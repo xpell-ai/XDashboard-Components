@@ -2,7 +2,7 @@
 
 ![npm](https://img.shields.io/npm/v/@xpell/xdashboard)
 ![downloads](https://img.shields.io/npm/dm/@xpell/xdashboard)
-![license](https://img.shields.io/npm/l/@xpell/xdashboard)
+![license](https://img.shields.io/npm/l/%40xpell%2Fxdashboard)
 ![types](https://img.shields.io/badge/TypeScript-Types-blue)
 ![xpell](https://img.shields.io/badge/Xpell-2%20Alpha-6f42c1)
 
