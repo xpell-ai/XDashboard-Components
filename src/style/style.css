@@ -1,0 +1,127 @@
+/* src/styles/index.css
+   Public entry: import this once
+*/
+@import "./tokens.css";
+@import "./xsimp.css";
+@import "./xcomp.css";
+@import "./xkpicard.css";
+@import "./xgrid.css";
+@import "./xsection.css";
+@import "./xscroll.css";
+@import "./xdivider.css";
+@import "./xspacer.css";
+@import "./xtoolbar.css";
+@import "./xtable.css";
+@import "./xbadge.css";
+@import "./xempty.css";
+@import "./xsearch.css";
+@import "./xigroup.css";
+@import "./xselect.css";
+@import "./xfield.css";
+@import "./xdrawer.css";
+@import "./xnavlist.css";
+@import "./xsidebar.css";
+@import "./xmodal.css";
+@import "./xtoast.css";
+@import "./xstack.css";
+@import "./xcard.css";
+
+/* -------------------------------------------------------------------------- */
+/* Minimal dashboard shell                                                    */
+/* -------------------------------------------------------------------------- */
+.dash-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--x-bg);
+  color: var(--x-text);
+}
+
+.dash-topbar {
+  background: var(--x-surface);
+  border-bottom: 1px solid var(--x-border);
+  padding: 12px 16px;
+}
+
+.dash-led {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-block;
+  box-shadow: 0 0 0 1px var(--x-border);
+}
+
+.dash-led--connected {
+  background: var(--x-success);
+}
+
+.dash-led--connecting {
+  background: var(--x-warning);
+}
+
+.dash-led--disconnected {
+  background: var(--x-danger);
+}
+
+.dash-topbar__title {
+  font-weight: 700;
+}
+
+.dash-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.dash-sidebar {
+  width: 248px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--x-surface);
+  border-right: 1px solid var(--x-border);
+  transition: width 160ms ease;
+}
+
+.dash-sidebar--collapsed {
+  width: 64px;
+}
+
+.dash-sidebar__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-sidebar__logo {
+  font-size: 18px;
+}
+
+.dash-sidebar--collapsed .dash-sidebar__label {
+  display: none;
+}
+
+.dash-sidebar--collapsed .xnavlist__label {
+  display: none;
+}
+
+.dash-sidebar--collapsed .xnavlist__item {
+  justify-content: center;
+}
+
+.dash-nav__icon {
+  width: 20px;
+  text-align: center;
+}
+
+.dash-main {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+}
+
+.dash-region {
+  min-height: 0;
+}

@@ -1,0 +1,43 @@
+/* XScroll tokens (theme-driven) */
+:root,
+[data-theme] {
+  --xscroll-thumb: var(--x-border);
+  --xscroll-thumb-hover: var(--x-text);
+  --xscroll-track: var(--x-surface-2, var(--x-surface));
+}
+
+.xscroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--xscroll-thumb) var(--xscroll-track);
+}
+
+.xscroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.xscroll::-webkit-scrollbar-track {
+  background: var(--xscroll-track);
+  border-radius: 999px;
+}
+
+.xscroll::-webkit-scrollbar-thumb {
+  background: var(--xscroll-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--xscroll-track);
+}
+
+.xscroll::-webkit-scrollbar-thumb:hover {
+  background: var(--xscroll-thumb-hover);
+}
+
+.xscroll--hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.xscroll--hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}

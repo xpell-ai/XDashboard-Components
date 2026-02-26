@@ -1,0 +1,58 @@
+/* XField */
+.xfield {
+  display: flex;
+  width: 100%;
+}
+
+.xfield__stack {
+  width: 100%;
+  --xstack-gap: var(--x-field-gap, 10px);
+}
+
+.xfield__label-row {
+  align-items: center;
+}
+
+.xfield__label {
+  color: var(--x-text);
+  font-weight: 600;
+}
+
+.xfield__required {
+  color: var(--x-danger, var(--x-text));
+}
+
+.xfield__control {
+  width: 100%;
+}
+
+.xfield__hint {
+  color: var(--x-text-muted, var(--x-muted, var(--x-text)));
+  font-size: var(--x-field-hint-size, 12px);
+}
+
+.xfield__error {
+  color: var(--x-danger, var(--x-text));
+  font-size: var(--x-field-hint-size, 12px);
+}
+
+.xfield--sm {
+  --x-field-gap: 8px;
+  --x-field-label-size: 12px;
+  --x-field-hint-size: 11px;
+}
+
+.xfield--md {
+  --x-field-gap: 10px;
+  --x-field-label-size: 13px;
+  --x-field-hint-size: 12px;
+}
+
+.xfield--sm .xfield__label,
+.xfield--md .xfield__label {
+  font-size: var(--x-field-label-size);
+}
+
+.xfield__row--inline {
+  align-items: center;
+}

@@ -1,0 +1,43 @@
+/* XSelect */
+.xselect {
+  display: inline-flex;
+  align-items: center;
+}
+
+.xselect__control {
+  width: 100%;
+  min-width: 0;
+  background: var(--x-surface);
+  border: 1px solid var(--x-border);
+  border-radius: var(--x-radius, 12px);
+  color: var(--x-text);
+  padding: var(--xselect-pad-y, 6px) var(--xselect-pad-x, 10px);
+  font-size: var(--xselect-font, 13px);
+  outline: none;
+}
+
+.xselect__control:focus {
+  border-color: var(--x-primary);
+  box-shadow: 0 0 0 3px var(--x-focus);
+}
+
+.xselect--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.xselect--disabled .xselect__control {
+  cursor: not-allowed;
+}
+
+.xselect--sm {
+  --xselect-pad-y: 4px;
+  --xselect-pad-x: 8px;
+  --xselect-font: 12px;
+}
+
+.xselect--md {
+  --xselect-pad-y: 6px;
+  --xselect-pad-x: 10px;
+  --xselect-font: 13px;
+}

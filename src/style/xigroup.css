@@ -1,0 +1,18 @@
+/* XInputGroup */
+.xigroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--xigroup-gap, 8px);
+}
+
+.xigroup--dense {
+  --xigroup-gap: 6px;
+}
+
+.xigroup--merged {
+  background: var(--x-surface);
+  border: 1px solid var(--x-border);
+  border-radius: var(--x-radius, 12px);
+  padding: 4px;
+}

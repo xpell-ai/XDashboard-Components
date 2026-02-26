@@ -1,0 +1,44 @@
+/* xbuilder.css — layout only */
+
+.xbuilder-shell {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.xbuilder-maincol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.xbuilder-region {
+  position: relative;
+  min-width: 0;
+}
+
+.xbuilder-region--main {
+  flex: 1;
+  overflow: hidden;
+}
+
+.xbuilder-region--modal {
+  position: fixed;
+  inset: 0;
+  pointer-events: none; /* modal controls visibility */
+}
+
+.xbuilder-page {
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.xbuilder-title {
+  font-weight: 600;
+}
+
+.xbuilder-muted {
+  opacity: 0.6;
+}

@@ -1,0 +1,57 @@
+/* -------------------------------------------------------
+   XSection
+------------------------------------------------------- */
+
+.xsection {
+  width: 100%;
+}
+
+.xsection__container {
+  border: 1px solid var(--dash-border);
+  background: var(--dash-surface);
+  border-radius: var(--dash-radius);
+  box-shadow: var(--dash-shadow);
+  padding: 16px;
+}
+
+.xsection__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.xsection__headings {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.xsection__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dash-text);
+  line-height: 1.2;
+}
+
+.xsection__subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dash-text-muted);
+  line-height: 1.35;
+}
+
+.xsection__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.xsection__body {
+  width: 100%;
+}

@@ -1,0 +1,30 @@
+/* src/styles/components.css
+   XDash Components
+   (Matches your current class usage: xcard / xkpi-card + card-body + btn)
+*/
+
+
+
+/* Optional helper: apply dashboard look to a container */
+.xdash,
+.xdash-bg {
+  font-family: var(--x-font);
+  color: var(--x-text);
+  background: var(--x-bg);
+}
+
+.dash-btn {
+  align-self: flex-start;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+
+  background: var(--x-primary);
+  color: var(--x-surface);
+
+  border: 1px solid var(--x-border);
+  box-shadow: var(--x-shadow);
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}

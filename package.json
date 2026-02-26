@@ -1,0 +1,40 @@
+{
+  "name": "@xpell/xdashboard",
+  "version": "0.1.0-alpha.1",
+  "description": "Dashboard XUI component library for Xpell UI",
+  "private": false,
+  "type": "module",
+  "author": "Tamir Fridman",
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "sideEffects": ["**/*.css"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./xdashboard.css": "./dist/xdashboard.css",
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf dist",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm clean && pnpm build"
+  },
+  "peerDependencies": {
+    "@xpell/core": ">=2.0.0-alpha",
+    "@xpell/ui": ">=2.0.0-alpha"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

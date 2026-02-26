@@ -1,0 +1,70 @@
+/* XTable base */
+.xtable {
+  width: 100%;
+}
+
+.xtable__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.xtable__head {
+  background: var(--x-surface);
+  border-bottom: 1px solid var(--x-border);
+}
+
+.xtable__th,
+.xtable__td {
+  padding: 10px 12px;
+  color: var(--x-text);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.xtable__th {
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.xtable__td {
+  font-size: 13px;
+}
+
+.xtable--dense .xtable__th,
+.xtable--dense .xtable__td {
+  padding: 6px 10px;
+}
+
+.xtable--bordered .xtable__table {
+  border: 1px solid var(--x-border);
+}
+
+.xtable--bordered .xtable__th,
+.xtable--bordered .xtable__td {
+  border-bottom: 1px solid var(--x-border);
+}
+
+.xtable--striped .xtable__body tr:nth-child(even) .xtable__td {
+  background: var(--x-surface-2, var(--x-surface));
+}
+
+.xtable--hover .xtable__body tr:hover .xtable__td {
+  background: var(--x-hover, var(--x-surface-2, var(--x-surface)));
+}
+
+.xtable__empty {
+  text-align: center;
+  color: var(--x-muted, var(--x-text));
+}
+
+.xtable__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--x-surface-2, var(--x-surface));
+  color: var(--x-text);
+  border: 1px solid var(--x-border);
+}

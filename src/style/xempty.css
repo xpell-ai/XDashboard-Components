@@ -1,0 +1,59 @@
+/* XEmptyState */
+.xempty {
+  display: flex;
+  width: 100%;
+}
+
+.xempty--center {
+  align-items: center;
+  text-align: center;
+}
+
+.xempty--start {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.xempty__stack {
+  width: 100%;
+  --xstack-gap: var(--x-empty-gap, 12px);
+}
+
+.xempty__title {
+  color: var(--x-text);
+  font-weight: 700;
+}
+
+.xempty__desc {
+  color: var(--x-text-muted, var(--x-muted, var(--x-text)));
+}
+
+.xempty--sm {
+  --x-empty-gap: 8px;
+  --x-empty-title-size: 14px;
+  --x-empty-desc-size: 12px;
+}
+
+.xempty--md {
+  --x-empty-gap: 12px;
+  --x-empty-title-size: 16px;
+  --x-empty-desc-size: 13px;
+}
+
+.xempty--lg {
+  --x-empty-gap: 16px;
+  --x-empty-title-size: 18px;
+  --x-empty-desc-size: 14px;
+}
+
+.xempty--sm .xempty__title,
+.xempty--md .xempty__title,
+.xempty--lg .xempty__title {
+  font-size: var(--x-empty-title-size);
+}
+
+.xempty--sm .xempty__desc,
+.xempty--md .xempty__desc,
+.xempty--lg .xempty__desc {
+  font-size: var(--x-empty-desc-size);
+}

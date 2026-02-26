@@ -1,0 +1,74 @@
+/* XSearchBox */
+.xsearch {
+  --xsearch-gap: 8px;
+  --xsearch-pad-y: 6px;
+  --xsearch-pad-x: 10px;
+  --xsearch-font: 13px;
+  --xsearch-height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xsearch-gap);
+  padding: var(--xsearch-pad-y) var(--xsearch-pad-x);
+  min-height: var(--xsearch-height);
+  background: var(--x-surface);
+  border: 1px solid var(--x-border);
+  border-radius: var(--x-radius, 12px);
+  color: var(--x-text);
+}
+
+.xsearch--sm {
+  --xsearch-pad-y: 4px;
+  --xsearch-pad-x: 8px;
+  --xsearch-font: 12px;
+  --xsearch-height: 30px;
+}
+
+.xsearch--md {
+  --xsearch-pad-y: 6px;
+  --xsearch-pad-x: 10px;
+  --xsearch-font: 13px;
+  --xsearch-height: 34px;
+}
+
+.xsearch:focus-within {
+  border-color: var(--x-primary);
+  box-shadow: 0 0 0 3px var(--x-focus);
+}
+
+.xsearch--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.xsearch__icon {
+  font-size: 14px;
+  color: var(--x-text-muted, var(--x-muted, var(--x-text)));
+}
+
+.xsearch__input {
+  font-size: var(--xsearch-font);
+  color: var(--x-text);
+  background: transparent;
+  border: none;
+  outline: none;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.xsearch__input::placeholder {
+  color: var(--x-text-muted, var(--x-muted, var(--x-text)));
+}
+
+.xsearch__clear {
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  color: var(--x-text-muted, var(--x-muted, var(--x-text)));
+}
+
+.xsearch__clear:hover {
+  color: var(--x-text);
+}

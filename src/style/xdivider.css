@@ -1,0 +1,23 @@
+/* XDivider base */
+.xdivider {
+  background: var(--x-divider, var(--x-border));
+  flex: 0 0 auto;
+}
+
+.xdivider--muted {
+  background: var(--x-divider-muted, var(--x-border));
+}
+
+.xdivider--h {
+  width: var(--xdivider-length, 100%);
+  height: var(--xdivider-thickness, 1px);
+  margin-left: var(--xdivider-inset, 0px);
+  margin-right: var(--xdivider-inset, 0px);
+}
+
+.xdivider--v {
+  height: var(--xdivider-length, 100%);
+  width: var(--xdivider-thickness, 1px);
+  margin-top: var(--xdivider-inset, 0px);
+  margin-bottom: var(--xdivider-inset, 0px);
+}

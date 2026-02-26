@@ -1,0 +1,22 @@
+/* XGrid — pure CSS grid */
+
+.xgrid {
+  display: grid;
+  gap: var(--x-grid-gap, 12px);
+}
+
+/* Fixed columns mode */
+.xgrid {
+  grid-template-columns: repeat(
+    var(--x-grid-cols, 1),
+    minmax(0, 1fr)
+  );
+}
+
+/* Auto-fit mode (enabled when --x-grid-min-col exists) */
+.xgrid[style*="--x-grid-min-col"] {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--x-grid-min-col), 1fr)
+  );
+}

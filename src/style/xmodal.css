@@ -1,0 +1,84 @@
+.xmodal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: var(--x-z-modal, 1000);
+}
+
+.xmodal--open {
+  display: block;
+}
+
+.xmodal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--x-overlay, rgba(0, 0, 0, 0.5));
+}
+
+.xmodal__panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1;
+}
+
+.xmodal__card {
+  width: var(--xmodal-width, 560px);
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  background: var(--x-surface);
+  color: var(--x-text);
+  border: 1px solid var(--x-border);
+  border-radius: var(--x-radius, 12px);
+  box-shadow: var(--x-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.xmodal__header {
+  padding: 12px 14px;
+}
+
+.xmodal__title {
+  font-weight: 600;
+  color: var(--x-text);
+}
+
+.xmodal__subtitle {
+  color: var(--x-muted);
+  font-size: 12px;
+}
+
+.xmodal__close {
+  background: transparent;
+  border: none;
+  color: var(--x-text);
+}
+
+.xmodal__body {
+  padding: 12px 14px;
+  min-height: 0;
+}
+
+.xmodal__scroll {
+  max-height: 60vh;
+}
+
+.xmodal__footer {
+  padding: 12px 14px;
+}
+
+.xmodal--sm {
+  --xmodal-width: 420px;
+}
+
+.xmodal--md {
+  --xmodal-width: 560px;
+}
+
+.xmodal--lg {
+  --xmodal-width: 720px;
+}

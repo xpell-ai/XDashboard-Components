@@ -1,0 +1,22 @@
+/* XStack tokens (self-contained, light/dark aware) */
+:root,
+[data-theme] {
+  --xstack-gap: 12px;
+  --xstack-accent: var(--x-primary);
+  --xstack-text: var(--x-text);
+}
+
+.xstack {
+  display: flex;
+  gap: var(--xstack-gap, 12px);
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.xstack--v {
+  flex-direction: column;
+}
+
+.xstack--h {
+  flex-direction: row;
+}

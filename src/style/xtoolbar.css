@@ -1,0 +1,16 @@
+/* XToolbar base */
+.xtoolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--xtoolbar-gap, 8px);
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: var(--x-radius, 12px);
+}
+
+.xtoolbar--elevated {
+  background: var(--x-surface);
+  border: 1px solid var(--x-border);
+  box-shadow: var(--x-shadow);
+}

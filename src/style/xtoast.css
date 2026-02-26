@@ -1,0 +1,76 @@
+.xtoast {
+  position: fixed;
+  z-index: var(--x-z-toast, 1100);
+  max-width: 360px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.xtoast--open {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.xtoast--top-right {
+  top: var(--x-toast-offset, 16px);
+  right: var(--x-toast-offset, 16px);
+}
+
+.xtoast--top-left {
+  top: var(--x-toast-offset, 16px);
+  left: var(--x-toast-offset, 16px);
+}
+
+.xtoast--bottom-right {
+  bottom: var(--x-toast-offset, 16px);
+  right: var(--x-toast-offset, 16px);
+}
+
+.xtoast--bottom-left {
+  bottom: var(--x-toast-offset, 16px);
+  left: var(--x-toast-offset, 16px);
+}
+
+.xtoast__container {
+  display: flex;
+  align-items: center;
+  gap: var(--x-gap, 12px);
+  padding: 10px 12px;
+  background: var(--x-surface);
+  color: var(--x-text);
+  border: 1px solid var(--x-border);
+  border-left: 4px solid var(--xtoast-accent, var(--x-border));
+  border-radius: var(--x-radius, 10px);
+  box-shadow: var(--x-shadow);
+}
+
+.xtoast__text {
+  flex: 1 1 auto;
+}
+
+.xtoast__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.xtoast__close {
+  background: transparent;
+  border: none;
+  color: var(--x-text);
+}
+
+.xtoast--success {
+  --xtoast-accent: var(--x-success);
+}
+
+.xtoast--error {
+  --xtoast-accent: var(--x-danger);
+}
+
+.xtoast--warn {
+  --xtoast-accent: var(--x-warning);
+}
+
+.xtoast--info {
+  --xtoast-accent: var(--x-primary);
+}

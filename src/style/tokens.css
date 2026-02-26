@@ -1,0 +1,131 @@
+/* src/styles/tokens.css
+   XDash Tokens
+   - Default follows OS preference via prefers-color-scheme
+   - Manual override:
+       [data-theme="light"] forces light
+       [data-theme="dark"]  forces dark
+   - Scope it globally (:root) OR per app by setting data-theme on #xplayer
+*/
+
+/* ---------- Base tokens (shared) ---------- */
+:root,
+[data-theme] {
+  --x-font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+
+  --x-radius: 16px;
+  --x-gap: 12px;
+
+  --x-primary: #2563eb;
+  --x-success: #16a34a;
+  --x-danger: #dc2626;
+  --x-warning: #f59e0b;
+
+  /* component-level “ink” */
+  --x-focus: rgba(37, 99, 235, 0.28);
+}
+
+/* ---------- Light (forced) ---------- */
+:root[data-theme="light"],
+[data-theme="light"] {
+  --x-bg: #f6f7fb;
+  --x-surface: #ffffff;
+  --x-surface-2: #fbfbfd;
+
+  --x-text: #0f172a;
+  --x-muted: #64748b;
+
+  --x-border: rgba(15, 23, 42, 0.10);
+  --x-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+
+  --x-primary: #2563eb;
+  --x-success: #16a34a;
+  --x-danger: #dc2626;
+  --x-warning: #f59e0b;
+}
+
+/* ---------- Dark (forced) ---------- */
+:root[data-theme="dark"],
+[data-theme="dark"] {
+  --x-bg: #1e1e1e;
+  --x-surface: #252526;
+  --x-surface-2: #2d2d2d;
+
+  --x-text: #d4d4d4;
+  --x-muted: #9da3a8;
+
+  --x-border: #2a2d2e;
+  --x-shadow: 0 16px 40px rgba(0, 0, 0, 0.60);
+
+  --x-primary: #007acc;
+  --x-success: #89d185;
+  --x-danger: #f48771;
+  --x-warning: #cca700;
+
+  --x-focus: rgba(0, 122, 204, 0.35);
+}
+
+/* ---------- OS preference (default) ----------
+   If user didn’t explicitly choose light/dark, follow the OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --x-bg: #1e1e1e;
+    --x-surface: #252526;
+    --x-surface-2: #2d2d2d;
+
+    --x-text: #d4d4d4;
+    --x-muted: #9da3a8;
+
+    --x-border: #2a2d2e;
+    --x-shadow: 0 16px 40px rgba(0, 0, 0, 0.60);
+
+    --x-primary: #007acc;
+    --x-success: #89d185;
+    --x-danger: #f48771;
+    --x-warning: #cca700;
+
+    --x-focus: rgba(0, 122, 204, 0.35);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --x-bg: #f6f7fb;
+    --x-surface: #ffffff;
+    --x-surface-2: #fbfbfd;
+
+    --x-text: #0f172a;
+    --x-muted: #64748b;
+
+    --x-border: rgba(15, 23, 42, 0.10);
+    --x-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+
+    --x-primary: #2563eb;
+    --x-success: #16a34a;
+    --x-danger: #dc2626;
+    --x-warning: #f59e0b;
+  }
+}
+
+/* Optional manual override */
+html[data-theme="dark"] {
+  --x-bg: #1e1e1e;
+  --x-surface: #252526;
+  --x-surface-2: #2d2d2d;
+  --x-text: #d4d4d4;
+  --x-muted: #9da3a8;
+  --x-border: #2a2d2e;
+  --x-primary: #007acc;
+  --x-success: #89d185;
+  --x-danger: #f48771;
+  --x-warning: #cca700;
+  --x-focus: rgba(0, 122, 204, 0.35);
+}
+
+html[data-theme="light"] {
+  --x-bg: #f0f0f0;
+  --x-surface: #ffffff;
+  --x-text: #111111;
+  --x-border: #e0e0e0;
+  --x-muted: #666666;
+}

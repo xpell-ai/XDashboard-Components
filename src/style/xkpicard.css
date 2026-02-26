@@ -1,0 +1,55 @@
+/* ---------------- XKpiCard ---------------- */
+.xkpi-card {
+  background: var(--x-surface);
+  border: 1px solid var(--x-border);
+  border-radius: var(--x-radius);
+  box-shadow: var(--x-shadow);
+}
+
+.xkpi-card .kpi-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.xkpi-card .kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.xkpi-card .kpi-icon {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.xkpi-card .kpi-label {
+  font-size: 12px;
+  color: var(--x-muted);
+  letter-spacing: 0.2px;
+}
+
+/* KPI VALUE should always be readable */
+.xkpi-card .kpi-value {
+  color: var(--x-text);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.xkpi-card .kpi-delta {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.xkpi-card .kpi-delta--up {
+  color: var(--x-success);
+}
+.xkpi-card .kpi-delta--down {
+  color: var(--x-danger);
+}
+.xkpi-card .kpi-delta--flat {
+  color: var(--x-muted);
+}
