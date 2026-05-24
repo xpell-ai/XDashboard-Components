@@ -1,22 +1,115 @@
-/* XGrid — pure CSS grid */
+/* ==========================================================================
+   XGrid
+   Semantic responsive grid system
+   ========================================================================== */
 
 .xgrid {
-  display: grid;
-  gap: var(--x-grid-gap, 12px);
+
+  display:grid;
+
+  gap:
+    var(--x-grid-gap, var(--x-spacing-md));
+
+  grid-template-columns:
+    repeat(
+      var(--x-grid-cols, 1),
+      minmax(0, 1fr)
+    );
 }
 
-/* Fixed columns mode */
-.xgrid {
-  grid-template-columns: repeat(
-    var(--x-grid-cols, 1),
-    minmax(0, 1fr)
-  );
-}
 
-/* Auto-fit mode (enabled when --x-grid-min-col exists) */
+/* ==========================================================================
+   Auto-fit Responsive Mode
+   ==========================================================================
+   Enabled when:
+   --x-grid-min-col exists
+   ========================================================================== */
+
 .xgrid[style*="--x-grid-min-col"] {
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(var(--x-grid-min-col), 1fr)
-  );
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        var(--x-grid-min-col),
+        1fr
+      )
+    );
+}
+
+
+/* ==========================================================================
+   Semantic Density Variants
+   ========================================================================== */
+
+.xgrid--dense,
+.xgrid--density-dense {
+
+  --x-grid-gap:
+    var(--x-spacing-sm);
+}
+
+
+.xgrid--normal,
+.xgrid--density-normal {
+
+  --x-grid-gap:
+    var(--x-spacing-md);
+}
+
+
+.xgrid--loose,
+.xgrid--density-loose {
+
+  --x-grid-gap:
+    var(--x-spacing-lg);
+}
+
+
+/* ==========================================================================
+   Semantic Gap Variants
+   ========================================================================== */
+
+.xgrid--gap-sm {
+  --x-grid-gap:
+    var(--x-spacing-sm);
+}
+
+.xgrid--gap-md {
+  --x-grid-gap:
+    var(--x-spacing-md);
+}
+
+.xgrid--gap-lg {
+  --x-grid-gap:
+    var(--x-spacing-lg);
+}
+
+
+/* ==========================================================================
+   Semantic Column Variants
+   ========================================================================== */
+
+.xgrid--cols-1 {
+  --x-grid-cols:1;
+}
+
+.xgrid--cols-2 {
+  --x-grid-cols:2;
+}
+
+.xgrid--cols-3 {
+  --x-grid-cols:3;
+}
+
+.xgrid--cols-4 {
+  --x-grid-cols:4;
+}
+
+.xgrid--cols-5 {
+  --x-grid-cols:5;
+}
+
+.xgrid--cols-6 {
+  --x-grid-cols:6;
 }

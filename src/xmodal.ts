@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XModalData extends XUIObjectData {
   _type: "modal";
@@ -22,6 +22,82 @@ type XModalSize = "sm" | "md" | "lg";
 
 export class XModal extends XUIObject {
   static _xtype = "modal";
+  static _skill: XpellSkill = {
+    _id: "modal",
+    _title: "XModal",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: [
+      "xuiobject",
+      "view",
+      "label",
+      "button",
+      "toolbar",
+      "divider",
+      "scroll",
+      "stack"
+    ],
+
+    _description:
+      "Dashboard modal dialog with backdrop, panel, optional title/subtitle, scrollable content, footer actions, size, width, and open/close state.",
+
+    _fields: {
+      _open: "Whether the modal is open.",
+      _title: "Optional modal title.",
+      _subtitle: "Optional modal subtitle.",
+      _size: "Modal size: sm, md, or lg.",
+      _width: "Optional custom modal width CSS value.",
+      _closable: "Show close button when true.",
+      _close_on_backdrop: "Close modal when backdrop is clicked.",
+      _scroll: "Wrap modal body in scroll container when true.",
+      _actions: "Optional footer action objects, usually buttons.",
+      _content: "Optional modal body content objects. Takes priority over _children.",
+      _children: "Modal body content when _content is not provided.",
+      class: "Optional CSS classes. xmodal is applied automatically."
+    },
+
+    _core_rules: [
+      "Use modal for confirmations, dialogs, forms, and focused overlays.",
+      "Use _open to control visibility.",
+      "Use _title and _subtitle for modal header text.",
+      "Use _content or _children for body content.",
+      "Use _actions for footer buttons.",
+      "Do not generate _on_open or _on_close; they are internal runtime callbacks only.",
+      "Do not generate JavaScript functions in modal JSON."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "modal",
+        _id: "confirm-modal",
+        _open: false,
+        _title: "Confirm",
+        _subtitle: "Are you sure?",
+        _size: "md",
+        _closable: true,
+        _close_on_backdrop: true,
+        _scroll: true,
+        _children: [
+          {
+            _type: "label",
+            _text: "This action cannot be undone."
+          }
+        ],
+        _actions: [
+          {
+            _type: "button",
+            _text: "Cancel"
+          },
+          {
+            _type: "button",
+            _text: "Confirm",
+            _variant: "primary"
+          }
+        ]
+      }
+    ]
+  };
 
   private __open = false;
   private __title?: string;
@@ -124,7 +200,7 @@ export class XModal extends XUIObject {
         _type: "button",
         class: "xmodal__close",
         _text: "×",
-        _on_click: () => this.close(),
+        _on: { click: () => this.close() },
       });
     }
 
@@ -144,12 +220,12 @@ export class XModal extends XUIObject {
     const content = this.__content ? this.__content : contentChildren;
     const bodyChildren: XUIObjectData[] = this.__scroll
       ? [
-          {
-            _type: "scroll",
-            class: "xmodal__scroll",
-            _children: content,
-          },
-        ]
+        {
+          _type: "scroll",
+          class: "xmodal__scroll",
+          _children: content,
+        },
+      ]
       : content;
 
     return {
@@ -188,7 +264,7 @@ export class XModal extends XUIObject {
       class: "xmodal__backdrop",
     };
     if (this.__close_on_backdrop) {
-      (backdrop as any)._on_click = () => this.close();
+      (backdrop as any)._on["click"] = () => this.close();
     }
 
     const panelChildren: XUIObjectData[] = [];

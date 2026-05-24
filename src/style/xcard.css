@@ -1,57 +1,230 @@
-/* ---------------- XCard ---------------- */
+/* ==========================================================================
+   XCard
+   Semantic card/content container component
+   ========================================================================== */
+
 .xcard {
-  background: var(--x-surface);
-  border: 1px solid var(--x-border);
-  border-radius: var(--x-radius);
-  box-shadow: var(--x-shadow);
-  overflow: hidden;
+
+  background:
+    var(--x-surface);
+
+  border:
+    1px solid var(--x-border);
+
+  border-radius:
+    var(--x-radius-lg);
+
+  box-shadow:
+    var(--x-shadow-md);
+
+  overflow:hidden;
 }
+
+
+/* ==========================================================================
+   Inner Layout
+   ========================================================================== */
 
 .xcard__inner {
-  display: flex;
-  flex-direction: column;
+
+  display:flex;
+
+  flex-direction:column;
 }
+
+
+/* ==========================================================================
+   Image
+   ========================================================================== */
 
 .xcard__image {
-  width: 100%;
-  height: auto;
-  display: block;
+
+  width:100%;
+
+  height:auto;
+
+  display:block;
 }
 
-.xcard--no-image .xcard__image {
-  display: none;
+
+.xcard--no-image .xcard__image,
+.xcard--state-no-image .xcard__image {
+
+  display:none;
 }
+
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
 
 .xcard__body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+
+  padding:
+    var(--x-spacing-md);
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:
+    var(--x-spacing-sm);
 }
+
+
+/* ==========================================================================
+   Title
+   ========================================================================== */
 
 .xcard__title {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  margin: 0;
-  color: var(--x-text);
+
+  font-size:14px;
+
+  font-weight:700;
+
+  letter-spacing:.2px;
+
+  margin:0;
+
+  color:
+    var(--x-text);
 }
+
+
+/* ==========================================================================
+   Text
+   ========================================================================== */
 
 .xcard__text {
-  font-size: 13px;
-  color: var(--x-muted);
-  line-height: 1.45;
-  margin: 0;
+
+  font-size:13px;
+
+  color:
+    var(--x-text-muted);
+
+  line-height:1.45;
+
+  margin:0;
 }
+
+
+/* ==========================================================================
+   Link
+   ========================================================================== */
 
 .xcard__link {
-  align-self: flex-start;
-  text-decoration: none;
+
+  align-self:flex-start;
+
+  text-decoration:none;
 }
 
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
+
 .xcard__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  align-items:center;
+
+  gap:
+    var(--x-spacing-sm);
+}
+
+
+/* ==========================================================================
+   Semantic Variants
+   ========================================================================== */
+
+.xcard--primary,
+.xcard--variant-primary {
+
+  border-color:
+    var(--x-primary);
+}
+
+
+.xcard--success,
+.xcard--variant-success {
+
+  border-color:
+    var(--x-success);
+}
+
+
+.xcard--danger,
+.xcard--error,
+.xcard--variant-danger,
+.xcard--variant-error {
+
+  border-color:
+    var(--x-danger);
+}
+
+
+.xcard--warning,
+.xcard--variant-warning {
+
+  border-color:
+    var(--x-warning);
+}
+
+
+/* ==========================================================================
+   Elevation Variants
+   ========================================================================== */
+
+.xcard--flat,
+.xcard--elevation-flat {
+
+  box-shadow:none;
+}
+
+
+.xcard--elevated,
+.xcard--elevation-md {
+
+  box-shadow:
+    var(--x-shadow-md);
+}
+
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xcard--dense,
+.xcard--density-dense {
+
+  --xcard-padding:
+    var(--x-spacing-sm);
+}
+
+
+.xcard--comfortable,
+.xcard--density-comfortable {
+
+  --xcard-padding:
+    var(--x-spacing-lg);
+}
+
+
+.xcard--dense .xcard__body,
+.xcard--density-dense .xcard__body {
+
+  padding:
+    var(--x-spacing-sm);
+}
+
+
+.xcard--comfortable .xcard__body,
+.xcard--density-comfortable .xcard__body {
+
+  padding:
+    var(--x-spacing-lg);
 }

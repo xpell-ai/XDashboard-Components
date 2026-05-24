@@ -1,70 +1,236 @@
-/* XTable base */
+/* ==========================================================================
+   XTable
+   Semantic data table component
+   ========================================================================== */
+
 .xtable {
-  width: 100%;
+  width:100%;
 }
+
+
+/* ==========================================================================
+   Native Table
+   ========================================================================== */
 
 .xtable__table {
-  width: 100%;
-  border-collapse: collapse;
+
+  width:100%;
+
+  border-collapse:collapse;
 }
 
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
 .xtable__head {
-  background: var(--x-surface);
-  border-bottom: 1px solid var(--x-border);
+
+  background:
+    var(--x-surface);
+
+  border-bottom:
+    1px solid var(--x-border);
 }
+
+
+/* ==========================================================================
+   Cells
+   ========================================================================== */
 
 .xtable__th,
 .xtable__td {
-  padding: 10px 12px;
-  color: var(--x-text);
-  text-align: left;
-  vertical-align: middle;
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  color:
+    var(--x-text);
+
+  text-align:left;
+
+  vertical-align:middle;
 }
+
 
 .xtable__th {
-  font-size: 12px;
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
+
+  font-size:12px;
+
+  letter-spacing:.2px;
+
+  text-transform:uppercase;
 }
+
 
 .xtable__td {
-  font-size: 13px;
+  font-size:13px;
 }
+
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xtable--dense,
+.xtable--density-dense {
+
+  --xtable-cell-pad-y:
+    6px;
+
+  --xtable-cell-pad-x:
+    10px;
+}
+
 
 .xtable--dense .xtable__th,
-.xtable--dense .xtable__td {
-  padding: 6px 10px;
+.xtable--dense .xtable__td,
+.xtable--density-dense .xtable__th,
+.xtable--density-dense .xtable__td {
+
+  padding:
+    var(--xtable-cell-pad-y)
+    var(--xtable-cell-pad-x);
 }
 
-.xtable--bordered .xtable__table {
-  border: 1px solid var(--x-border);
+
+/* ==========================================================================
+   Border Variants
+   ========================================================================== */
+
+.xtable--bordered,
+.xtable--variant-bordered {
+
 }
+
+
+.xtable--bordered .xtable__table,
+.xtable--variant-bordered .xtable__table {
+
+  border:
+    1px solid var(--x-border);
+}
+
 
 .xtable--bordered .xtable__th,
-.xtable--bordered .xtable__td {
-  border-bottom: 1px solid var(--x-border);
+.xtable--bordered .xtable__td,
+.xtable--variant-bordered .xtable__th,
+.xtable--variant-bordered .xtable__td {
+
+  border-bottom:
+    1px solid var(--x-border);
 }
 
-.xtable--striped .xtable__body tr:nth-child(even) .xtable__td {
-  background: var(--x-surface-2, var(--x-surface));
+
+/* ==========================================================================
+   Row Style Variants
+   ========================================================================== */
+
+.xtable--striped .xtable__body tr:nth-child(even) .xtable__td,
+.xtable--variant-striped .xtable__body tr:nth-child(even) .xtable__td {
+
+  background:
+    var(--x-surface-2, var(--x-surface));
 }
 
-.xtable--hover .xtable__body tr:hover .xtable__td {
-  background: var(--x-hover, var(--x-surface-2, var(--x-surface)));
+
+.xtable--hover .xtable__body tr:hover .xtable__td,
+.xtable--variant-hover .xtable__body tr:hover .xtable__td {
+
+  background:
+    var(--x-hover, var(--x-surface-2, var(--x-surface)));
 }
+
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
 
 .xtable__empty {
-  text-align: center;
-  color: var(--x-muted, var(--x-text));
+
+  text-align:center;
+
+  color:
+    var(--x-text-muted, var(--x-text));
 }
 
+
+/* ==========================================================================
+   Inline Badge
+   ========================================================================== */
+
 .xtable__badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  background: var(--x-surface-2, var(--x-surface));
-  color: var(--x-text);
-  border: 1px solid var(--x-border);
+
+  display:inline-block;
+
+  padding:
+    2px
+    var(--x-spacing-sm);
+
+  border-radius:999px;
+
+  font-size:11px;
+  font-weight:600;
+
+  background:
+    var(--x-surface-2, var(--x-surface));
+
+  color:
+    var(--x-text);
+
+  border:
+    1px solid var(--x-border);
+}
+
+
+/* ==========================================================================
+   Semantic Badge Variants
+   ========================================================================== */
+
+.xtable__badge--success,
+.xtable__badge--variant-success {
+
+  color:
+    var(--x-success);
+
+  border-color:
+    var(--x-success);
+}
+
+
+.xtable__badge--danger,
+.xtable__badge--error,
+.xtable__badge--variant-danger,
+.xtable__badge--variant-error {
+
+  color:
+    var(--x-danger);
+
+  border-color:
+    var(--x-danger);
+}
+
+
+.xtable__badge--warning,
+.xtable__badge--variant-warning {
+
+  color:
+    var(--x-warning);
+
+  border-color:
+    var(--x-warning);
+}
+
+
+.xtable__badge--primary,
+.xtable__badge--info,
+.xtable__badge--variant-primary,
+.xtable__badge--variant-info {
+
+  color:
+    var(--x-primary);
+
+  border-color:
+    var(--x-primary);
 }

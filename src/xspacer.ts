@@ -1,9 +1,8 @@
 import { XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XSpacerData extends XUIObjectData {
   _type?: "spacer";
-  _size?: number;
   _direction?: "vertical" | "horizontal";
 }
 
@@ -11,13 +10,45 @@ type XSpacerDirection = "vertical" | "horizontal";
 
 export class XSpacer extends XUIObject {
   static _xtype = "spacer";
+  static _skill: XpellSkill = {
+    _id: "spacer",
+    _title: "XSpacer",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject"],
 
+    _description:
+      "Dashboard spacing primitive for adding fixed vertical or horizontal empty space between UI elements.",
+
+    _fields: {
+      _direction: "Spacer direction: vertical or horizontal.",
+      _size: "Spacer size in pixels. Defaults to 16.",
+      class: "Optional CSS classes. xspacer is applied automatically."
+    },
+
+    _core_rules: [
+      "Use spacer only for simple fixed spacing between elements.",
+      "Use _direction:'vertical' for vertical gaps.",
+      "Use _direction:'horizontal' for horizontal gaps.",
+      "Prefer stack/grid _gap for normal layout spacing.",
+      "Do not use spacer as a content container."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "spacer",
+        _direction: "vertical",
+        _size: 16
+      }
+    ]
+  };
   private __size = 16;
   private __direction: XSpacerDirection = "vertical";
 
   private static readonly managedStyles = new Set(["width", "height", "min-width", "min-height"]);
 
-  constructor(data: XSpacerData) {
+  constructor(data: any) {
     const defaults: any = {
       _type: XSpacer._xtype,
       class: "xspacer",
@@ -80,14 +111,7 @@ export class XSpacer extends XUIObject {
     if (this._dom_object) this._dom_object.setAttribute("style", nextStyle);
   }
 
-  set _size(value: number | undefined) {
-    this.__size = this.normalizeSize(value);
-    this.applyLayout();
-  }
 
-  get _size() {
-    return this.__size;
-  }
 
   set _direction(value: XSpacerDirection | undefined) {
     this.__direction = this.normalizeDirection(value);

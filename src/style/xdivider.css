@@ -1,23 +1,140 @@
-/* XDivider base */
+/* ==========================================================================
+   XDivider
+   Semantic divider/separator component
+   ========================================================================== */
+
 .xdivider {
-  background: var(--x-divider, var(--x-border));
-  flex: 0 0 auto;
+
+  --xdivider-color:
+    var(--x-divider, var(--x-border));
+
+  --xdivider-thickness:
+    1px;
+
+  --xdivider-length:
+    100%;
+
+  --xdivider-inset:
+    0px;
+
+  flex:0 0 auto;
+
+  background:
+    var(--xdivider-color);
 }
 
-.xdivider--muted {
-  background: var(--x-divider-muted, var(--x-border));
+
+/* ==========================================================================
+   Semantic Tone Variants
+   ========================================================================== */
+
+.xdivider--muted,
+.xdivider--tone-muted {
+
+  --xdivider-color:
+    var(--x-divider-muted, var(--x-border));
 }
 
-.xdivider--h {
-  width: var(--xdivider-length, 100%);
-  height: var(--xdivider-thickness, 1px);
-  margin-left: var(--xdivider-inset, 0px);
-  margin-right: var(--xdivider-inset, 0px);
+
+.xdivider--primary,
+.xdivider--tone-primary {
+
+  --xdivider-color:
+    var(--x-primary);
 }
 
-.xdivider--v {
-  height: var(--xdivider-length, 100%);
-  width: var(--xdivider-thickness, 1px);
-  margin-top: var(--xdivider-inset, 0px);
-  margin-bottom: var(--xdivider-inset, 0px);
+
+.xdivider--success,
+.xdivider--tone-success {
+
+  --xdivider-color:
+    var(--x-success);
+}
+
+
+.xdivider--danger,
+.xdivider--error,
+.xdivider--tone-danger,
+.xdivider--tone-error {
+
+  --xdivider-color:
+    var(--x-danger);
+}
+
+
+.xdivider--warning,
+.xdivider--tone-warning {
+
+  --xdivider-color:
+    var(--x-warning);
+}
+
+
+/* ==========================================================================
+   Horizontal Divider
+   ========================================================================== */
+
+.xdivider--h,
+.xdivider--horizontal {
+
+  width:
+    var(--xdivider-length);
+
+  height:
+    var(--xdivider-thickness);
+
+  margin-left:
+    var(--xdivider-inset);
+
+  margin-right:
+    var(--xdivider-inset);
+}
+
+
+/* ==========================================================================
+   Vertical Divider
+   ========================================================================== */
+
+.xdivider--v,
+.xdivider--vertical {
+
+  height:
+    var(--xdivider-length);
+
+  width:
+    var(--xdivider-thickness);
+
+  margin-top:
+    var(--xdivider-inset);
+
+  margin-bottom:
+    var(--xdivider-inset);
+}
+
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xdivider--sm,
+.xdivider--size-sm {
+
+  --xdivider-thickness:
+    1px;
+}
+
+
+.xdivider--md,
+.xdivider--size-md {
+
+  --xdivider-thickness:
+    2px;
+}
+
+
+.xdivider--lg,
+.xdivider--size-lg {
+
+  --xdivider-thickness:
+    3px;
 }

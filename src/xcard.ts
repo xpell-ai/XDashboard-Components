@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData,XpellSkill } from "@xpell/ui";
 
 export interface XCardData extends XUIObjectData {
   _type: "card";
@@ -16,6 +16,56 @@ export interface XCardData extends XUIObjectData {
 
 export class XCard extends XUIObject {
   static _xtype = "card";
+  static _skill: XpellSkill = {
+    _id: "card",
+    _title: "XCard",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject"],
+
+    _description:
+      "Dashboard card component with optional image, title, text, link, and action buttons.",
+
+    _fields: {
+      _image: "Optional card image URL.",
+      _image_alt: "Alt text for the card image.",
+      _hide_image: "Hide the image area when true.",
+      _title: "Card title text.",
+      _text: "Card body text.",
+      _href: "Optional link URL.",
+      _link_text: "Visible link text.",
+      _actions: "Optional action button/link child objects.",
+      class: "Optional CSS classes. xcard is applied automatically."
+    },
+
+    _core_rules: [
+      "Use card for compact dashboard/content summaries.",
+      "Use _title and _text for primary card content.",
+      "Use _image only when visual context is useful.",
+      "Use _actions for card buttons.",
+      "Do not use card as a generic layout container; use view/grid/stack instead."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "card",
+        _title: "Quarterly Report",
+        _text: "Revenue up 12% QoQ.",
+        _image: "https://via.placeholder.com/600x200?text=Report",
+        _image_alt: "Quarterly report preview",
+        _href: "#",
+        _link_text: "View report",
+        _actions: [
+          {
+            _type: "button",
+            _text: "Open",
+            class: "dash-btn"
+          }
+        ]
+      }
+    ]
+  };
 
   private __image?: string;
   private __title?: string;

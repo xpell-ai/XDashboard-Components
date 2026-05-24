@@ -1,5 +1,5 @@
 import { XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XToolbarData extends XUIObjectData {
   _type?: "toolbar";
@@ -17,7 +17,58 @@ type XToolbarJustify = "start" | "center" | "end" | "space-between";
 
 export class XToolbar extends XUIObject {
   static _xtype = "toolbar";
+  static _skill: XpellSkill = {
+    _id: "toolbar",
+    _title: "XToolbar",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject"],
 
+    _description:
+      "Dashboard toolbar layout for arranging actions, filters, titles, or controls in a horizontal flex row with gap, alignment, sticky mode, wrapping, and elevation.",
+
+    _fields: {
+      _children: "Toolbar child objects, usually buttons, inputs, filters, or action groups.",
+      _gap: "Gap between toolbar children in pixels. Defaults to 8.",
+      _align: "Cross-axis alignment: start, center, end, or stretch.",
+      _justify: "Main-axis distribution: start, center, end, or space-between.",
+      _wrap: "Allow toolbar items to wrap onto multiple lines.",
+      _sticky: "Make toolbar sticky when true.",
+      _top: "Top offset in pixels when sticky.",
+      _elevated: "Use elevated toolbar style.",
+      class: "Optional CSS classes. xtoolbar is applied automatically."
+    },
+
+    _core_rules: [
+      "Use toolbar for page actions, filters, table controls, and modal/footer actions.",
+      "Use _children for toolbar items.",
+      "Use _justify:'space-between' for left/right action groups.",
+      "Use _sticky:true only for persistent page-level controls.",
+      "Use stack or igroup for smaller local control groups.",
+      "Do not use toolbar as a full page layout container."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "toolbar",
+        _gap: 8,
+        _align: "center",
+        _justify: "space-between",
+        _wrap: true,
+        _children: [
+          {
+            _type: "label",
+            _text: "Reports"
+          },
+          {
+            _type: "button",
+            _text: "Create"
+          }
+        ]
+      }
+    ]
+  };
   private __gap = 8;
   private __align: XToolbarAlign = "center";
   private __justify: XToolbarJustify = "start";
@@ -53,7 +104,7 @@ export class XToolbar extends XUIObject {
       return value;
     }
     return "center";
-    
+
   }
 
   private normalizeJustify(value?: XToolbarJustify): XToolbarJustify {

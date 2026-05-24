@@ -1,66 +1,207 @@
+/* ==========================================================================
+   XDrawer
+   Semantic drawer/sidebar/panel component
+   ========================================================================== */
+
 .xdrawer {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: var(--xdrawer-width, 360px);
-  background: var(--x-surface);
-  color: var(--x-text);
-  transform: translateX(100%);
-  transition: transform 180ms ease;
-  border-left: 1px solid var(--x-border);
+
+  position:relative;
+
+  display:flex;
+  flex-direction:column;
+
+  height:100%;
+
+  width:
+    var(--xdrawer-width, 360px);
+
+  background:
+    var(--x-surface);
+
+  color:
+    var(--x-text);
+
+  transform:
+    translateX(100%);
+
+  transition:
+    transform 180ms ease;
+
+  border-left:
+    1px solid var(--x-border);
 }
 
-.xdrawer--left {
-  transform: translateX(-100%);
-  border-left: none;
-  border-right: 1px solid var(--x-border);
+
+/* ==========================================================================
+   Side Variants
+   ========================================================================== */
+
+.xdrawer--left,
+.xdrawer--side-left {
+
+  transform:
+    translateX(-100%);
+
+  border-left:none;
+
+  border-right:
+    1px solid var(--x-border);
 }
 
-.xdrawer--right {
-  transform: translateX(100%);
+
+.xdrawer--right,
+.xdrawer--side-right {
+
+  transform:
+    translateX(100%);
 }
 
-.xdrawer--open {
-  transform: translateX(0);
+
+/* ==========================================================================
+   Open State
+   ========================================================================== */
+
+.xdrawer--open,
+.xdrawer--state-open {
+
+  transform:
+    translateX(0);
 }
 
-.xdrawer--elevated {
-  box-shadow: var(--x-shadow);
+
+/* ==========================================================================
+   Elevation Variants
+   ========================================================================== */
+
+.xdrawer--elevated,
+.xdrawer--variant-elevated {
+
+  box-shadow:
+    var(--x-shadow-md);
 }
+
+
+.xdrawer--flat,
+.xdrawer--variant-flat {
+
+  box-shadow:none;
+}
+
+
+/* ==========================================================================
+   Internal Panel
+   ========================================================================== */
 
 .xdrawer__panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+
+  display:flex;
+  flex-direction:column;
+
+  height:100%;
 }
+
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
 
 .xdrawer__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--x-border);
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  gap:
+    var(--x-spacing-sm);
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  border-bottom:
+    1px solid var(--x-border);
 }
+
+
+/* ==========================================================================
+   Title
+   ========================================================================== */
 
 .xdrawer__title {
-  font-weight: 600;
-  color: var(--x-text);
+
+  font-weight:600;
+
+  color:
+    var(--x-text);
 }
+
+
+/* ==========================================================================
+   Close Button
+   ========================================================================== */
 
 .xdrawer__close {
-  background: transparent;
-  border: none;
-  color: var(--x-text);
+
+  background:transparent;
+
+  border:none;
+
+  color:
+    var(--x-text);
+
+  cursor:pointer;
 }
+
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
 
 .xdrawer__body {
-  flex: 1 1 auto;
-  min-height: 0;
-  padding: 12px 14px;
+
+  flex:1 1 auto;
+
+  min-height:0;
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
 }
 
+
+/* ==========================================================================
+   Scroll Region
+   ========================================================================== */
+
 .xdrawer__scroll {
-  min-height: 0;
+  min-height:0;
+}
+
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xdrawer--sm,
+.xdrawer--size-sm {
+
+  --xdrawer-width:
+    280px;
+}
+
+
+.xdrawer--md,
+.xdrawer--size-md {
+
+  --xdrawer-width:
+    360px;
+}
+
+
+.xdrawer--lg,
+.xdrawer--size-lg {
+
+  --xdrawer-width:
+    480px;
 }

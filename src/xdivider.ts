@@ -1,5 +1,5 @@
 import { XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData,XpellSkill } from "@xpell/ui";
 
 export interface XDividerData extends XUIObjectData {
   _type: "divider";
@@ -14,6 +14,44 @@ type XDividerOrientation = "horizontal" | "vertical";
 
 export class XDivider extends XUIObject {
   static _xtype = "divider";
+  static _skill: XpellSkill = {
+  _id: "divider",
+  _title: "XDivider",
+  _version: "1.0.0",
+  _active: true,
+  _type: "view-skill",
+  _requires: ["xuiobject"],
+
+  _description:
+    "Dashboard divider/separator component for visually separating content horizontally or vertically.",
+
+  _fields: {
+    _orientation: "Divider orientation: horizontal or vertical.",
+    _thickness: "Divider thickness in pixels. Defaults to 1.",
+    _length: "Optional CSS length, e.g. 100%, 240px, 2rem.",
+    _inset: "Optional inset spacing in pixels.",
+    _muted: "Use muted/subtle divider style.",
+    class: "Optional CSS classes. xdivider is applied automatically."
+  },
+
+  _core_rules: [
+    "Use divider to separate dashboard sections or groups.",
+    "Use _orientation:'horizontal' for row/section separation.",
+    "Use _orientation:'vertical' for side-by-side content separation.",
+    "Use _muted:true for subtle separators.",
+    "Do not use divider as a layout container."
+  ],
+
+  _canonical_examples: [
+    {
+      _type: "divider",
+      _orientation: "horizontal",
+      _thickness: 1,
+      _length: "100%",
+      _muted: true
+    }
+  ]
+};
 
   private __orientation: XDividerOrientation = "horizontal";
   private __thickness = 1;

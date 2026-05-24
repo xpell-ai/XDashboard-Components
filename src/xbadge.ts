@@ -1,5 +1,6 @@
 import { XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XObjectData } from "@xpell/ui";
+import type { XpellSkill } from "@xpell/ui";
 
 export interface XBadgeData extends XUIObjectData {
   _type: "badge";
@@ -17,6 +18,46 @@ type XBadgeSize = "sm" | "md";
 
 export class XBadge extends XUIObject {
   static _xtype = "badge";
+
+  static _skill: XpellSkill = {
+    _id: "badge",
+    _title: "XBadge",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "label"],
+
+    _description:
+      "Dashboard badge component for compact labels, statuses, counters, and dot indicators with semantic variants and sizes.",
+
+    _fields: {
+      _text: "Badge text.",
+      _variant: "Badge variant: default, success, warn, error, or info.",
+      _size: "Badge size: sm or md.",
+      _pill: "Use rounded pill shape. Defaults to true.",
+      _dot: "Show dot indicator style.",
+      _title: "Optional native title tooltip.",
+      class: "Optional CSS classes. xbadge is applied automatically."
+    },
+
+    _core_rules: [
+      "Use badge for status labels, counters, tags, and small metadata.",
+      "Use _variant to communicate semantic state.",
+      "Use _dot:true for compact status indicators.",
+      "Use _text for readable status/counter content.",
+      "Do not use badge as a button or action control."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "badge",
+        _text: "Active",
+        _variant: "success",
+        _size: "md",
+        _pill: true
+      }
+    ]
+  };
 
   private __text = "";
   private __variant: XBadgeVariant = "default";
@@ -169,23 +210,9 @@ export class XBadge extends XUIObject {
     this.applyLayout();
   }
 
-  set _variant(value: XBadgeVariant | undefined) {
-    this.__variant = this.normalizeVariant(value);
-    this.applyLayout();
-  }
 
-  get _variant() {
-    return this.__variant;
-  }
 
-  set _size(value: XBadgeSize | undefined) {
-    this.__size = this.normalizeSize(value);
-    this.applyLayout();
-  }
 
-  get _size() {
-    return this.__size;
-  }
 
   set _pill(value: boolean | undefined) {
     this.__pill = this.normalizeBoolean(value);

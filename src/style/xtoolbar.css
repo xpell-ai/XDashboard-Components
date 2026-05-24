@@ -1,16 +1,135 @@
-/* XToolbar base */
+/* ==========================================================================
+   XToolbar
+   Semantic toolbar/action row component
+   ========================================================================== */
+
 .xtoolbar {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--xtoolbar-gap, 8px);
-  min-height: 40px;
-  padding: 8px 12px;
-  border-radius: var(--x-radius, 12px);
+
+  --xtoolbar-gap:
+    var(--x-spacing-sm);
+
+  --xtoolbar-min-height:
+    40px;
+
+  display:flex;
+
+  flex-direction:row;
+
+  align-items:center;
+
+  gap:
+    var(--xtoolbar-gap);
+
+  min-height:
+    var(--xtoolbar-min-height);
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  border-radius:
+    var(--x-radius-md);
 }
 
-.xtoolbar--elevated {
-  background: var(--x-surface);
-  border: 1px solid var(--x-border);
-  box-shadow: var(--x-shadow);
+
+/* ==========================================================================
+   Surface Variants
+   ========================================================================== */
+
+.xtoolbar--elevated,
+.xtoolbar--variant-elevated {
+
+  background:
+    var(--x-surface);
+
+  border:
+    1px solid var(--x-border);
+
+  box-shadow:
+    var(--x-shadow-md);
+}
+
+
+.xtoolbar--flat,
+.xtoolbar--variant-flat {
+
+  background:transparent;
+
+  border:none;
+
+  box-shadow:none;
+}
+
+
+/* ==========================================================================
+   Direction Variants
+   ========================================================================== */
+
+.xtoolbar--row,
+.xtoolbar--horizontal {
+
+  flex-direction:row;
+}
+
+
+.xtoolbar--column,
+.xtoolbar--vertical {
+
+  flex-direction:column;
+
+  align-items:stretch;
+}
+
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xtoolbar--dense,
+.xtoolbar--density-dense {
+
+  --xtoolbar-gap:
+    var(--x-spacing-xs);
+
+  padding:
+    var(--x-spacing-xs)
+    var(--x-spacing-sm);
+
+  --xtoolbar-min-height:
+    32px;
+}
+
+
+.xtoolbar--comfortable,
+.xtoolbar--density-comfortable {
+
+  --xtoolbar-gap:
+    var(--x-spacing-md);
+
+  padding:
+    var(--x-spacing-md);
+
+  --xtoolbar-min-height:
+    48px;
+}
+
+
+/* ==========================================================================
+   Alignment Variants
+   ========================================================================== */
+
+.xtoolbar--start {
+  justify-content:flex-start;
+}
+
+.xtoolbar--center {
+  justify-content:center;
+}
+
+.xtoolbar--end {
+  justify-content:flex-end;
+}
+
+.xtoolbar--between {
+  justify-content:space-between;
 }

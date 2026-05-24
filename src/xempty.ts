@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XEmptyStateData extends XUIObjectData {
   _type: "empty";
@@ -17,7 +17,50 @@ type XEmptyAlign = "start" | "center";
 
 export class XEmptyState extends XUIObject {
   static _xtype = "empty";
+  static _skill: XpellSkill = {
+    _id: "empty",
+    _title: "XEmptyState",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "stack", "label"],
 
+    _description:
+      "Dashboard empty-state component for showing no-data, no-results, onboarding, or fallback messages with optional icon and action.",
+
+    _fields: {
+      _title: "Primary empty-state title.",
+      _description: "Optional descriptive text.",
+      _icon: "Optional icon/visual child object.",
+      _action: "Optional action child object, usually a button or link.",
+      _size: "Empty-state size: sm, md, or lg.",
+      _align: "Content alignment: start or center.",
+      class: "Optional CSS classes. xempty is applied automatically."
+    },
+
+    _core_rules: [
+      "Use empty when there is no data, no search result, or no selected item.",
+      "Use _title for the main message.",
+      "Use _description for helpful context.",
+      "Use _action for a recovery action like create, retry, or clear filters.",
+      "Do not use empty as a generic layout container."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "empty",
+        _title: "No results found",
+        _description: "Try changing your filters or search query.",
+        _size: "md",
+        _align: "center",
+        _action: {
+          _type: "button",
+          _text: "Clear filters"
+        }
+      }
+    ]
+  };
+  
   private __size: XEmptySize = "md";
   private __align: XEmptyAlign = "center";
   private __title = "";
@@ -174,14 +217,6 @@ export class XEmptyState extends XUIObject {
     return this.__description;
   }
 
-  set _size(value: XEmptySize | undefined) {
-    this.__size = this.normalizeSize(value);
-    this.applyLayout();
-  }
-
-  get _size() {
-    return this.__size;
-  }
 
   set _align(value: XEmptyAlign | undefined) {
     this.__align = this.normalizeAlign(value);

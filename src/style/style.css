@@ -1,8 +1,9 @@
 /* src/styles/index.css
-   Public entry: import this once
+   XDashboard public entry
+   XDashboard consumes XUI tokens
 */
-@import "./tokens.css";
-@import "./xsimp.css";
+
+
 @import "./xcomp.css";
 @import "./xkpicard.css";
 @import "./xgrid.css";
@@ -26,102 +27,189 @@
 @import "./xstack.css";
 @import "./xcard.css";
 
-/* -------------------------------------------------------------------------- */
-/* Minimal dashboard shell                                                    */
-/* -------------------------------------------------------------------------- */
+
+/* ==========================================================================
+   Dashboard Shell Preset
+   ==========================================================================
+   Optional admin/dashboard layout helpers
+   ========================================================================== */
+
 .dash-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--x-bg);
-  color: var(--x-text);
+
+  min-height:100vh;
+
+  display:flex;
+  flex-direction:column;
+
+  background:
+    var(--x-bg);
+
+  color:
+    var(--x-text);
 }
+
 
 .dash-topbar {
-  background: var(--x-surface);
-  border-bottom: 1px solid var(--x-border);
-  padding: 12px 16px;
+
+  background:
+    var(--x-surface);
+
+  border-bottom:
+    1px solid var(--x-border);
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
 }
 
+
+/* ==========================================================================
+   Connection LED
+   ========================================================================== */
+
 .dash-led {
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  display: inline-block;
-  box-shadow: 0 0 0 1px var(--x-border);
+
+  width:
+    var(--x-dashboard-led-size, 20px);
+
+  height:
+    var(--x-dashboard-led-size, 20px);
+
+  border-radius:999px;
+
+  display:inline-block;
+
+  box-shadow:
+    0 0 0 1px var(--x-border);
 }
 
 .dash-led--connected {
-  background: var(--x-success);
+  background:var(--x-success);
 }
 
 .dash-led--connecting {
-  background: var(--x-warning);
+  background:var(--x-warning);
 }
 
 .dash-led--disconnected {
-  background: var(--x-danger);
+  background:var(--x-danger);
 }
+
+
+/* ==========================================================================
+   Topbar
+   ========================================================================== */
 
 .dash-topbar__title {
-  font-weight: 700;
+  font-weight:700;
 }
+
+
+/* ==========================================================================
+   Main Layout
+   ========================================================================== */
 
 .dash-body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
+
+  flex:1;
+
+  min-height:0;
+
+  display:flex;
 }
+
 
 .dash-sidebar {
-  width: 248px;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-  background: var(--x-surface);
-  border-right: 1px solid var(--x-border);
-  transition: width 160ms ease;
+
+  width:
+    var(--x-sidebar-width, 248px);
+
+  min-height:0;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:
+    var(--x-spacing-sm);
+
+  padding:
+    var(--x-spacing-sm);
+
+  background:
+    var(--x-surface);
+
+  border-right:
+    1px solid var(--x-border);
+
+  transition:
+    width 160ms ease;
 }
+
 
 .dash-sidebar--collapsed {
-  width: 64px;
+
+  width:
+    var(--x-sidebar-width-collapsed, 64px);
 }
+
 
 .dash-sidebar__header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+
+  display:flex;
+  align-items:center;
+
+  gap:
+    var(--x-spacing-xs);
 }
+
 
 .dash-sidebar__logo {
-  font-size: 18px;
+  font-size:18px;
 }
 
-.dash-sidebar--collapsed .dash-sidebar__label {
-  display: none;
-}
 
+/* ==========================================================================
+   Collapsed Sidebar
+   ========================================================================== */
+
+.dash-sidebar--collapsed .dash-sidebar__label,
 .dash-sidebar--collapsed .xnavlist__label {
-  display: none;
+  display:none;
 }
 
 .dash-sidebar--collapsed .xnavlist__item {
-  justify-content: center;
+  justify-content:center;
 }
+
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
 
 .dash-nav__icon {
-  width: 20px;
-  text-align: center;
+
+  width:
+    var(--x-dashboard-nav-icon-width, 20px);
+
+  text-align:center;
 }
+
+
+/* ==========================================================================
+   Main Region
+   ========================================================================== */
 
 .dash-main {
-  flex: 1;
-  min-width: 0;
-  padding: 16px;
+
+  flex:1;
+
+  min-width:0;
+
+  padding:
+    var(--x-spacing-md);
 }
 
+
 .dash-region {
-  min-height: 0;
+  min-height:0;
 }

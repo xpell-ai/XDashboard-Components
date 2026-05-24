@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XFieldData extends XUIObjectData {
   _type: "field";
@@ -18,7 +18,54 @@ type XFieldAlign = "inline" | "stack";
 
 export class XField extends XUIObject {
   static _xtype = "field";
+  static _skill: XpellSkill = {
+    _id: "field",
+    _title: "XField",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "stack", "label", "view"],
 
+    _description:
+      "Dashboard form field wrapper for label, required marker, hint/error message, and a single control object.",
+
+    _fields: {
+      _label: "Optional field label text.",
+      _hint: "Optional helper/hint text shown when there is no error.",
+      _error: "Optional error text. Takes priority over _hint.",
+      _required: "Show required marker when true.",
+      _inline: "Render label and control inline when true.",
+      _size: "Field size: sm or md.",
+      _control: "Single form control child object, such as text, password, select, or textarea.",
+      class: "Optional CSS classes. xfield is applied automatically."
+    },
+
+    _core_rules: [
+      "Use field to wrap one input/control with label and validation message.",
+      "Use _control for the actual form input object.",
+      "Use _hint for helper text.",
+      "Use _error only when validation failed.",
+      "Use _required:true when the field is mandatory.",
+      "Do not use field as a generic layout container."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "field",
+        _label: "Email",
+        _required: true,
+        _hint: "Use your work email.",
+        _control: {
+          _type: "text",
+          name: "email",
+          placeholder: "you@example.com",
+          _data_source: "form.email",
+          _update_data_source_on_change: true
+        }
+      }
+    ]
+  };
+  
   private __size: XFieldSize = "md";
   private __align: XFieldAlign = "stack";
   private __has_error = false;
@@ -308,11 +355,7 @@ export class XField extends XUIObject {
     this.rebuild();
   }
 
-  set _size(value: XFieldSize | undefined) {
-    this.__size = this.normalizeSize(value);
-    if (this.__initializing) return;
-    this.applyLayout();
-  }
+
 
   set _control(value: XUIObjectData | undefined) {
     this.__control = value;
@@ -340,9 +383,7 @@ export class XField extends XUIObject {
     return this.__inline;
   }
 
-  get _size() {
-    return this.__size;
-  }
+
 
   get _control() {
     return this.__control;

@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XSidebarData extends XUIObjectData {
   _type: "sidebar";
@@ -22,6 +22,86 @@ type XSidebarSide = "left" | "right";
 
 export class XSidebar extends XUIObject {
   static _xtype = "sidebar";
+  static _skill: XpellSkill = {
+    _id: "sidebar",
+    _title: "XSidebar",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: [
+      "xuiobject",
+      "view",
+      "label",
+      "stack",
+      "scroll",
+      "divider",
+      "navlist"
+    ],
+
+    _description:
+      "Dashboard sidebar container for app navigation, branding, actions, scrollable content, footer content, side placement, and collapsed state.",
+
+    _fields: {
+      _side: "Sidebar side: left or right.",
+      _width: "Sidebar width CSS value. Defaults to 280px.",
+      _title: "Optional sidebar title.",
+      _subtitle: "Optional sidebar subtitle.",
+      _logo: "Optional logo child object.",
+      _actions: "Optional header action objects.",
+      _nav: "Optional navigation object, usually navlist.",
+      _scroll: "Wrap sidebar body in scroll container when true.",
+      _dividers: "Show dividers between header/body/footer sections.",
+      _footer: "Optional footer child object.",
+      _collapsed: "Whether sidebar is collapsed.",
+      _children: "Sidebar body content when _nav is not provided.",
+      class: "Optional CSS classes. xsidebar is applied automatically."
+    },
+
+    _core_rules: [
+      "Use sidebar for dashboard/application navigation or persistent side panels.",
+      "Use _nav with navlist for navigation menus.",
+      "Use _children only when custom sidebar body content is needed.",
+      "Use _footer for bottom content such as user/account actions.",
+      "Use _collapsed to control collapsed state.",
+      "Do not generate _on_toggle as a JavaScript function.",
+      "For persisted/generated views, handlers must be Nano-Commands/data-only."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "sidebar",
+        _side: "left",
+        _width: "280px",
+        _title: "Dashboard",
+        _subtitle: "Admin panel",
+        _scroll: true,
+        _dividers: true,
+        _collapsed: false,
+        _nav: {
+          _type: "navlist",
+          _items: [
+            {
+              _label: "Home",
+              _value: "home"
+            },
+            {
+              _label: "Reports",
+              _value: "reports"
+            },
+            {
+              _label: "Settings",
+              _value: "settings"
+            }
+          ],
+          _active: "home"
+        },
+        _footer: {
+          _type: "button",
+          _text: "Logout"
+        }
+      }
+    ]
+  };
 
   private __side: XSidebarSide = "left";
   private __width = "280px";
@@ -91,9 +171,9 @@ export class XSidebar extends XUIObject {
   private hasHeader(): boolean {
     return Boolean(
       (this.__title && this.__title.trim().length) ||
-        (this.__subtitle && this.__subtitle.trim().length) ||
-        this.__logo ||
-        (this.__actions && this.__actions.length)
+      (this.__subtitle && this.__subtitle.trim().length) ||
+      this.__logo ||
+      (this.__actions && this.__actions.length)
     );
   }
 
@@ -173,12 +253,12 @@ export class XSidebar extends XUIObject {
     const content = this.__nav ? [this.__nav] : contentChildren;
     const bodyChildren: XUIObjectData[] = this.__scroll
       ? [
-          {
-            _type: "scroll",
-            class: "xsidebar__scroll",
-            _children: content,
-          },
-        ]
+        {
+          _type: "scroll",
+          class: "xsidebar__scroll",
+          _children: content,
+        },
+      ]
       : content;
 
     return {

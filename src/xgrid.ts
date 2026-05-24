@@ -1,4 +1,4 @@
-import { XUIObject, type XUIObjectData } from "@xpell/ui";
+import { XUIObject, type XUIObjectData, type XpellSkill } from "@xpell/ui";
 
 /**
  * XGridData — JSON shape for the `grid` layout primitive.
@@ -63,6 +63,60 @@ export interface XGridData extends XUIObjectData {
  */
 export class XGrid extends XUIObject {
   static _xtype = "grid";
+  static _skill: XpellSkill = {
+    _id: "grid",
+    _title: "XGrid",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject","view"],
+    _match: {
+      _keywords: ["grid", "layout", "cards", "dashboard", "columns", "responsive"],
+      _priority: 80
+    },
+
+    _description:
+      "Dashboard CSS grid layout container for arranging child UI objects in fixed or responsive columns.",
+
+    _fields: {
+      _children: "Child UI objects placed inside the grid.",
+      _cols: "Fixed number of columns.",
+      _gap: "Gap between grid items in pixels.",
+      _min_col_width:
+        "Responsive auto-fit minimum column width in pixels. Preferred for dashboards.",
+      class: "Optional CSS classes. xgrid is applied automatically."
+    },
+
+    _core_rules: [
+      "Use grid for dashboard/card layouts.",
+      "Use _children for grid items.",
+      "Use _min_col_width for responsive dashboards.",
+      "Use _cols only when fixed columns are required.",
+      "_min_col_width takes priority over _cols.",
+      "Do not use grid for tabular data; use table instead."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "grid",
+        _id: "kpi-grid",
+        _min_col_width: 240,
+        _gap: 16,
+        _children: [
+          {
+            _type: "card",
+            _title: "Revenue",
+            _text: "$120K"
+          },
+          {
+            _type: "card",
+            _title: "Users",
+            _text: "4,320"
+          }
+        ]
+      }
+    ]
+  };
 
   _cols?: number;
   _gap?: number;

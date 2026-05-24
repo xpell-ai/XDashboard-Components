@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XToastData extends XUIObjectData {
   _type: "toast";
@@ -21,6 +21,50 @@ type XToastPosition = "top-right" | "top-left" | "bottom-right" | "bottom-left";
 
 export class XToast extends XUIObject {
   static _xtype = "toast";
+  static _skill: XpellSkill = {
+    _id: "toast",
+    _title: "XToast",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "view", "label", "button"],
+
+    _description:
+      "Dashboard toast notification component with open/close state, message text, variant, optional icon/actions, close button, auto-close timing, and screen position.",
+
+    _fields: {
+      _open: "Whether the toast is visible.",
+      _text: "Toast message text.",
+      _variant: "Toast variant: default, success, error, warn, or info.",
+      _icon: "Optional icon child object.",
+      _actions: "Optional action child objects, usually buttons.",
+      _closable: "Show close button when true.",
+      _auto_close_ms: "Optional auto-close delay in milliseconds.",
+      _position: "Toast position: top-right, top-left, bottom-right, or bottom-left.",
+      class: "Optional CSS classes. xtoast is applied automatically."
+    },
+
+    _core_rules: [
+      "Use toast for temporary feedback messages.",
+      "Use _variant to express message type.",
+      "Use _auto_close_ms only for temporary notifications.",
+      "Use _actions only for short contextual actions.",
+      "Do not generate _on_open or _on_close as JavaScript functions.",
+      "For persisted/generated views, handlers must be Nano-Commands/data-only."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "toast",
+        _open: true,
+        _text: "Saved successfully",
+        _variant: "success",
+        _closable: true,
+        _auto_close_ms: 3000,
+        _position: "bottom-right"
+      }
+    ]
+  };
 
   private __open = false;
   private __text = "";
@@ -224,14 +268,8 @@ export class XToast extends XUIObject {
     return this.__text;
   }
 
-  set _variant(value: XToastVariant | undefined) {
-    this.__variant = this.normalizeVariant(value);
-    this.applyLayout();
-  }
 
-  get _variant() {
-    return this.__variant;
-  }
+
 
   set _position(value: XToastPosition | undefined) {
     this.__position = this.normalizePosition(value);

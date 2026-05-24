@@ -1,18 +1,111 @@
-/* XInputGroup */
+/* ==========================================================================
+   XInputGroup
+   Semantic grouped input/action container
+   ========================================================================== */
+
 .xigroup {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--xigroup-gap, 8px);
+
+  --xigroup-gap:
+    var(--x-spacing-sm);
+
+  display:flex;
+
+  flex-direction:row;
+
+  align-items:center;
+
+  gap:
+    var(--xigroup-gap);
 }
 
-.xigroup--dense {
-  --xigroup-gap: 6px;
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xigroup--dense,
+.xigroup--density-dense {
+
+  --xigroup-gap:
+    6px;
 }
 
-.xigroup--merged {
-  background: var(--x-surface);
-  border: 1px solid var(--x-border);
-  border-radius: var(--x-radius, 12px);
-  padding: 4px;
+
+.xigroup--comfortable,
+.xigroup--density-comfortable {
+
+  --xigroup-gap:
+    var(--x-spacing-md);
+}
+
+
+/* ==========================================================================
+   Surface Variants
+   ========================================================================== */
+
+.xigroup--merged,
+.xigroup--variant-merged {
+
+  background:
+    var(--x-surface);
+
+  border:
+    1px solid var(--x-border);
+
+  border-radius:
+    var(--x-radius-md);
+
+  padding:4px;
+}
+
+
+.xigroup--flat,
+.xigroup--variant-flat {
+
+  background:transparent;
+
+  border:none;
+
+  padding:0;
+}
+
+
+/* ==========================================================================
+   Direction Variants
+   ========================================================================== */
+
+.xigroup--row,
+.xigroup--horizontal {
+
+  flex-direction:row;
+}
+
+
+.xigroup--column,
+.xigroup--vertical {
+
+  flex-direction:column;
+
+  align-items:stretch;
+}
+
+
+/* ==========================================================================
+   Alignment Variants
+   ========================================================================== */
+
+.xigroup--start {
+  justify-content:flex-start;
+}
+
+.xigroup--center {
+  justify-content:center;
+}
+
+.xigroup--end {
+  justify-content:flex-end;
+}
+
+.xigroup--between {
+  justify-content:space-between;
 }

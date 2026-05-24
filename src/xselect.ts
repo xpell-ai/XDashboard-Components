@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData, XObjectData } from "@xpell/ui";
+import type { XUIObjectData, XObjectData, XpellSkill } from "@xpell/ui";
 
 export type XSelectOption = {
   value: string;
@@ -8,7 +8,7 @@ export type XSelectOption = {
 };
 
 export interface XSelectData extends XUIObjectData {
-  _type: "select";
+  _type: "xselect";
   _value?: string;
   _placeholder?: string;
   _options?: XSelectOption[];
@@ -23,7 +23,53 @@ export interface XSelectData extends XUIObjectData {
 type XSelectSize = "sm" | "md";
 
 export class XSelect extends XUIObject {
-  static _xtype = "select";
+  static _xtype = "xselect";
+  static _skill: XpellSkill = {
+    _id: "xselect",
+    _title: "XSelect",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "xhtml"],
+
+    _description:
+      "Dashboard select/dropdown component with placeholder, options, selected value, size, disabled state, and change handling.",
+
+    _fields: {
+      _value: "Currently selected option value.",
+      _placeholder: "Optional placeholder option text.",
+      _options: "Select options: { value, label, disabled? }.",
+      _size: "Select size: sm or md.",
+      _disabled: "Disable select control when true.",
+      _name: "Optional native select name attribute.",
+      _select_id: "Optional DOM id for the internal select element.",
+      class: "Optional CSS classes. xselect is applied automatically."
+    },
+
+    _core_rules: [
+      "Use xselect for styled dashboard dropdowns.",
+      "Use select only for the core/native XUI select object.",
+      "Use _options for available choices.",
+      "Use _value for the selected option value.",
+      "Use _placeholder when no value is selected.",
+      "Use field to wrap xselect with label/hint/error when used in forms.",
+      "Do not generate _on_change as a JavaScript function.",
+      "For persisted/generated views, handlers must be Nano-Commands/data-only."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "xselect",
+        _placeholder: "Choose status",
+        _value: "active",
+        _options: [
+          { value: "active", label: "Active" },
+          { value: "paused", label: "Paused" },
+          { value: "archived", label: "Archived", disabled: true }
+        ]
+      }
+    ]
+  };
 
   private __value = "";
   private __placeholder?: string;

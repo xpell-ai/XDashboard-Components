@@ -1,5 +1,74 @@
 /* XSpacer base */
+/* ==========================================================================
+   XSpacer
+   Layout spacing utility
+   ========================================================================== */
+
 .xspacer {
-  display: block;
-  background: transparent;
+
+  display:block;
+
+  flex:0 0 auto;
+
+  background:transparent;
+}
+
+
+/* ==========================================================================
+   Direction Variants
+   ========================================================================== */
+
+.xspacer--h,
+.xspacer--horizontal {
+
+  width:
+    var(--xspacer-size, var(--x-spacing-md));
+
+  height:1px;
+}
+
+
+.xspacer--v,
+.xspacer--vertical {
+
+  width:1px;
+
+  height:
+    var(--xspacer-size, var(--x-spacing-md));
+}
+
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xspacer--xs,
+.xspacer--size-xs {
+
+  --xspacer-size:
+    var(--x-spacing-xs);
+}
+
+
+.xspacer--sm,
+.xspacer--size-sm {
+
+  --xspacer-size:
+    var(--x-spacing-sm);
+}
+
+
+.xspacer--md,
+.xspacer--size-md {
+
+  --xspacer-size:
+    var(--x-spacing-md);
+}
+
+
+.xspacer--lg,
+.xspacer--size-lg {
+
+  --xspacer-size:
+    var(--x-spacing-lg);
 }

@@ -1,5 +1,5 @@
 import { _xlog, XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData, XObjectData } from "@xpell/ui";
+import type { XUIObjectData, XObjectData, XpellSkill } from "@xpell/ui";
 import { _xd } from "@xpell/ui";
 
 export type XTableColumn = {
@@ -29,7 +29,87 @@ type XTableAlign = "start" | "center" | "end";
 
 export class XTable extends XUIObject {
   static _xtype = "table";
+  static _skill: XpellSkill = {
+    _id: "table",
+    _title: "XTable",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "xhtml", "xdata"],
 
+    _description:
+      "Dashboard table component for rendering column-based rows, empty state, visual density/striping/hover/borders, and optional XData-backed row updates.",
+
+    _fields: {
+      _columns:
+        "Required table columns: { key, label?, width?, align?, class? }. Do not generate render functions.",
+      _rows:
+        "Table rows as an array of objects, or a string XData key resolving to rows.",
+      _data_source:
+        "Optional XData key used to update table rows through onData.",
+      _on_data:
+        "Optional data handler. For persisted/generated views, use Nano-Commands/data-only, not functions.",
+      _row_key:
+        "Optional row field used as stable data-key.",
+      _dense:
+        "Use compact row spacing.",
+      _striped:
+        "Use striped row styling.",
+      _hover:
+        "Enable row hover styling. Defaults to true.",
+      _bordered:
+        "Enable bordered table styling. Defaults to true.",
+      _empty_text:
+        "Text shown when there are no rows.",
+      class:
+        "Optional CSS classes. xtable is applied automatically."
+    },
+
+    _core_rules: [
+      "Use table for structured tabular dashboard data.",
+      "Use _columns to define visible fields and labels.",
+      "Use _rows for static/local row data.",
+      "Use _data_source when rows should update from XData.",
+      "Do not generate column render functions in persisted/Vibe JSON.",
+      "Use card, grid, or list-style components for non-tabular content.",
+      "For persisted/generated views, handlers must be Nano-Commands/data-only."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "table",
+        _columns: [
+          {
+            key: "name",
+            label: "Name"
+          },
+          {
+            key: "status",
+            label: "Status",
+            align: "center"
+          },
+          {
+            key: "revenue",
+            label: "Revenue",
+            align: "end"
+          }
+        ],
+        _rows: [
+          {
+            name: "Aime",
+            status: "Active",
+            revenue: "$12,000"
+          }
+        ],
+        _row_key: "name",
+        _dense: false,
+        _striped: true,
+        _hover: true,
+        _bordered: true,
+        _empty_text: "No records"
+      }
+    ]
+  };
   private __columns: XTableColumn[] = [];
   private __rows?: any[] | string;
   private __row_key?: string;
@@ -417,7 +497,7 @@ export class XTable extends XUIObject {
       this.refresh();
     }
 
-    
+
     this.__data_inflight = false;
   }
 }

@@ -1,5 +1,6 @@
 import { XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData } from "@xpell/ui";
+import type { XpellSkill } from "@xpell/ui";
 
 export type XNavItem = {
   _id?: string;
@@ -23,6 +24,70 @@ export interface XNavListData extends XUIObjectData {
 
 export class XNavList extends XUIObject {
   static _xtype = "navlist";
+  static _skill: XpellSkill = {
+    _id: "navlist",
+    _title: "XNavList",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "stack", "label"],
+
+    _description:
+      "Dashboard navigation list for rendering selectable vertical navigation items with optional icons, badges, dense mode, dividers, and active state.",
+
+    _fields: {
+      _items:
+        "Navigation items: { _label, _value?, _id?, _icon?, _badge?, _disabled?, _active? }.",
+      _active:
+        "Currently active item value. Matches _value, then _id, then _label.",
+      _dense:
+        "Use compact item spacing.",
+      _dividers:
+        "Show visual dividers between items.",
+      class:
+        "Optional CSS classes. xnavlist is applied automatically."
+    },
+
+    _core_rules: [
+      "Use navlist for sidebar/menu/dashboard navigation.",
+      "Use _items to define navigation entries.",
+      "Use _value as the stable navigation key.",
+      "Use _active to highlight the current item.",
+      "Use _icon for optional leading icon objects.",
+      "Use _badge for optional trailing badge/status objects.",
+      "Do not generate _on_select; it is an internal runtime callback only.",
+      "Do not generate JavaScript functions in navlist JSON."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "navlist",
+        _id: "main-nav",
+        _items: [
+          {
+            _label: "Home",
+            _value: "home"
+          },
+          {
+            _label: "Reports",
+            _value: "reports",
+            _badge: {
+              _type: "badge",
+              _text: "3"
+            }
+          },
+          {
+            _label: "Settings",
+            _value: "settings",
+            _disabled: true
+          }
+        ],
+        _active: "home",
+        _dense: true,
+        _dividers: false
+      }
+    ]
+  };
 
   private __items: XNavItem[] = [];
   private __active = "";

@@ -1,56 +1,194 @@
+/* ==========================================================================
+   XNavList
+   Semantic navigation/menu list component
+   ========================================================================== */
+
 .xnavlist {
-  display: flex;
-  flex-direction: column;
-  gap: var(--xnavlist-gap, 6px);
+
+  --xnavlist-gap:
+    6px;
+
+  --xnavlist-item-gap:
+    10px;
+
+  --xnavlist-item-padding:
+    8px 10px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:
+    var(--xnavlist-gap);
 }
+
+
+/* ==========================================================================
+   List Container
+   ========================================================================== */
 
 .xnavlist__list {
-  width: 100%;
+  width:100%;
 }
+
+
+/* ==========================================================================
+   Navigation Item
+   ========================================================================== */
 
 .xnavlist__item {
-  display: flex;
-  align-items: center;
-  gap: var(--xnavlist-item-gap, 10px);
-  padding: var(--xnavlist-item-padding, 8px 10px);
-  border-radius: var(--x-radius, 12px);
-  color: var(--x-text);
-  background: transparent;
-  cursor: pointer;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:
+    var(--xnavlist-item-gap);
+
+  padding:
+    var(--xnavlist-item-padding);
+
+  border-radius:
+    var(--x-radius-md);
+
+  color:
+    var(--x-text);
+
+  background:transparent;
+
+  cursor:pointer;
+
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
 }
+
+
+/* ==========================================================================
+   Hover
+   ========================================================================== */
 
 .xnavlist__item:hover {
-  background: var(--x-surface-2);
+
+  background:
+    var(--x-surface-2);
 }
 
-.xnavlist__item--active {
-  background: var(--x-surface-2);
-  border: 1px solid var(--x-border);
+
+/* ==========================================================================
+   Active State
+   ========================================================================== */
+
+.xnavlist__item--active,
+.xnavlist__item--state-active {
+
+  background:
+    var(--x-surface-2);
+
+  border:
+    1px solid var(--x-border);
 }
 
-.xnavlist__item--disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+
+/* ==========================================================================
+   Disabled State
+   ========================================================================== */
+
+.xnavlist__item--disabled,
+.xnavlist__item--state-disabled {
+
+  opacity:.5;
+
+  cursor:not-allowed;
 }
+
+
+/* ==========================================================================
+   Label
+   ========================================================================== */
 
 .xnavlist__label {
-  flex: 1 1 auto;
+  flex:1 1 auto;
 }
+
+
+/* ==========================================================================
+   Badge
+   ========================================================================== */
 
 .xnavlist__badge {
-  flex: 0 0 auto;
+  flex:0 0 auto;
 }
 
-.xnavlist--dense {
-  --xnavlist-item-padding: 6px 8px;
-  --xnavlist-item-gap: 8px;
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xnavlist--dense,
+.xnavlist--density-dense {
+
+  --xnavlist-item-padding:
+    6px 8px;
+
+  --xnavlist-item-gap:
+    8px;
 }
 
-.xnavlist--dividers .xnavlist__item {
-  border-bottom: 1px solid var(--x-border);
-  border-radius: 0;
+
+.xnavlist--comfortable,
+.xnavlist--density-comfortable {
+
+  --xnavlist-item-padding:
+    10px 12px;
+
+  --xnavlist-item-gap:
+    12px;
 }
 
-.xnavlist--dividers .xnavlist__item:last-child {
-  border-bottom: none;
+
+/* ==========================================================================
+   Divider Variant
+   ========================================================================== */
+
+.xnavlist--dividers,
+.xnavlist--variant-dividers {
+
+}
+
+
+.xnavlist--dividers .xnavlist__item,
+.xnavlist--variant-dividers .xnavlist__item {
+
+  border-bottom:
+    1px solid var(--x-border);
+
+  border-radius:0;
+}
+
+
+.xnavlist--dividers .xnavlist__item:last-child,
+.xnavlist--variant-dividers .xnavlist__item:last-child {
+
+  border-bottom:none;
+}
+
+
+/* ==========================================================================
+   Tone Variants
+   ========================================================================== */
+
+.xnavlist--muted,
+.xnavlist--tone-muted {
+
+  opacity:.9;
+}
+
+
+.xnavlist--primary .xnavlist__item--active,
+.xnavlist--tone-primary .xnavlist__item--active {
+
+  border-color:
+    var(--x-primary);
 }

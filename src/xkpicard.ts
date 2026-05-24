@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XKpiCardData extends XUIObjectData {
   _type: "kpi-card";
@@ -15,7 +15,47 @@ type XKpiDeltaState = "up" | "down" | "flat";
 
 export class XKpiCard extends XUIObject {
   static _xtype = "kpi-card";
+  static _skill: XpellSkill = {
+    _id: "kpi-card",
+    _title: "XKpiCard",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "view", "label"],
 
+    _description:
+      "Dashboard KPI card for showing a metric label, value, optional delta, trend state, and optional icon.",
+
+    _fields: {
+      _label: "KPI label/title.",
+      _value: "Primary KPI value.",
+      _delta: "Optional change/delta text, e.g. +8% or -0.6%.",
+      _delta_state: "Delta trend state: up, down, or flat.",
+      _icon: "Optional icon text/emoji.",
+      class: "Optional CSS classes. xkpi-card is applied automatically."
+    },
+
+    _core_rules: [
+      "Use kpi-card for dashboard summary metrics.",
+      "Use _label for the metric name.",
+      "Use _value for the main number/value.",
+      "Use _delta with _delta_state when showing trend/change.",
+      "Use _delta_state:'up' for positive trend, 'down' for negative trend, and 'flat' for neutral.",
+      "Do not use kpi-card as a generic content card; use card instead."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "kpi-card",
+        _label: "Users",
+        _value: "1,204",
+        _delta: "+8%",
+        _delta_state: "up",
+        _icon: "👤"
+      }
+    ]
+  };
+  
   private __label = "";
   private __value = "";
   private __delta = "";

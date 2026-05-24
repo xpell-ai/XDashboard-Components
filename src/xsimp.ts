@@ -152,7 +152,7 @@ async function main() {
           // Cards / KPI
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_cards",
             _title: "Cards",
             _subtitle: "XCard + XKpiCard",
@@ -203,7 +203,7 @@ async function main() {
           // Badges
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_badge",
             _title: "Badge",
             _subtitle: "XBadge variants",
@@ -226,7 +226,7 @@ async function main() {
           // Inputs (Search / Select / InputGroup / Field)
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_inputs",
             _title: "Inputs",
             _subtitle: "XSearchBox + XSelect + XInputGroup + XField",
@@ -304,7 +304,7 @@ async function main() {
           // Table (XData bound)
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_table",
             _title: "Table",
             _subtitle: "XTable v1.1 (_data_source + _on_data)",
@@ -385,7 +385,7 @@ async function main() {
           // Empty State
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_empty",
             _title: "Empty State",
             _subtitle: "XEmptyState",
@@ -403,7 +403,7 @@ async function main() {
           // Drawer
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_drawer",
             _title: "Drawer",
             _subtitle: "XDrawer v1 (properties panel)",
@@ -429,7 +429,7 @@ async function main() {
           // NavList
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_navlist",
             _title: "NavList",
             _subtitle: "Sidebar list primitive",
@@ -462,7 +462,7 @@ async function main() {
           // Sidebar
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_sidebar",
             _title: "Sidebar",
             _subtitle: "XSidebar v1",
@@ -537,7 +537,7 @@ async function main() {
           // Modal
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_modal",
             _title: "Modal",
             _subtitle: "XModal v1",
@@ -601,7 +601,7 @@ async function main() {
           // Toast
           // -------------------------------------------------------------------
           {
-            _type: "section",
+            _type: "xsection",
             _id: "sec_toast",
             _title: "Toast",
             _subtitle: "XToast v1",

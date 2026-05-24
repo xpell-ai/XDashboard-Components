@@ -116,7 +116,7 @@ const chipRow = (id: string, title: string, hint: string): XObjectData => ({
 });
 
 const card = (title: string, body: XObjectData[], foot?: XObjectData[]): XObjectData => ({
-  _type: "section", // XHTML alias -> semantic
+  _type: "xsection", // XHTML alias -> semantic
   class: "card",
   _children: [
     { _type: "view", class: "card-head", _children: [{ _type: "label", _text: title }] },

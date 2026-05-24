@@ -1,274 +1,169 @@
-# XUI-TEST CODEX — STRICT SYSTEM CONTRACT
+# @xpell/xdashboard codex.md — AI Agent Contract for Vibe Coding
 
-This document defines the NON-NEGOTIABLE rules for generating code
-in the **xui-test / xpell-ui dashboard** project.
+## Purpose
 
-Violations are incorrect output.
+This document defines the strict contract for **@xpell/xdashboard** —  
+the dashboard UI object pack of the Xpell 2 ecosystem.
 
----
+This package builds on:
 
-## 1. CORE PRINCIPLES
+- @xpell/core (runtime engine)
+- @xpell/ui (UI runtime layer)
 
-- Xpell is NOT React / Vue / Angular
-- Declarative JSON + runtime objects
-- NO JSX
-- NO hooks
-- NO virtual DOM
-- NO framework assumptions
+It provides structured dashboard-oriented UI objects.
 
-Everything follows Xpell runtime rules explicitly.
+This document MUST be applied by any AI agent modifying or generating code in this package.
 
 ---
 
-## 2. OBJECT MODEL (MANDATORY)
+## Scope & Position in the Stack
 
-All UI components MUST:
-
-- Extend `XUIObject`
-- Accept **one** `data` object in constructor
-- Call `super(data, defaults, true)`
-- Call `this.parse(data)`
-- Use `_type` as the ONLY public identifier
-- Define `static _xtype`
-
----
-
-## 3. PROPERTY NAMING (CRITICAL)
-
-- Any non-HTML property MUST start with `_`
-- Examples:
-  `_label`, `_value`, `_options`, `_dense`, `_variant`, `_data_source`, `_on_*`
-
-❌ Forbidden:
-- `label`, `value`, `options`, `onClick`, etc.
-
-✅ Allowed HTML passthrough (only when intended):
-- `style`, `src`, `href`, `title`, `id`
-- `class` (explicit project exception)
-
----
-
-## 4. EVENT SYSTEM
-
-### 4.1 Global events (non-object)
-Use `_xem` ONLY:
-```ts
-_xem.on("event", handler)
-_xem.fire("event", payload)
+```
+@xpell/core      → runtime engine (XObject, XData2, XEventManager)
+@xpell/ui        → DOM runtime + XUIObject
+@xpell/xdashboard → dashboard UI object pack (this project)
 ```
 
-### 4.2 Object events (JSON)
+@xpell/xdashboard:
 
-Use `_on_*` or `_on` map ONLY.
-
-Supported shortcuts:
-
-**XObject**
-- `_on_create`
-- `_on_mount`
-- `_on_data`
-- `_on_frame`
-
-**XUIObject**
-- `_on_click`
-- `_on_show`
-- `_on_hide`
-- `_on_change`
-- `_on_input`
-
-### 4.3 Nano commands
-
-Handlers MAY be strings invoking nano commands.
-
-Nano commands MAY be used to handle `_on_data`.
-
-### 4.4 Forbidden events
-
-❌ Forbidden:
-- `onClick`, `onChange`, `onclick`, `oninput`
-- `addEventListener`
-- DOM event handlers
-- React/Vue conventions
+- EXTENDS @xpell/ui
+- Registers XUIObject subclasses
+- Ships UI components only
+- MUST NOT introduce runtime logic
+- MUST NOT mutate XData directly
+- MUST NOT introduce application state
 
 ---
 
-## 5. DATA FLOW (XDATA2 — STRICT)
+## Architectural Role
 
-- XData2 (`_xd`) is the ONLY shared runtime state
-- XData is NOT persistence
-- XData is NOT an event bus
+@xpell/xdashboard is:
 
-### 5.1 Canonical API (MANDATORY)
+- A pure XObjectPack
+- A collection of XUIObject subclasses
+- JSON-driven
+- Nano-command compatible
 
-- `_xd.get(key)`
-- `_xd.set(key, value, { source })`
-- `_xd.delete(key, { source })`
-- `_xd.on(key, handler)`
-- `_xd.touch(key, { source })`
-- `_xd.pick(key, { source })`
+It is NOT:
+
+- A framework
+- A state manager
+- A service layer
+- A runtime module
+- A behavior engine
 
 ---
 
-### 5.2 `_data_source` Binding (UI → Data)
+## Authoritative Object Registry
 
-```js
+The only registered objects are those returned by:
+
+```
+XDashPack.getObjects()
+```
+
+Current registered classes:
+
+- XCard
+- XKpiCard
+- XGrid
+- XStack
+- XScroll
+- XSpacer
+- XDivider
+- XToolbar
+- XTable
+- XBadge
+- XEmptyState
+- XSearchBox
+- XInputGroup
+- XSelect
+- XField
+- XDrawer
+- XNavList
+- XSidebar
+- XModal
+- XToast
+- XSection
+
+AI agents MUST NOT invent additional types.
+AI agents MUST NOT generate `_type` values not registered in XDashPack.
+
+---
+
+## Component Rules
+
+Each component:
+
+- MUST extend XUIObject
+- MUST follow XUI rendering lifecycle
+- MUST not contain business logic
+- MUST not directly mutate global state
+- MUST not perform data fetching
+- MUST not embed application logic
+
+UI-only behavior is allowed.
+Runtime state management is forbidden.
+
+---
+
+## JSON Contract
+
+Components must be instantiable via:
+
+```json
 {
-  _type: "label",
-  _data_source: "fps",
-  _on_data: "set-text-from-data empty:true"
+  "_type": "<registered xtype>",
+  ...
 }
 ```
 
----
+Rules:
 
-### 5.3 Legacy Compatibility (STRICTLY LIMITED)
-
-- `_xd._o[...]` is LEGACY ONLY
-- New code MUST NOT write to `_xd._o`
-- Wormholes MAY write to `_xd._o` only as ingress
-
----
-
-### 5.4 Forbidden Patterns
-
-❌ polling, timers, DOM queries, mirroring state
+- No inline JS functions
+- No direct DOM manipulation
+- No side-channel state
+- Nano-commands only
 
 ---
 
-## 6. NO TIMERS
+## Layout Philosophy
 
-❌ `setInterval`, `setTimeout`
+@xpell/xdashboard provides structural primitives:
 
-✅ `_on_frame`, `_on_data`
+- Layout (XGrid, XStack, XSection, XSidebar)
+- Containers (XCard, XKpiCard, XModal, XDrawer)
+- Data display (XTable, XBadge)
+- UX helpers (XToast, XEmptyState)
+- Input primitives (XField, XSelect, XSearchBox)
 
----
-
-## 7. CHILDREN & DOM
-
-- `_children` ONLY
-- DOM is OUTPUT ONLY
-
----
-
-## 8. STYLING
-
-- NO hardcoded colors
-- Use CSS tokens `var(--x-*)`
+It does not define application flow.
 
 ---
 
-## 9. OUTPUT FORMAT (FOR CODEX)
+## XData Rules
 
-1. Short explanation
-2. Type interface
-3. Class implementation
-4. Minimal usage example
+Fully inherits XData2 rules from @xpell/core:
 
----
-
-## 10. CODEX LINT CHECKLIST
-
-(unchanged – enforced)
+- No shadow state
+- No hidden local mirrors
+- No direct XData mutation outside contract
+- No polling
+- No implicit syncing
 
 ---
 
-## 11. WORMHOLES v2 (WEB CLIENT) — STRICT CONTRACT
+## Forbidden Patterns
 
-### 11.1 Canonical import
-
-```ts
-import { Wormholes } from "xpell-ui";
-```
-
-### 11.2 Envelope-only protocol
-
-- Uses `_kind` (UPPERCASE)
-- REQ/RES via `_rid`
-- JSON-only payloads
-
-❌ No raw JSON, no manual WebSocket/fetch
-
-### 11.3 Opening
-
-```ts
-Wormholes.open({
-  _url: "ws://localhost:3000/wh/v2",
-  _auto_reconnect: true,
-  _hello_payload: { _client: "xui-test" }
-});
-```
-
-### 11.4 Events via `_xem`
-
-```ts
-_xem.on("wormhole-open", ...)
-_xem.on("wormhole-close", ...)
-```
-
-### 11.5 Data ingress
-
-- Wormholes is ingress boundary
-- UI consumes via `_data_source`
-
-### 11.6 v1 legacy
-
-- Disabled by default
-- `_allow_v1: true` required
-
-### 11.7 Requests
-
-```ts
-await Wormholes.sendXcmd({
-  _module: "xvm",
-  _op: "navigate"
-});
-```
-
-### 11.8 Events
-
-```ts
-Wormholes.sendEvt("datasource", { _data_source: "users", _data: [] });
-```
-
-### 11.9 Forbidden
-
-❌ fetch/ws/timers/manual protocol
+- Adding runtime modules inside this package
+- Embedding API calls
+- Introducing service logic
+- Modifying unrelated packs
+- Exposing private internals publicly
+- Loosening encapsulation to fix compile errors
 
 ---
 
-## 12 XObject Property Naming Rule (Mandatory)
+## One-Line Anchor
 
-All **runtime properties** defined inside `XObject` and **every framework-level object that extends it** MUST follow this rule:
-
-- **Every runtime property name MUST start with `_`**
-- This includes:
-  - state fields (`_position`, `_rotation`, `_mass`)
-  - configuration fields (`_enable_physics`, `_fade_duration`)
-  - flags and toggles (`_visible`, `_disable_frame_3d_state`)
-- Properties **without** a leading `_` are considered:
-  - local variables
-  - method arguments
-  - internal implementation details only
-
-### Rationale
-The `_` prefix explicitly marks:
-- engine-owned runtime state
-- serializable / exportable fields
-- fields eligible for command execution, binding, and inspection
-
-This rule prevents:
-- accidental API exposure
-- ambiguity between runtime state and implementation logic
-- cross-framework inconsistencies
-
-### Non-Negotiable
-- New framework code **must not** introduce runtime properties without `_`
-- Public mutation of runtime state **must occur only via methods**
-- Direct field access is allowed **only inside the owning class**
-
-Violations of this rule are considered **engine contract breaks**.
-
-
-## FINAL RULE
-
-If unsure — STOP and ask.
+@xpell/xdashboard is a deterministic dashboard UI object pack for Xpell 2, providing structured layout and presentation components without owning application logic.

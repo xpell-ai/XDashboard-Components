@@ -1,5 +1,5 @@
 import { XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XScrollData extends XUIObjectData {
   _type: "scroll";
@@ -14,7 +14,51 @@ type XScrollDirection = "vertical" | "horizontal" | "both";
 
 export class XScroll extends XUIObject {
   static _xtype = "scroll";
+  static _skill: XpellSkill = {
+    _id: "scroll",
+    _title: "XScroll",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject"],
 
+    _description:
+      "Dashboard scroll container for vertical, horizontal, or bidirectional overflow content with optional grow behavior and hidden scrollbar styling.",
+
+    _fields: {
+      _children: "Scrollable child UI objects.",
+      _direction: "Scroll direction: vertical, horizontal, or both.",
+      _grow: "Allow scroll area to grow/fill available flex space.",
+      _hide_scrollbar: "Hide scrollbar visually while keeping scroll behavior.",
+      _max_height: "Optional max-height CSS value.",
+      _max_width: "Optional max-width CSS value.",
+      class: "Optional CSS classes. xscroll is applied automatically."
+    },
+
+    _core_rules: [
+      "Use scroll when content may overflow its container.",
+      "Use _direction:'vertical' for normal panels and lists.",
+      "Use _direction:'horizontal' for horizontal tables/toolbars.",
+      "Use _direction:'both' only when both axes may overflow.",
+      "Use _grow:true inside flex layouts when the scroll area should fill remaining space.",
+      "Do not use scroll as a generic layout container when content does not overflow."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "scroll",
+        _direction: "vertical",
+        _grow: true,
+        _max_height: "420px",
+        _children: [
+          {
+            _type: "label",
+            _text: "Scrollable content"
+          }
+        ]
+      }
+    ]
+  };
   private __direction: XScrollDirection = "vertical";
   private __grow = false;
   private __hide_scrollbar = false;

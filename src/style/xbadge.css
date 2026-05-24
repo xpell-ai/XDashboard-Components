@@ -1,90 +1,224 @@
-/* XBadge base */
-.xbadge {
-  --xbadge-bg: var(--x-surface-2, var(--x-surface));
-  --xbadge-fg: var(--x-text);
-  --xbadge-border: var(--x-border);
-  --xbadge-dot: var(--xbadge-fg);
-  --xbadge-gap: 6px;
-  --xbadge-radius: var(--x-radius, 10px);
-  --xbadge-pad-y: 4px;
-  --xbadge-pad-x: 8px;
-  --xbadge-font: 12px;
-  --xbadge-dot-size: 6px;
+/* XBadge
+   Semantic, token-driven badge component
+*/
 
-  display: inline-flex;
-  align-items: center;
-  gap: var(--xbadge-gap);
-  padding: var(--xbadge-pad-y) var(--xbadge-pad-x);
-  font-size: var(--xbadge-font);
-  line-height: 1;
-  border-radius: var(--xbadge-radius);
-  background: var(--xbadge-bg);
-  color: var(--xbadge-fg);
-  border: 1px solid var(--xbadge-border);
-  white-space: nowrap;
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+.xbadge {
+
+  --xbadge-bg:
+    var(--x-surface-2, var(--x-surface));
+
+  --xbadge-fg:
+    var(--x-text);
+
+  --xbadge-border:
+    var(--x-border);
+
+  --xbadge-dot:
+    var(--xbadge-fg);
+
+  --xbadge-gap:
+    var(--x-spacing-xs, 4px);
+
+  --xbadge-radius:
+    var(--x-radius-md, 10px);
+
+  --xbadge-pad-y:
+    4px;
+
+  --xbadge-pad-x:
+    8px;
+
+  --xbadge-font:
+    12px;
+
+  --xbadge-dot-size:
+    6px;
+
+  display:inline-flex;
+  align-items:center;
+
+  gap:var(--xbadge-gap);
+
+  padding:
+    var(--xbadge-pad-y)
+    var(--xbadge-pad-x);
+
+  font-size:
+    var(--xbadge-font);
+
+  line-height:1;
+
+  border-radius:
+    var(--xbadge-radius);
+
+  background:
+    var(--xbadge-bg);
+
+  color:
+    var(--xbadge-fg);
+
+  border:
+    1px solid var(--xbadge-border);
+
+  white-space:nowrap;
 }
 
+
+/* ==========================================================================
+   Dot
+   ========================================================================== */
+
 .xbadge__dot {
-  width: var(--xbadge-dot-size);
-  height: var(--xbadge-dot-size);
-  border-radius: 999px;
-  background: var(--xbadge-dot);
-  display: none;
+
+  width:
+    var(--xbadge-dot-size);
+
+  height:
+    var(--xbadge-dot-size);
+
+  border-radius:999px;
+
+  background:
+    var(--xbadge-dot);
+
+  display:none;
 }
 
 .xbadge--dot .xbadge__dot {
-  display: inline-block;
+  display:inline-block;
 }
+
+
+/* ==========================================================================
+   Shape Variants
+   ========================================================================== */
 
 .xbadge--pill {
-  border-radius: 999px;
+  border-radius:999px;
 }
 
-.xbadge--sm {
-  --xbadge-pad-y: 2px;
-  --xbadge-pad-x: 6px;
-  --xbadge-font: 11px;
-  --xbadge-dot-size: 5px;
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xbadge--sm,
+.xbadge--size-sm {
+
+  --xbadge-pad-y:2px;
+  --xbadge-pad-x:6px;
+
+  --xbadge-font:11px;
+
+  --xbadge-dot-size:5px;
 }
 
-.xbadge--md {
-  --xbadge-pad-y: 4px;
-  --xbadge-pad-x: 8px;
-  --xbadge-font: 12px;
-  --xbadge-dot-size: 6px;
+.xbadge--md,
+.xbadge--size-md {
+
+  --xbadge-pad-y:4px;
+  --xbadge-pad-x:8px;
+
+  --xbadge-font:12px;
+
+  --xbadge-dot-size:6px;
 }
 
-.xbadge--default {
-  --xbadge-bg: var(--x-surface-2, var(--x-surface));
-  --xbadge-fg: var(--x-text);
-  --xbadge-border: var(--x-border);
-  --xbadge-dot: var(--x-text);
+
+/* ==========================================================================
+   Semantic Variants
+   ========================================================================== */
+
+.xbadge--default,
+.xbadge--variant-default {
+
+  --xbadge-bg:
+    var(--x-surface-2, var(--x-surface));
+
+  --xbadge-fg:
+    var(--x-text);
+
+  --xbadge-border:
+    var(--x-border);
+
+  --xbadge-dot:
+    var(--x-text);
 }
 
-.xbadge--success {
-  --xbadge-bg: var(--x-surface-2, var(--x-surface));
-  --xbadge-fg: var(--x-success, var(--x-text));
-  --xbadge-border: var(--x-success, var(--x-border));
-  --xbadge-dot: var(--x-success, var(--x-text));
+
+.xbadge--success,
+.xbadge--variant-success {
+
+  --xbadge-bg:
+    var(--x-surface-2, var(--x-surface));
+
+  --xbadge-fg:
+    var(--x-success, var(--x-text));
+
+  --xbadge-border:
+    var(--x-success, var(--x-border));
+
+  --xbadge-dot:
+    var(--x-success, var(--x-text));
 }
 
-.xbadge--warn {
-  --xbadge-bg: var(--x-surface-2, var(--x-surface));
-  --xbadge-fg: var(--x-warning, var(--x-text));
-  --xbadge-border: var(--x-warning, var(--x-border));
-  --xbadge-dot: var(--x-warning, var(--x-text));
+
+.xbadge--warn,
+.xbadge--warning,
+.xbadge--variant-warn,
+.xbadge--variant-warning {
+
+  --xbadge-bg:
+    var(--x-surface-2, var(--x-surface));
+
+  --xbadge-fg:
+    var(--x-warning, var(--x-text));
+
+  --xbadge-border:
+    var(--x-warning, var(--x-border));
+
+  --xbadge-dot:
+    var(--x-warning, var(--x-text));
 }
 
-.xbadge--error {
-  --xbadge-bg: var(--x-surface-2, var(--x-surface));
-  --xbadge-fg: var(--x-danger, var(--x-text));
-  --xbadge-border: var(--x-danger, var(--x-border));
-  --xbadge-dot: var(--x-danger, var(--x-text));
+
+.xbadge--error,
+.xbadge--danger,
+.xbadge--variant-error,
+.xbadge--variant-danger {
+
+  --xbadge-bg:
+    var(--x-surface-2, var(--x-surface));
+
+  --xbadge-fg:
+    var(--x-danger, var(--x-text));
+
+  --xbadge-border:
+    var(--x-danger, var(--x-border));
+
+  --xbadge-dot:
+    var(--x-danger, var(--x-text));
 }
 
-.xbadge--info {
-  --xbadge-bg: var(--x-surface-2, var(--x-surface));
-  --xbadge-fg: var(--x-primary, var(--x-text));
-  --xbadge-border: var(--x-primary, var(--x-border));
-  --xbadge-dot: var(--x-primary, var(--x-text));
+
+.xbadge--info,
+.xbadge--primary,
+.xbadge--variant-info,
+.xbadge--variant-primary {
+
+  --xbadge-bg:
+    var(--x-surface-2, var(--x-surface));
+
+  --xbadge-fg:
+    var(--x-primary, var(--x-text));
+
+  --xbadge-border:
+    var(--x-primary, var(--x-border));
+
+  --xbadge-dot:
+    var(--x-primary, var(--x-text));
 }

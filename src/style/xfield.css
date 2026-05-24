@@ -1,58 +1,208 @@
-/* XField */
+/* ==========================================================================
+   XField
+   Semantic field/form wrapper component
+   ========================================================================== */
+
 .xfield {
-  display: flex;
-  width: 100%;
+
+  display:flex;
+
+  width:100%;
 }
+
+
+/* ==========================================================================
+   Internal Stack
+   ========================================================================== */
 
 .xfield__stack {
-  width: 100%;
-  --xstack-gap: var(--x-field-gap, 10px);
+
+  width:100%;
+
+  --xstack-gap:
+    var(--x-field-gap, 10px);
 }
+
+
+/* ==========================================================================
+   Label Row
+   ========================================================================== */
 
 .xfield__label-row {
-  align-items: center;
+
+  align-items:center;
 }
+
+
+/* ==========================================================================
+   Label
+   ========================================================================== */
 
 .xfield__label {
-  color: var(--x-text);
-  font-weight: 600;
+
+  color:
+    var(--x-text);
+
+  font-weight:600;
 }
+
+
+/* ==========================================================================
+   Required Indicator
+   ========================================================================== */
 
 .xfield__required {
-  color: var(--x-danger, var(--x-text));
+
+  color:
+    var(--x-danger, var(--x-text));
 }
+
+
+/* ==========================================================================
+   Control Wrapper
+   ========================================================================== */
 
 .xfield__control {
-  width: 100%;
+  width:100%;
 }
+
+
+/* ==========================================================================
+   Hint
+   ========================================================================== */
 
 .xfield__hint {
-  color: var(--x-text-muted, var(--x-muted, var(--x-text)));
-  font-size: var(--x-field-hint-size, 12px);
+
+  color:
+    var(--x-text-muted, var(--x-text));
+
+  font-size:
+    var(--x-field-hint-size, 12px);
 }
+
+
+/* ==========================================================================
+   Error
+   ========================================================================== */
 
 .xfield__error {
-  color: var(--x-danger, var(--x-text));
-  font-size: var(--x-field-hint-size, 12px);
+
+  color:
+    var(--x-danger, var(--x-text));
+
+  font-size:
+    var(--x-field-hint-size, 12px);
 }
 
-.xfield--sm {
-  --x-field-gap: 8px;
-  --x-field-label-size: 12px;
-  --x-field-hint-size: 11px;
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xfield--sm,
+.xfield--size-sm {
+
+  --x-field-gap:
+    8px;
+
+  --x-field-label-size:
+    12px;
+
+  --x-field-hint-size:
+    11px;
 }
 
-.xfield--md {
-  --x-field-gap: 10px;
-  --x-field-label-size: 13px;
-  --x-field-hint-size: 12px;
+
+.xfield--md,
+.xfield--size-md {
+
+  --x-field-gap:
+    10px;
+
+  --x-field-label-size:
+    13px;
+
+  --x-field-hint-size:
+    12px;
 }
+
+
+.xfield--lg,
+.xfield--size-lg {
+
+  --x-field-gap:
+    12px;
+
+  --x-field-label-size:
+    14px;
+
+  --x-field-hint-size:
+    13px;
+}
+
+
+/* ==========================================================================
+   Typography Application
+   ========================================================================== */
 
 .xfield--sm .xfield__label,
-.xfield--md .xfield__label {
-  font-size: var(--x-field-label-size);
+.xfield--md .xfield__label,
+.xfield--lg .xfield__label,
+.xfield--size-sm .xfield__label,
+.xfield--size-md .xfield__label,
+.xfield--size-lg .xfield__label {
+
+  font-size:
+    var(--x-field-label-size);
 }
 
-.xfield__row--inline {
-  align-items: center;
+
+/* ==========================================================================
+   Inline Layout
+   ========================================================================== */
+
+.xfield__row--inline,
+.xfield--inline {
+
+  align-items:center;
+}
+
+
+/* ==========================================================================
+   Semantic States
+   ========================================================================== */
+
+.xfield--disabled,
+.xfield--state-disabled {
+
+  opacity:.6;
+
+  pointer-events:none;
+}
+
+
+.xfield--error .xfield__label,
+.xfield--state-error .xfield__label {
+
+  color:
+    var(--x-danger);
+}
+
+
+.xfield--success .xfield__label,
+.xfield--state-success .xfield__label {
+
+  color:
+    var(--x-success);
+}
+
+
+/* ==========================================================================
+   Tone Variants
+   ========================================================================== */
+
+.xfield--muted,
+.xfield--tone-muted {
+
+  opacity:.8;
 }

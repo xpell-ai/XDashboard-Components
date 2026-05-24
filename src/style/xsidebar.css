@@ -1,52 +1,202 @@
+/* ==========================================================================
+   XSidebar
+   Semantic sidebar/navigation panel component
+   ========================================================================== */
+
 .xsidebar {
-  width: var(--xsidebar-width, 280px);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--x-surface);
-  color: var(--x-text);
-  border-right: 1px solid var(--x-border);
+
+  --xsidebar-width:
+    280px;
+
+  --xsidebar-width-collapsed:
+    72px;
+
+  --xsidebar-pad:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  width:
+    var(--xsidebar-width);
+
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  background:
+    var(--x-surface);
+
+  color:
+    var(--x-text);
+
+  border-right:
+    1px solid var(--x-border);
 }
 
-.xsidebar--right {
-  border-right: none;
-  border-left: 1px solid var(--x-border);
+
+/* ==========================================================================
+   Side Variants
+   ========================================================================== */
+
+.xsidebar--right,
+.xsidebar--side-right {
+
+  border-right:none;
+
+  border-left:
+    1px solid var(--x-border);
 }
+
+
+.xsidebar--left,
+.xsidebar--side-left {
+
+  border-left:none;
+
+  border-right:
+    1px solid var(--x-border);
+}
+
+
+/* ==========================================================================
+   Internal Panel
+   ========================================================================== */
 
 .xsidebar__panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+
+  display:flex;
+  flex-direction:column;
+
+  height:100%;
 }
+
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
 
 .xsidebar__header {
-  padding: var(--xsidebar-pad, 12px 14px);
+
+  padding:
+    var(--xsidebar-pad);
 }
+
+
+/* ==========================================================================
+   Title
+   ========================================================================== */
 
 .xsidebar__title {
-  font-weight: 600;
-  color: var(--x-text);
+
+  font-weight:600;
+
+  color:
+    var(--x-text);
 }
+
+
+/* ==========================================================================
+   Subtitle
+   ========================================================================== */
 
 .xsidebar__subtitle {
-  color: var(--x-muted);
-  font-size: 12px;
+
+  color:
+    var(--x-text-muted);
+
+  font-size:12px;
 }
+
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
 
 .xsidebar__body {
-  flex: 1 1 auto;
-  min-height: 0;
-  padding: var(--xsidebar-pad, 12px 14px);
+
+  flex:1 1 auto;
+
+  min-height:0;
+
+  padding:
+    var(--xsidebar-pad);
 }
+
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
 
 .xsidebar__footer {
-  padding: var(--xsidebar-pad, 12px 14px);
+
+  padding:
+    var(--xsidebar-pad);
 }
+
+
+/* ==========================================================================
+   Scroll Region
+   ========================================================================== */
 
 .xsidebar__scroll {
-  min-height: 0;
+  min-height:0;
 }
 
-.xsidebar--collapsed {
-  width: var(--xsidebar-width-collapsed, 72px);
+
+/* ==========================================================================
+   Collapsed State
+   ========================================================================== */
+
+.xsidebar--collapsed,
+.xsidebar--state-collapsed {
+
+  width:
+    var(--xsidebar-width-collapsed);
+}
+
+
+/* ==========================================================================
+   Elevation Variants
+   ========================================================================== */
+
+.xsidebar--elevated,
+.xsidebar--variant-elevated {
+
+  box-shadow:
+    var(--x-shadow-md);
+}
+
+
+.xsidebar--flat,
+.xsidebar--variant-flat {
+
+  box-shadow:none;
+}
+
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xsidebar--sm,
+.xsidebar--size-sm {
+
+  --xsidebar-width:
+    220px;
+}
+
+
+.xsidebar--md,
+.xsidebar--size-md {
+
+  --xsidebar-width:
+    280px;
+}
+
+
+.xsidebar--lg,
+.xsidebar--size-lg {
+
+  --xsidebar-width:
+    360px;
 }

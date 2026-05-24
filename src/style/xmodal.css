@@ -1,84 +1,259 @@
+/* ==========================================================================
+   XModal
+   Semantic modal/dialog component
+   ========================================================================== */
+
 .xmodal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  z-index: var(--x-z-modal, 1000);
+
+  position:fixed;
+
+  inset:0;
+
+  display:none;
+
+  z-index:
+    var(--x-z-modal, 1000);
 }
 
-.xmodal--open {
-  display: block;
+
+/* ==========================================================================
+   Open State
+   ========================================================================== */
+
+.xmodal--open,
+.xmodal--state-open {
+
+  display:block;
 }
+
+
+/* ==========================================================================
+   Backdrop
+   ========================================================================== */
 
 .xmodal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: var(--x-overlay, rgba(0, 0, 0, 0.5));
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+    var(--x-overlay, rgba(0,0,0,.5));
 }
+
+
+/* ==========================================================================
+   Panel Wrapper
+   ========================================================================== */
 
 .xmodal__panel {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  z-index: 1;
+
+  position:absolute;
+
+  inset:0;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:
+    var(--x-spacing-md);
+
+  z-index:1;
 }
+
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
 
 .xmodal__card {
-  width: var(--xmodal-width, 560px);
-  max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 32px);
-  background: var(--x-surface);
-  color: var(--x-text);
-  border: 1px solid var(--x-border);
-  border-radius: var(--x-radius, 12px);
-  box-shadow: var(--x-shadow);
-  display: flex;
-  flex-direction: column;
+
+  width:
+    var(--xmodal-width, 560px);
+
+  max-width:
+    calc(100vw - 32px);
+
+  max-height:
+    calc(100vh - 32px);
+
+  background:
+    var(--x-surface);
+
+  color:
+    var(--x-text);
+
+  border:
+    1px solid var(--x-border);
+
+  border-radius:
+    var(--x-radius-lg);
+
+  box-shadow:
+    var(--x-shadow-md);
+
+  display:flex;
+  flex-direction:column;
 }
+
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
 
 .xmodal__header {
-  padding: 12px 14px;
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
 }
+
+
+/* ==========================================================================
+   Title
+   ========================================================================== */
 
 .xmodal__title {
-  font-weight: 600;
-  color: var(--x-text);
+
+  font-weight:600;
+
+  color:
+    var(--x-text);
 }
+
+
+/* ==========================================================================
+   Subtitle
+   ========================================================================== */
 
 .xmodal__subtitle {
-  color: var(--x-muted);
-  font-size: 12px;
+
+  color:
+    var(--x-text-muted);
+
+  font-size:12px;
 }
+
+
+/* ==========================================================================
+   Close Button
+   ========================================================================== */
 
 .xmodal__close {
-  background: transparent;
-  border: none;
-  color: var(--x-text);
+
+  background:transparent;
+
+  border:none;
+
+  color:
+    var(--x-text);
+
+  cursor:pointer;
 }
+
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
 
 .xmodal__body {
-  padding: 12px 14px;
-  min-height: 0;
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  min-height:0;
 }
+
+
+/* ==========================================================================
+   Scroll Region
+   ========================================================================== */
 
 .xmodal__scroll {
-  max-height: 60vh;
+
+  max-height:60vh;
 }
+
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
 
 .xmodal__footer {
-  padding: 12px 14px;
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
 }
 
-.xmodal--sm {
-  --xmodal-width: 420px;
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xmodal--sm,
+.xmodal--size-sm {
+
+  --xmodal-width:
+    420px;
 }
 
-.xmodal--md {
-  --xmodal-width: 560px;
+
+.xmodal--md,
+.xmodal--size-md {
+
+  --xmodal-width:
+    560px;
 }
 
-.xmodal--lg {
-  --xmodal-width: 720px;
+
+.xmodal--lg,
+.xmodal--size-lg {
+
+  --xmodal-width:
+    720px;
+}
+
+
+/* ==========================================================================
+   Tone Variants
+   ========================================================================== */
+
+.xmodal--flat,
+.xmodal--variant-flat {
+
+  box-shadow:none;
+}
+
+
+.xmodal--elevated,
+.xmodal--variant-elevated {
+
+  box-shadow:
+    var(--x-shadow-md);
+}
+
+
+/* ==========================================================================
+   Alignment Variants
+   ========================================================================== */
+
+.xmodal--top .xmodal__panel {
+
+  align-items:flex-start;
+}
+
+
+.xmodal--bottom .xmodal__panel {
+
+  align-items:flex-end;
+}
+
+
+.xmodal--center .xmodal__panel {
+
+  align-items:center;
 }

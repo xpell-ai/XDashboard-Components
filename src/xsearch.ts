@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData, XObjectData } from "@xpell/ui";
+import type { XUIObjectData, XObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XSearchBoxData extends XUIObjectData {
   _type: "search";
@@ -21,7 +21,49 @@ type XSearchSize = "sm" | "md";
 
 export class XSearchBox extends XUIObject {
   static _xtype = "search";
+  static _skill: XpellSkill = {
+    _id: "search",
+    _title: "XSearchBox",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "label", "input", "button"],
 
+    _description:
+      "Dashboard search box component with search input, optional icon, clear button, value state, size, disabled state, and input/change/clear runtime handlers.",
+
+    _fields: {
+      _value: "Current search value.",
+      _placeholder: "Input placeholder text. Defaults to Search...",
+      _size: "Search box size: sm or md.",
+      _disabled: "Disable search input when true.",
+      _clearable: "Show clear button when value is not empty.",
+      _icon: "Show search icon when true.",
+      _autofocus: "Autofocus the input when mounted.",
+      _input_id: "Optional DOM id for the internal input.",
+      class: "Optional CSS classes. xsearch is applied automatically."
+    },
+
+    _core_rules: [
+      "Use search for filtering lists, tables, dashboards, and navigation results.",
+      "Use _value for the current search text.",
+      "Use _placeholder to explain what can be searched.",
+      "Use _clearable:true when users should quickly reset the search.",
+      "Do not generate _on_input, _on_change, or _on_clear as JavaScript functions.",
+      "For persisted/generated views, handlers must be Nano-Commands/data-only."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "search",
+        _id: "dashboard-search",
+        _placeholder: "Search reports...",
+        _size: "md",
+        _clearable: true,
+        _icon: true
+      }
+    ]
+  };
   private __value = "";
   private __placeholder = "Search...";
   private __size: XSearchSize = "md";

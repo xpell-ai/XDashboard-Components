@@ -1,57 +1,197 @@
-/* -------------------------------------------------------
+/* ==========================================================================
    XSection
-------------------------------------------------------- */
+   Semantic section/container component
+   ========================================================================== */
 
 .xsection {
-  width: 100%;
+    flex:1 1 auto;
+    min-height:0;
 }
+
+/* ==========================================================================
+   Container
+   ========================================================================== */
 
 .xsection__container {
-  border: 1px solid var(--dash-border);
-  background: var(--dash-surface);
-  border-radius: var(--dash-radius);
-  box-shadow: var(--dash-shadow);
-  padding: 16px;
+
+  border:
+    1px solid var(--x-border);
+
+  background:
+    var(--x-surface);
+
+  border-radius:
+    var(--x-radius-lg);
+
+  box-shadow:
+    var(--x-shadow-md);
+
+  padding:
+    var(--x-spacing-md);
 }
+
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
 
 .xsection__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+
+  display:flex;
+
+  align-items:flex-start;
+  justify-content:space-between;
+
+  gap:
+    var(--x-spacing-sm);
+
+  margin-bottom:
+    var(--x-spacing-sm);
 }
+
+
+/* ==========================================================================
+   Headings
+   ========================================================================== */
 
 .xsection__headings {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:
+    var(--x-spacing-xs);
+
+  min-width:0;
 }
+
 
 .xsection__title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--dash-text);
-  line-height: 1.2;
+
+  margin:0;
+
+  font-size:16px;
+  font-weight:700;
+
+  color:
+    var(--x-text);
+
+  line-height:1.2;
 }
+
 
 .xsection__subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: var(--dash-text-muted);
-  line-height: 1.35;
+
+  margin:0;
+
+  font-size:13px;
+
+  color:
+    var(--x-text-muted);
+
+  line-height:1.35;
 }
+
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
 
 .xsection__actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:flex-end;
+
+  gap:
+    var(--x-spacing-sm);
+
+  flex-wrap:wrap;
 }
 
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
+
 .xsection__body {
-  width: 100%;
+  width:100%;
+}
+
+
+/* ==========================================================================
+   Semantic Variants
+   ========================================================================== */
+
+.xsection--primary,
+.xsection--variant-primary {
+
+  border-color:
+    var(--x-primary);
+}
+
+
+.xsection--success,
+.xsection--variant-success {
+
+  border-color:
+    var(--x-success);
+}
+
+
+.xsection--danger,
+.xsection--error,
+.xsection--variant-danger,
+.xsection--variant-error {
+
+  border-color:
+    var(--x-danger);
+}
+
+
+.xsection--warning,
+.xsection--variant-warning {
+
+  border-color:
+    var(--x-warning);
+}
+
+
+/* ==========================================================================
+   Elevation Variants
+   ========================================================================== */
+
+.xsection--flat,
+.xsection--elevation-flat {
+
+  box-shadow:none;
+}
+
+
+.xsection--elevated,
+.xsection--elevation-md {
+
+  box-shadow:
+    var(--x-shadow-md);
+}
+
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xsection--dense,
+.xsection--density-dense {
+
+  padding:
+    var(--x-spacing-sm);
+}
+
+
+.xsection--comfortable,
+.xsection--density-comfortable {
+
+  padding:
+    var(--x-spacing-md);
 }

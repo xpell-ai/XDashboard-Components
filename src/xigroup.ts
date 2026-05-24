@@ -1,5 +1,5 @@
 import { XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XInputGroupData extends XUIObjectData {
   _type: "igroup";
@@ -15,6 +15,56 @@ type XInputGroupAlign = "start" | "center" | "end" | "stretch";
 
 export class XInputGroup extends XUIObject {
   static _xtype = "igroup";
+  static _skill: XpellSkill = {
+    _id: "igroup",
+    _title: "XInputGroup",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject"],
+
+    _description:
+      "Dashboard input/action group layout for arranging controls in a horizontal flex row with gap, alignment, wrapping, dense mode, or merged styling.",
+
+    _fields: {
+      _children: "Child controls or action objects inside the group.",
+      _gap: "Gap between children in pixels. Defaults to 8.",
+      _align: "Cross-axis alignment: start, center, end, or stretch.",
+      _wrap: "Allow controls to wrap onto multiple lines.",
+      _dense: "Use compact spacing/style.",
+      _merged: "Use merged control styling for connected inputs/buttons.",
+      class: "Optional CSS classes. xigroup is applied automatically."
+    },
+
+    _core_rules: [
+      "Use igroup to group related inputs, buttons, filters, or toolbar actions.",
+      "Use _children for the grouped controls.",
+      "Use _merged:true for connected controls like search input + button.",
+      "Use _wrap:true when the group must be responsive.",
+      "Do not use igroup as a full page layout container; use grid, stack, or view instead."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "igroup",
+        _gap: 8,
+        _align: "center",
+        _wrap: true,
+        _children: [
+          {
+            _type: "text",
+            placeholder: "Search...",
+            _data_source: "filters.search",
+            _update_data_source_on_change: true
+          },
+          {
+            _type: "button",
+            _text: "Search"
+          }
+        ]
+      }
+    ]
+  };
 
   private __gap = 8;
   private __align: XInputGroupAlign = "center";

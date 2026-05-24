@@ -1,8 +1,8 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XSectionData extends XUIObjectData {
-  _type: "section";
+  _type: "xsection";
   _title?: string;
   _subtitle?: string;
   _actions?: XUIObjectData[];
@@ -15,7 +15,56 @@ type XSectionHeader = {
 };
 
 export class XSection extends XUIObject {
-  static _xtype = "section";
+  static _xtype = "xsection";
+  static _skill: XpellSkill = {
+    _id: "xsection",
+    _title: "XSection",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "view", "label"],
+
+    _description:
+      "Dashboard section container with optional title, subtitle, header actions, and body content.",
+
+    _fields: {
+      _title: "Optional section title.",
+      _subtitle: "Optional section subtitle/description.",
+      _actions: "Optional header action objects, usually buttons or links.",
+      _children: "Section body content.",
+      class: "Optional CSS classes. xsection is applied automatically."
+    },
+
+    _core_rules: [
+      "Use xsection to group dashboard content into semantic sections.",
+      "Use _title and _subtitle for section header text.",
+      "Use _actions for header-level actions.",
+      "Use _children for body content.",
+      "Do not use xsection for small cards; use card or kpi-card instead."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "xsection",
+        _title: "Reports",
+        _subtitle: "Latest dashboard reports",
+        _actions: [
+          {
+            _type: "button",
+            _text: "Create report"
+          }
+        ],
+        _children: [
+          {
+            _type: "grid",
+            _min_col_width: 240,
+            _gap: 16,
+            _children: []
+          }
+        ]
+      }
+    ]
+  };
 
   private __title = "";
   private __subtitle = "";

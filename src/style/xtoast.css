@@ -1,76 +1,227 @@
+/* ==========================================================================
+   XToast
+   Semantic toast/notification component
+   ========================================================================== */
+
 .xtoast {
-  position: fixed;
-  z-index: var(--x-z-toast, 1100);
-  max-width: 360px;
-  pointer-events: none;
-  opacity: 0;
+
+  position:fixed;
+
+  z-index:
+    var(--x-z-toast, 1100);
+
+  max-width:360px;
+
+  pointer-events:none;
+
+  opacity:0;
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
 }
 
-.xtoast--open {
-  pointer-events: auto;
-  opacity: 1;
+
+/* ==========================================================================
+   Open State
+   ========================================================================== */
+
+.xtoast--open,
+.xtoast--state-open {
+
+  pointer-events:auto;
+
+  opacity:1;
 }
 
-.xtoast--top-right {
-  top: var(--x-toast-offset, 16px);
-  right: var(--x-toast-offset, 16px);
+
+/* ==========================================================================
+   Position Variants
+   ========================================================================== */
+
+.xtoast--top-right,
+.xtoast--position-top-right {
+
+  top:
+    var(--x-toast-offset, 16px);
+
+  right:
+    var(--x-toast-offset, 16px);
 }
 
-.xtoast--top-left {
-  top: var(--x-toast-offset, 16px);
-  left: var(--x-toast-offset, 16px);
+
+.xtoast--top-left,
+.xtoast--position-top-left {
+
+  top:
+    var(--x-toast-offset, 16px);
+
+  left:
+    var(--x-toast-offset, 16px);
 }
 
-.xtoast--bottom-right {
-  bottom: var(--x-toast-offset, 16px);
-  right: var(--x-toast-offset, 16px);
+
+.xtoast--bottom-right,
+.xtoast--position-bottom-right {
+
+  bottom:
+    var(--x-toast-offset, 16px);
+
+  right:
+    var(--x-toast-offset, 16px);
 }
 
-.xtoast--bottom-left {
-  bottom: var(--x-toast-offset, 16px);
-  left: var(--x-toast-offset, 16px);
+
+.xtoast--bottom-left,
+.xtoast--position-bottom-left {
+
+  bottom:
+    var(--x-toast-offset, 16px);
+
+  left:
+    var(--x-toast-offset, 16px);
 }
+
+
+/* ==========================================================================
+   Container
+   ========================================================================== */
 
 .xtoast__container {
-  display: flex;
-  align-items: center;
-  gap: var(--x-gap, 12px);
-  padding: 10px 12px;
-  background: var(--x-surface);
-  color: var(--x-text);
-  border: 1px solid var(--x-border);
-  border-left: 4px solid var(--xtoast-accent, var(--x-border));
-  border-radius: var(--x-radius, 10px);
-  box-shadow: var(--x-shadow);
+
+  display:flex;
+
+  align-items:center;
+
+  gap:
+    var(--x-spacing-sm);
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  background:
+    var(--x-surface);
+
+  color:
+    var(--x-text);
+
+  border:
+    1px solid var(--x-border);
+
+  border-left:
+    4px solid
+    var(--xtoast-accent, var(--x-border));
+
+  border-radius:
+    var(--x-radius-md);
+
+  box-shadow:
+    var(--x-shadow-md);
 }
+
+
+/* ==========================================================================
+   Text
+   ========================================================================== */
 
 .xtoast__text {
-  flex: 1 1 auto;
+  flex:1 1 auto;
 }
+
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
 
 .xtoast__actions {
-  display: flex;
-  gap: 8px;
+
+  display:flex;
+
+  gap:
+    var(--x-spacing-sm);
 }
+
+
+/* ==========================================================================
+   Close Button
+   ========================================================================== */
 
 .xtoast__close {
-  background: transparent;
-  border: none;
-  color: var(--x-text);
+
+  background:transparent;
+
+  border:none;
+
+  color:
+    var(--x-text);
+
+  cursor:pointer;
 }
 
-.xtoast--success {
-  --xtoast-accent: var(--x-success);
+
+/* ==========================================================================
+   Semantic Variants
+   ========================================================================== */
+
+.xtoast--success,
+.xtoast--variant-success {
+
+  --xtoast-accent:
+    var(--x-success);
 }
 
-.xtoast--error {
-  --xtoast-accent: var(--x-danger);
+
+.xtoast--error,
+.xtoast--danger,
+.xtoast--variant-error,
+.xtoast--variant-danger {
+
+  --xtoast-accent:
+    var(--x-danger);
 }
 
-.xtoast--warn {
-  --xtoast-accent: var(--x-warning);
+
+.xtoast--warn,
+.xtoast--warning,
+.xtoast--variant-warn,
+.xtoast--variant-warning {
+
+  --xtoast-accent:
+    var(--x-warning);
 }
 
-.xtoast--info {
-  --xtoast-accent: var(--x-primary);
+
+.xtoast--info,
+.xtoast--primary,
+.xtoast--variant-info,
+.xtoast--variant-primary {
+
+  --xtoast-accent:
+    var(--x-primary);
+}
+
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xtoast--sm,
+.xtoast--size-sm {
+
+  max-width:280px;
+}
+
+
+.xtoast--md,
+.xtoast--size-md {
+
+  max-width:360px;
+}
+
+
+.xtoast--lg,
+.xtoast--size-lg {
+
+  max-width:520px;
 }

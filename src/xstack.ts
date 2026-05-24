@@ -1,5 +1,5 @@
 import { XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XStackData extends XUIObjectData {
   _type: "stack";
@@ -20,7 +20,61 @@ type XStackJustify = "start" | "center" | "end" | "space-between" | "space-aroun
 
 export class XStack extends XUIObject {
   static _xtype = "stack";
+  static _skill: XpellSkill = {
+    _id: "stack",
+    _title: "XStack",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject"],
 
+    _description:
+      "Dashboard flex stack layout container for arranging child UI objects vertically or horizontally with gap, alignment, justification, wrapping, and grow behavior.",
+
+    _fields: {
+      _children: "Child UI objects arranged by the stack.",
+      _direction: "Stack direction: vertical or horizontal.",
+      _gap: "Gap between child objects in pixels.",
+      _align: "Cross-axis alignment: start, center, end, or stretch.",
+      _justify:
+        "Main-axis distribution: start, center, end, space-between, space-around, or space-evenly.",
+      _wrap: "Allow child objects to wrap when direction is horizontal.",
+      _grow: "Allow stack to grow/fill available flex space.",
+      _class: "Extra CSS classes appended to the stack.",
+      class: "Optional CSS classes. xstack is applied automatically."
+    },
+
+    _core_rules: [
+      "Use stack for simple vertical or horizontal layout groups.",
+      "Use _children for stacked content.",
+      "Use _gap instead of spacer for normal spacing.",
+      "Use _direction:'vertical' for forms and panels.",
+      "Use _direction:'horizontal' for toolbars, rows, and action groups.",
+      "Use grid for multi-column dashboard layouts."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "stack",
+        _direction: "vertical",
+        _gap: 12,
+        _align: "stretch",
+        _children: [
+          {
+            _type: "label",
+            _text: "Dashboard"
+          },
+          {
+            _type: "grid",
+            _min_col_width: 240,
+            _gap: 16,
+            _children: []
+          }
+        ]
+      }
+    ]
+  };
+  
   private __direction: XStackDirection = "vertical";
   private __gap?: number;
   private __align: XStackAlign = "stretch";

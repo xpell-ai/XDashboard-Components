@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XDrawerData extends XUIObjectData {
   _type: "drawer";
@@ -20,7 +20,60 @@ type XDrawerSide = "right" | "left";
 
 export class XDrawer extends XUIObject {
   static _xtype = "drawer";
+  static _skill: XpellSkill = {
+    _id: "drawer",
+    _title: "XDrawer",
+    _version: "1.0.0",
+    _active: true,
+    _type: "view-skill",
+    _requires: ["xuiobject", "view", "label", "button", "scroll"],
 
+    _description:
+      "Dashboard drawer panel that slides from the left or right and contains optional title, close button, scrollable content, overlay, and elevation.",
+
+    _fields: {
+      _open: "Whether the drawer is open.",
+      _side: "Drawer side: right or left.",
+      _width: "Drawer width CSS value. Defaults to 360px.",
+      _title: "Optional drawer title.",
+      _closable: "Show close button when true.",
+      _scroll: "Wrap drawer body in scroll container when true.",
+      _elevated: "Use elevated/shadow style.",
+      _overlay: "Use overlay drawer mode.",
+      _children: "Drawer body content.",
+      class: "Optional CSS classes. xdrawer is applied automatically."
+    },
+
+    _core_rules: [
+      "Use drawer for side panels, details panels, filters, or settings.",
+      "Use _open to control visibility.",
+      "Use _side:'right' for detail/settings panels and _side:'left' for navigation panels.",
+      "Use _children for drawer body content.",
+      "Do not generate _on_open or _on_close; they are internal runtime callbacks only.",
+      "Do not generate JavaScript functions in drawer JSON."
+    ],
+
+    _canonical_examples: [
+      {
+        _type: "drawer",
+        _id: "details-drawer",
+        _open: false,
+        _side: "right",
+        _width: "420px",
+        _title: "Details",
+        _closable: true,
+        _scroll: true,
+        _elevated: true,
+        _overlay: true,
+        _children: [
+          {
+            _type: "label",
+            _text: "Select an item to view details."
+          }
+        ]
+      }
+    ]
+  };
   private __open = false;
   private __side: XDrawerSide = "right";
   private __width = "360px";
@@ -123,13 +176,13 @@ export class XDrawer extends XUIObject {
   private buildBody(contentChildren: XUIObjectData[]) {
     const content = this.__scroll
       ? [
-          {
-            _type: "scroll",
-            _id: this.__scroll_id,
-            class: "xdrawer__scroll",
-            _children: contentChildren,
-          },
-        ]
+        {
+          _type: "scroll",
+          _id: this.__scroll_id,
+          class: "xdrawer__scroll",
+          _children: contentChildren,
+        },
+      ]
       : contentChildren;
 
     return {

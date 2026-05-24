@@ -1,22 +1,140 @@
-/* XStack tokens (self-contained, light/dark aware) */
-:root,
-[data-theme] {
-  --xstack-gap: 12px;
-  --xstack-accent: var(--x-primary);
-  --xstack-text: var(--x-text);
-}
+/* ==========================================================================
+   XStack
+   Semantic flex stack/layout component
+   ========================================================================== */
 
 .xstack {
-  display: flex;
-  gap: var(--xstack-gap, 12px);
-  align-items: stretch;
-  justify-content: flex-start;
+
+  --xstack-gap:
+    var(--x-spacing-md);
+
+  display:flex;
+
+  gap:
+    var(--xstack-gap);
+
+  align-items:stretch;
+
+  justify-content:flex-start;
 }
 
-.xstack--v {
-  flex-direction: column;
+
+/* ==========================================================================
+   Direction Variants
+   ========================================================================== */
+
+.xstack--v,
+.xstack--vertical {
+
+  flex-direction:column;
 }
 
-.xstack--h {
-  flex-direction: row;
+
+.xstack--h,
+.xstack--horizontal {
+
+  flex-direction:row;
+}
+
+
+/* ==========================================================================
+   Density Variants
+   ========================================================================== */
+
+.xstack--dense,
+.xstack--density-dense {
+
+  --xstack-gap:
+    var(--x-spacing-sm);
+}
+
+
+.xstack--comfortable,
+.xstack--density-comfortable {
+
+  --xstack-gap:
+    var(--x-spacing-lg);
+}
+
+
+/* ==========================================================================
+   Gap Variants
+   ========================================================================== */
+
+.xstack--gap-xs {
+
+  --xstack-gap:
+    var(--x-spacing-xs);
+}
+
+
+.xstack--gap-sm {
+
+  --xstack-gap:
+    var(--x-spacing-sm);
+}
+
+
+.xstack--gap-md {
+
+  --xstack-gap:
+    var(--x-spacing-md);
+}
+
+
+.xstack--gap-lg {
+
+  --xstack-gap:
+    var(--x-spacing-lg);
+}
+
+
+/* ==========================================================================
+   Alignment Variants
+   ========================================================================== */
+
+.xstack--start {
+  justify-content:flex-start;
+}
+
+.xstack--center {
+  justify-content:center;
+}
+
+.xstack--end {
+  justify-content:flex-end;
+}
+
+.xstack--between {
+  justify-content:space-between;
+}
+
+
+.xstack--align-start {
+  align-items:flex-start;
+}
+
+.xstack--align-center {
+  align-items:center;
+}
+
+.xstack--align-end {
+  align-items:flex-end;
+}
+
+.xstack--align-stretch {
+  align-items:stretch;
+}
+
+
+/* ==========================================================================
+   Wrap Variants
+   ========================================================================== */
+
+.xstack--wrap {
+  flex-wrap:wrap;
+}
+
+.xstack--nowrap {
+  flex-wrap:nowrap;
 }

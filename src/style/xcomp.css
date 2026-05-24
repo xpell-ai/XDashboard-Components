@@ -1,30 +1,132 @@
 /* src/styles/components.css
-   XDash Components
-   (Matches your current class usage: xcard / xkpi-card + card-body + btn)
+   XDashboard shared component helpers
 */
 
 
+/* ==========================================================================
+   Optional Dashboard Surface Helper
+   ========================================================================== */
 
-/* Optional helper: apply dashboard look to a container */
 .xdash,
 .xdash-bg {
-  font-family: var(--x-font);
-  color: var(--x-text);
-  background: var(--x-bg);
+
+  font-family:
+    var(--x-font);
+
+  color:
+    var(--x-text);
+
+  background:
+    var(--x-bg);
 }
 
+
+/* ==========================================================================
+   Dashboard Button Preset
+   ==========================================================================
+   Optional helper class for dashboard actions.
+   Uses XUI token system.
+   ========================================================================== */
+
 .dash-btn {
-  align-self: flex-start;
-  text-decoration: none;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 700;
 
-  background: var(--x-primary);
-  color: var(--x-surface);
+  align-self:flex-start;
 
-  border: 1px solid var(--x-border);
-  box-shadow: var(--x-shadow);
-  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+  text-decoration:none;
+
+  padding:
+    var(--x-spacing-sm)
+    var(--x-spacing-md);
+
+  border-radius:
+    var(--x-radius-md);
+
+  font-size:13px;
+  font-weight:700;
+
+  background:
+    var(--x-primary);
+
+  color:
+    var(--x-text);
+
+  border:
+    1px solid var(--x-border);
+
+  box-shadow:
+    var(--x-shadow-md);
+
+  transition:
+    transform 120ms ease,
+    filter 120ms ease,
+    box-shadow 120ms ease;
+}
+
+
+.dash-btn:hover {
+  filter:brightness(1.05);
+}
+
+
+.dash-btn:active {
+  transform:translateY(1px);
+}
+
+
+.dash-btn:focus-visible {
+
+  outline:none;
+
+  box-shadow:
+    0 0 0 3px rgba(79,70,229,.24);
+}
+
+
+/* ==========================================================================
+   Semantic Variants
+   ========================================================================== */
+
+.dash-btn--primary,
+.dash-btn--variant-primary {
+
+  background:
+    var(--x-primary);
+
+  color:
+    var(--x-text);
+}
+
+
+.dash-btn--success,
+.dash-btn--variant-success {
+
+  background:
+    var(--x-success);
+
+  color:
+    var(--x-text);
+}
+
+
+.dash-btn--danger,
+.dash-btn--error,
+.dash-btn--variant-danger,
+.dash-btn--variant-error {
+
+  background:
+    var(--x-danger);
+
+  color:
+    var(--x-text);
+}
+
+
+.dash-btn--warning,
+.dash-btn--variant-warning {
+
+  background:
+    var(--x-warning);
+
+  color:
+    var(--x-text);
 }

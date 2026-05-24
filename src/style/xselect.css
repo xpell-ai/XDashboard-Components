@@ -1,43 +1,168 @@
-/* XSelect */
+/* ==========================================================================
+   XSelect
+   Semantic select/dropdown component
+   ========================================================================== */
+
 .xselect {
-  display: inline-flex;
-  align-items: center;
+
+  display:inline-flex;
+
+  align-items:center;
+
+  width:100%;
 }
+
+
+/* ==========================================================================
+   Control
+   ========================================================================== */
 
 .xselect__control {
-  width: 100%;
-  min-width: 0;
-  background: var(--x-surface);
-  border: 1px solid var(--x-border);
-  border-radius: var(--x-radius, 12px);
-  color: var(--x-text);
-  padding: var(--xselect-pad-y, 6px) var(--xselect-pad-x, 10px);
-  font-size: var(--xselect-font, 13px);
-  outline: none;
+
+  width:100%;
+
+  min-width:0;
+
+  background:
+    var(--x-surface);
+
+  border:
+    1px solid var(--x-border);
+
+  border-radius:
+    var(--x-radius-md);
+
+  color:
+    var(--x-text);
+
+  padding:
+    var(--xselect-pad-y, 6px)
+    var(--xselect-pad-x, 10px);
+
+  font-size:
+    var(--xselect-font, 13px);
+
+  outline:none;
+
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
 }
+
+
+/* ==========================================================================
+   Focus State
+   ========================================================================== */
 
 .xselect__control:focus {
-  border-color: var(--x-primary);
-  box-shadow: 0 0 0 3px var(--x-focus);
+
+  border-color:
+    var(--x-primary);
+
+  box-shadow:
+    0 0 0 3px var(--x-focus);
 }
 
-.xselect--disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+
+/* ==========================================================================
+   Disabled State
+   ========================================================================== */
+
+.xselect--disabled,
+.xselect--state-disabled {
+
+  opacity:.6;
+
+  cursor:not-allowed;
 }
 
-.xselect--disabled .xselect__control {
-  cursor: not-allowed;
+
+.xselect--disabled .xselect__control,
+.xselect--state-disabled .xselect__control {
+
+  cursor:not-allowed;
 }
 
-.xselect--sm {
-  --xselect-pad-y: 4px;
-  --xselect-pad-x: 8px;
-  --xselect-font: 12px;
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+
+.xselect--sm,
+.xselect--size-sm {
+
+  --xselect-pad-y:4px;
+  --xselect-pad-x:8px;
+
+  --xselect-font:12px;
 }
 
-.xselect--md {
-  --xselect-pad-y: 6px;
-  --xselect-pad-x: 10px;
-  --xselect-font: 13px;
+
+.xselect--md,
+.xselect--size-md {
+
+  --xselect-pad-y:6px;
+  --xselect-pad-x:10px;
+
+  --xselect-font:13px;
+}
+
+
+.xselect--lg,
+.xselect--size-lg {
+
+  --xselect-pad-y:8px;
+  --xselect-pad-x:12px;
+
+  --xselect-font:14px;
+}
+
+
+/* ==========================================================================
+   Tone Variants
+   ========================================================================== */
+
+.xselect--flat,
+.xselect--tone-flat {
+
+  background:transparent;
+}
+
+
+.xselect--elevated,
+.xselect--tone-elevated {
+
+  box-shadow:
+    var(--x-shadow-sm);
+}
+
+
+/* ==========================================================================
+   Variant States
+   ========================================================================== */
+
+.xselect--success .xselect__control,
+.xselect--variant-success .xselect__control {
+
+  border-color:
+    var(--x-success);
+}
+
+
+.xselect--danger .xselect__control,
+.xselect--error .xselect__control,
+.xselect--variant-danger .xselect__control,
+.xselect--variant-error .xselect__control {
+
+  border-color:
+    var(--x-danger);
+}
+
+
+.xselect--warning .xselect__control,
+.xselect--variant-warning .xselect__control {
+
+  border-color:
+    var(--x-warning);
 }
