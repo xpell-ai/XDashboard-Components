@@ -1,5 +1,5 @@
 import { XUI, XUIObject } from "@xpell/ui";
-import type { XUIObjectData,XpellSkill } from "@xpell/ui";
+import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XCardData extends XUIObjectData {
   _type: "card";
@@ -44,28 +44,36 @@ export class XCard extends XUIObject {
       "Use _title and _text for primary card content.",
       "Use _image only when visual context is useful.",
       "Use _actions for card buttons.",
-      "Do not use card as a generic layout container; use view/grid/stack instead."
+      "Do not use card as a generic layout container; use view/grid/stack instead.",
+      "Use _hide_image:true when no meaningful image is requested."
     ],
 
     _canonical_examples: [
       {
         _type: "card",
-        _title: "Quarterly Report",
-        _text: "Revenue up 12% QoQ.",
-        _image: "https://via.placeholder.com/600x200?text=Report",
-        _image_alt: "Quarterly report preview",
-        _href: "#",
-        _link_text: "View report",
+        _title: "Customers",
+        _text: "Manage customer records and activity.",
+        _hide_image: true,
         _actions: [
           {
             _type: "button",
-            _text: "Open",
-            class: "dash-btn"
+            _text: "View Customers",
+            _variant: "primary",
+            _flow: {
+              _id: "flow-view-customers",
+              _payload: {
+                _action: "view-customers",
+                _entity: "customers"
+              }
+            }
           }
         ]
       }
     ]
   };
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
 
   private __image?: string;
   private __title?: string;

@@ -19,7 +19,7 @@ export interface XDrawerData extends XUIObjectData {
 type XDrawerSide = "right" | "left";
 
 export class XDrawer extends XUIObject {
-  static _xtype = "drawer";
+  static _xtype = "drawer" as const;
   static _skill: XpellSkill = {
     _id: "drawer",
     _title: "XDrawer",
@@ -74,6 +74,45 @@ export class XDrawer extends XUIObject {
       }
     ]
   };
+  static override getArtifactStrategy() {
+    return "generator" as const;
+  }
+
+  static generateArtifact(intent: any = {}): XDrawerData {
+    return {
+      _type: XDrawer._xtype,
+
+      ...(intent._id
+        ? { _id: intent._id }
+        : {}),
+
+      _open: false,
+
+      _title:
+        intent._title ??
+        intent._label ??
+        "Details",
+
+      _side:
+        intent._side ??
+        "right",
+
+      _width:
+        intent._width ??
+        "420px",
+
+      _closable: true,
+      _scroll: true,
+      _elevated: true,
+      _overlay: true,
+
+      _children:
+        Array.isArray(intent._children)
+          ? intent._children
+          : []
+    };
+  }
+
   private __open = false;
   private __side: XDrawerSide = "right";
   private __width = "360px";
@@ -161,7 +200,7 @@ export class XDrawer extends XUIObject {
         _id: this.__close_id,
         class: "xdrawer__close",
         _text: "×",
-        _on_click: () => this.setOpen(false),
+        _on: { click: () => this.setOpen(false) },
       });
     }
 

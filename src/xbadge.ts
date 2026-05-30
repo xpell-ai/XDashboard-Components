@@ -55,6 +55,13 @@ export class XBadge extends XUIObject {
         _variant: "success",
         _size: "md",
         _pill: true
+      },
+      {
+        _type: "badge",
+        _text: "Pending",
+        _variant: "warn",
+        _dot: true,
+        _title: "Waiting for approval"
       }
     ]
   };

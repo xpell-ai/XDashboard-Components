@@ -102,6 +102,43 @@ export class XSidebar extends XUIObject {
       }
     ]
   };
+  static override getArtifactStrategy() {
+    return "generator" as const;
+  }
+
+  static generateArtifact(intent: any = {}): XSidebarData {
+    return {
+      _type: "sidebar",
+
+      ...(intent._id
+        ? { _id: intent._id }
+        : {}),
+
+      _side: intent._side ?? "left",
+
+      _width: intent._width ?? "280px",
+
+      _title:
+        intent._title ??
+        "Navigation",
+
+      ...(intent._subtitle
+        ? { _subtitle: intent._subtitle }
+        : {}),
+
+      _scroll: true,
+      _dividers: true,
+      _collapsed: false,
+
+      ...(intent._nav
+        ? { _nav: intent._nav }
+        : {}),
+
+      ...(intent._footer
+        ? { _footer: intent._footer }
+        : {})
+    };
+  }
 
   private __side: XSidebarSide = "left";
   private __width = "280px";

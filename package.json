@@ -1,6 +1,6 @@
 {
   "name": "@xpell/xdashboard",
-  "version": "2.0.01",
+  "version": "2.0.1",
   "description": "Dashboard XUI component library for Xpell UI",
   "private": false,
   "type": "module",
@@ -35,8 +35,8 @@
     "prepublishOnly": "pnpm clean && pnpm build"
   },
   "peerDependencies": {
-    "@xpell/core": "^2.0.0",
-    "@xpell/ui": "^2.0.0"
+    "@xpell/core": "workspace:*",
+    "@xpell/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.19.19",

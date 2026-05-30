@@ -64,6 +64,11 @@ export class XSearchBox extends XUIObject {
       }
     ]
   };
+
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
+  
   private __value = "";
   private __placeholder = "Search...";
   private __size: XSearchSize = "md";
@@ -139,7 +144,7 @@ export class XSearchBox extends XUIObject {
         class: "xsearch__clear",
         _text: "×",
         "aria-label": "Clear",
-        _on_click: () => this.clear(),
+        _on:{ click: () => this.clear() },
       },
     ];
 

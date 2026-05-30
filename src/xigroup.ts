@@ -66,6 +66,10 @@ export class XInputGroup extends XUIObject {
     ]
   };
 
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
+
   private __gap = 8;
   private __align: XInputGroupAlign = "center";
   private __wrap = false;

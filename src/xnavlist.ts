@@ -89,6 +89,48 @@ export class XNavList extends XUIObject {
     ]
   };
 
+  static override getArtifactStrategy() {
+    return "generator" as const;
+  }
+  static generateArtifact(intent: any = {}): XNavListData {
+    const items =
+      Array.isArray(intent._items) && intent._items.length
+        ? intent._items
+        : [];
+
+    const normalizedItems =
+      items.length > 0
+        ? items
+        : [
+          {
+            _label: "Overview",
+            _value: "overview",
+          },
+          {
+            _label: "Records",
+            _value: "records",
+          },
+        ];
+
+    return {
+      _type: "navlist",
+
+      ...(intent._id
+        ? { _id: intent._id }
+        : {}),
+
+      _items: normalizedItems,
+
+      _active:
+        typeof intent._active === "string"
+          ? intent._active
+          : normalizedItems[0]?._value,
+
+      _dense: true,
+      _dividers: false,
+    };
+  }
+
   private __items: XNavItem[] = [];
   private __active = "";
   private __dense = false;
@@ -197,12 +239,14 @@ export class XNavList extends XUIObject {
     return {
       _type: "view",
       class: classes.join(" "),
-      _on_click: () => {
-        if (disabled) return;
-        const value = this.getItemValue(item);
-        this.setActive(value, true);
-        if ((this as any)._on_select) {
-          this.checkAndRunInternalFunction((this as any)._on_select, value, item);
+      _on: {
+        click: () => {
+          if (disabled) return;
+          const value = this.getItemValue(item);
+          this.setActive(value, true);
+          if ((this as any)._on_select) {
+            this.checkAndRunInternalFunction((this as any)._on_select, value, item);
+          }
         }
       },
       _children: rowChildren,

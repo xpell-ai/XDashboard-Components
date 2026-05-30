@@ -164,7 +164,7 @@ export class XToast extends XUIObject {
         _type: "button",
         class: "xtoast__close",
         _text: "×",
-        _on_click: () => this.close(),
+        _on:{ click: () => this.close() },
       });
     }
 

@@ -66,6 +66,10 @@ export class XSection extends XUIObject {
     ]
   };
 
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
+
   private __title = "";
   private __subtitle = "";
   private __actions: XUIObjectData[] = [];

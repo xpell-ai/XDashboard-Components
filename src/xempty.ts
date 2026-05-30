@@ -60,6 +60,9 @@ export class XEmptyState extends XUIObject {
       }
     ]
   };
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
   
   private __size: XEmptySize = "md";
   private __align: XEmptyAlign = "center";

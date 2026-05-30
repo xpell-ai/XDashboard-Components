@@ -110,6 +110,45 @@ export class XTable extends XUIObject {
       }
     ]
   };
+
+  static override getArtifactStrategy() {
+    return "generator" as const;
+  }
+
+  static generateArtifact(intent: any = {}): XTableData {
+    const entity =
+      typeof intent._entity === "string" && intent._entity.trim()
+        ? intent._entity.trim()
+        : "records";
+
+    const fields =
+      Array.isArray(intent._fields) && intent._fields.length
+        ? intent._fields
+        : ["name", "status"];
+
+    const columns = fields.map((field: string) => ({
+      key: field,
+      label: field
+        .replace(/[_-]+/g, " ")
+        .replace(/\b\w/g, (c: string) => c.toUpperCase()),
+    }));
+
+    return {
+      _type: "table",
+      ...(intent._id ? { _id: intent._id } : {}),
+      _columns: columns,
+      _data_source: `${entity}:records`,
+      _row_key: fields.includes("id")
+        ? "id"
+        : fields.includes("_id")
+          ? "_id"
+          : fields[0],
+      _hover: true,
+      _bordered: true,
+      _empty_text: "No records",
+    };
+  }
+
   private __columns: XTableColumn[] = [];
   private __rows?: any[] | string;
   private __row_key?: string;

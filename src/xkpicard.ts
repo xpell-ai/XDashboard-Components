@@ -55,6 +55,10 @@ export class XKpiCard extends XUIObject {
       }
     ]
   };
+
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
   
   private __label = "";
   private __value = "";

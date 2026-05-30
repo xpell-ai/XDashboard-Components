@@ -99,6 +99,45 @@ export class XModal extends XUIObject {
     ]
   };
 
+  static override getArtifactStrategy() {
+    return "generator" as const;
+  }
+
+  static generateArtifact(intent: any = {}): XModalData {
+    return {
+      _type: "modal",
+
+      ...(intent._id ? { _id: intent._id } : {}),
+
+      _open: false,
+
+      _title:
+        intent._title ??
+        intent._label ??
+        "Dialog",
+
+      ...(intent._subtitle
+        ? { _subtitle: intent._subtitle }
+        : {}),
+
+      _size: intent._size ?? "md",
+
+      _closable: true,
+      _close_on_backdrop: true,
+      _scroll: true,
+
+      _children:
+        Array.isArray(intent._children)
+          ? intent._children
+          : [],
+
+      _actions:
+        Array.isArray(intent._actions)
+          ? intent._actions
+          : []
+    };
+  }
+
   private __open = false;
   private __title?: string;
   private __subtitle?: string;
@@ -264,7 +303,8 @@ export class XModal extends XUIObject {
       class: "xmodal__backdrop",
     };
     if (this.__close_on_backdrop) {
-      (backdrop as any)._on["click"] = () => this.close();
+      (backdrop as any)._on ??= {};
+      (backdrop as any)._on.click = () => this.close();
     }
 
     const panelChildren: XUIObjectData[] = [];

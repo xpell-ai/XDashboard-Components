@@ -87,6 +87,10 @@ export class XToolbar extends XUIObject {
     "z-index",
   ]);
 
+  static getArtifactStrategy() {
+    return "merge" as const;
+  }
+
   constructor(data: XToolbarData) {
     const defaults: any = {
       _type: XToolbar._xtype,

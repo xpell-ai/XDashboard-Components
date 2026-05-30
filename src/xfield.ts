@@ -17,7 +17,7 @@ type XFieldSize = "sm" | "md";
 type XFieldAlign = "inline" | "stack";
 
 export class XField extends XUIObject {
-  static _xtype = "field";
+  static _xtype = "field" as const;
   static _skill: XpellSkill = {
     _id: "field",
     _title: "XField",
@@ -59,13 +59,12 @@ export class XField extends XUIObject {
           _type: "text",
           name: "email",
           placeholder: "you@example.com",
-          _data_source: "form.email",
-          _update_data_source_on_change: true
+          _data_output: "form.email",
         }
       }
     ]
   };
-  
+
   private __size: XFieldSize = "md";
   private __align: XFieldAlign = "stack";
   private __has_error = false;
@@ -84,6 +83,67 @@ export class XField extends XUIObject {
   private readonly __error_id: string;
   private readonly __control_wrap_id: string;
   private readonly __inline_row_id: string;
+
+  static override getArtifactStrategy() {
+    return "generator" as const;
+  }
+
+  static override generateArtifact(intent: any = {}): XFieldData {
+    const name =
+      typeof intent._name === "string" && intent._name.trim()
+        ? intent._name.trim()
+        : typeof intent.name === "string" && intent.name.trim()
+          ? intent.name.trim()
+          : "value";
+
+    const label =
+      typeof intent._label === "string" && intent._label.trim()
+        ? intent._label.trim()
+        : name
+          .replace(/[_-]+/g, " ")
+          .replace(/\b\w/g, (char: string) => char.toUpperCase());
+
+    const controlType =
+      typeof intent._control_type === "string" && intent._control_type.trim()
+        ? intent._control_type.trim()
+        : name.toLowerCase().includes("password")
+          ? "password"
+          : "text";
+
+    const placeholder =
+      typeof intent._placeholder === "string" && intent._placeholder.trim()
+        ? intent._placeholder.trim()
+        : `Enter ${label.toLowerCase()}`;
+
+    const dataOutput =
+      typeof intent._data_output === "string" && intent._data_output.trim()
+        ? intent._data_output.trim()
+        : typeof intent._entity === "string" && intent._entity.trim()
+          ? `${intent._entity.trim()}.form.${name}`
+          : `form.${name}`;
+
+    return {
+      _type: XField._xtype,
+      ...(typeof intent._id === "string" && intent._id.trim()
+        ? { _id: intent._id.trim() }
+        : {}),
+      _label: label,
+      _required: intent._required === true,
+      ...(typeof intent._hint === "string" && intent._hint.trim()
+        ? { _hint: intent._hint.trim() }
+        : {}),
+      ...(intent._inline === true ? { _inline: true } : {}),
+      ...(intent._size === "sm" || intent._size === "md"
+        ? { _size: intent._size }
+        : {}),
+      _control: {
+        _type: controlType,
+        name,
+        placeholder,
+        _data_output: dataOutput,
+      },
+    };
+  }
 
   constructor(data: XFieldData) {
     const defaults: any = {
