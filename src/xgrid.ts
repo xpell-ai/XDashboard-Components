@@ -1,4 +1,4 @@
-import { XUIObject, type XUIObjectData, type XpellSkill } from "@xpell/ui";
+import { XUIObject, _xlog, type XUIObjectData, type XpellSkill } from "@xpell/ui";
 
 /**
  * XGridData — JSON shape for the `grid` layout primitive.
@@ -69,7 +69,7 @@ export class XGrid extends XUIObject {
     _version: "1.0.0",
     _active: true,
     _type: "view-skill",
-    _requires: ["xuiobject","view"],
+    _requires: ["xuiobject", "view"],
     _match: {
       _keywords: ["grid", "layout", "cards", "dashboard", "columns", "responsive"],
       _priority: 80
@@ -132,6 +132,13 @@ export class XGrid extends XUIObject {
     super(data, defaults, true);
     this.parse(data);
 
+    
+    _xlog.log("XGRID", {
+      data_gap: data._gap,
+      obj_gap: this._gap,
+      data_min: data._min_col_width,
+      obj_min: this._min_col_width
+    });
     // translate props → CSS variables
     if (this._cols) {
       (this as any).style = `${(this as any).style || ""}; --x-grid-cols:${this._cols}`;
