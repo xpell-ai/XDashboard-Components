@@ -190,5 +190,5 @@
 .xnavlist--tone-primary .xnavlist__item--active {
 
   border-color:
-    var(--x-primary);
+    var(--x-accent);
 }

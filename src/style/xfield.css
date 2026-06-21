@@ -206,3 +206,15 @@
 
   opacity:.8;
 }
+
+.xfield__control > * {
+  width:100%;
+}
+
+.xfield__row--inline {
+  width:100%;
+}
+
+.xfield__control {
+  flex:1;
+}

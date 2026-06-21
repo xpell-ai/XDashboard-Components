@@ -3,8 +3,12 @@ import type { XUIObjectData, XObjectData, XpellSkill } from "@xpell/ui";
 import { _xd } from "@xpell/ui";
 
 export type XTableColumn = {
-  key: string;
+  key?: string;
   label?: string;
+  _key?: string;
+  _title?: string;
+  _type?: "text" | "actions";
+  _actions?: XObjectData[];
   width?: string;
   align?: "start" | "center" | "end";
   class?: string;
@@ -42,7 +46,7 @@ export class XTable extends XUIObject {
 
     _fields: {
       _columns:
-        "Required table columns: { key, label?, width?, align?, class? }. Do not generate render functions.",
+        "Required table columns. Supports text columns with { key, label? } or aliases { _key, _title }, and action columns with { _key:'actions', _title:'Actions', _type:'actions', _actions:[...] }. Prefer _key/_title in generated Xpell JSON. Do not generate render functions.",
       _rows:
         "Table rows as an array of objects, or a string XData key resolving to rows.",
       _data_source:
@@ -70,7 +74,9 @@ export class XTable extends XUIObject {
       "Use _columns to define visible fields and labels.",
       "Use _rows for static/local row data.",
       "Use _data_source when rows should update from XData.",
+      "Use action columns for row buttons/links.",
       "Do not generate column render functions in persisted/Vibe JSON.",
+      "Action objects may reference row data with $row and $row_index if supported by the runtime.",
       "Use card, grid, or list-style components for non-tabular content.",
       "For persisted/generated views, handlers must be Nano-Commands/data-only."
     ],
@@ -80,17 +86,17 @@ export class XTable extends XUIObject {
         _type: "table",
         _columns: [
           {
-            key: "name",
-            label: "Name"
+            _key: "name",
+            _title: "Name"
           },
           {
-            key: "status",
-            label: "Status",
+            _key: "status",
+            _title: "Status",
             align: "center"
           },
           {
-            key: "revenue",
-            label: "Revenue",
+            _key: "revenue",
+            _title: "Revenue",
             align: "end"
           }
         ],
@@ -107,6 +113,34 @@ export class XTable extends XUIObject {
         _hover: true,
         _bordered: true,
         _empty_text: "No records"
+      },
+      {
+        _type: "table",
+        _row_key: "_id",
+        _columns: [
+          {
+            _key: "email",
+            _title: "Email"
+          },
+          {
+            _key: "actions",
+            _title: "Actions",
+            _type: "actions",
+            _actions: [
+              {
+                _type: "button",
+                _text: "Delete",
+                _variant: "danger"
+              }
+            ]
+          }
+        ],
+        _rows: [
+          {
+            _id: "u1",
+            email: "a@test.com"
+          }
+        ]
       }
     ]
   };
@@ -127,8 +161,8 @@ export class XTable extends XUIObject {
         : ["name", "status"];
 
     const columns = fields.map((field: string) => ({
-      key: field,
-      label: field
+      _key: field,
+      _title: field
         .replace(/[_-]+/g, " ")
         .replace(/\b\w/g, (c: string) => c.toUpperCase()),
     }));
@@ -197,9 +231,22 @@ export class XTable extends XUIObject {
     return value === true || value === ("true" as any);
   }
 
+  private normalizeColumn(col: XTableColumn): XTableColumn {
+    const key = String((col as any).key || (col as any)._key || "").trim();
+    const label = String((col as any).label || (col as any)._title || key).trim();
+
+    return {
+      ...col,
+      key,
+      label,
+    };
+  }
+
   private applyPropsFromData() {
     const dataColumns = (this as any)._columns;
-    this.__columns = Array.isArray(dataColumns) ? dataColumns : [];
+    this.__columns = Array.isArray(dataColumns)
+      ? dataColumns.map((col) => this.normalizeColumn(col))
+      : [];
     this.__rows = (this as any)._rows;
     this.__row_key =
       (this as any)._row_key != null ? String((this as any)._row_key) : undefined;
@@ -360,6 +407,51 @@ export class XTable extends XUIObject {
     this.setCellText(cell, String(output ?? ""));
   }
 
+  private cloneAction(action: XObjectData): XObjectData {
+    if (typeof structuredClone === "function") {
+      try {
+        return structuredClone(action);
+      } catch {
+        // Persisted/Vibe action objects should be JSON-compatible.
+      }
+    }
+    return JSON.parse(JSON.stringify(action));
+  }
+
+  private renderActionCell(
+    cell: XUIObject,
+    col: XTableColumn,
+    row: any,
+    rowIndex: number
+  ) {
+    const actions = Array.isArray((col as any)._actions) ? (col as any)._actions : [];
+
+    actions.forEach((action: XObjectData, actionIndex: number) => {
+      const cloned = this.cloneAction(action);
+
+      (cloned as any)._row = row;
+      (cloned as any)._row_index = rowIndex;
+
+      (cloned as any)._context = {
+        row,
+        row_index: rowIndex
+      };
+      // $row/$row_index command-time resolution belongs in the generic XObject/XUI resolver.
+
+      if (!(cloned as any)._id) {
+        const rowKey = this.__row_key && row && row[this.__row_key] != null
+          ? String(row[this.__row_key])
+          : String(rowIndex);
+        (cloned as any)._id = `${this._id}_row_${rowKey}_action_${actionIndex}`;
+      }
+
+      
+      const child = XUI.create(cloned);
+
+      cell.append(child);
+    });
+  }
+
   renderBody() {
     const body = this.getBody();
     if (!body) return;
@@ -410,12 +502,14 @@ export class XTable extends XUIObject {
         const td = XUI.create({
           _type: "xhtml",
           _html_tag: "td",
-          class: `xtable__td${col.class ? " " + col.class : ""}`,
+          class: `xtable__td${col._type === "actions" ? " xtable__td--actions" : ""}${col.class ? " " + col.class : ""}`,
           ...(style ? { style } : {}),
         });
 
-        const value = row ? row[col.key] : undefined;
-        if (col.render) {
+        const value = row ? row[col.key || ""] : undefined;
+        if (col._type === "actions") {
+          this.renderActionCell(td as XUIObject, col, row, rowIndex);
+        } else if (col.render) {
           const output = col.render(value, row, rowIndex);
           this.appendCellContent(td as XUIObject, output);
         } else {
@@ -440,7 +534,9 @@ export class XTable extends XUIObject {
   }
 
   set _columns(value: XTableColumn[]) {
-    this.__columns = Array.isArray(value) ? value : [];
+    this.__columns = Array.isArray(value)
+      ? value.map((col) => this.normalizeColumn(col))
+      : [];
     this.rebuildHeaderAndBody();
   }
 

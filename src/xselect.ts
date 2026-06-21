@@ -33,7 +33,7 @@ export class XSelect extends XUIObject {
     _requires: ["xuiobject", "xhtml"],
 
     _description:
-      "Dashboard select/dropdown component with placeholder, options, selected value, size, disabled state, and change handling.",
+      "Dashboard select/dropdown component with placeholder, options, selected value, size, disabled state, and Nano-Command change handling.",
 
     _fields: {
       _value: "Currently selected option value.",
@@ -43,6 +43,8 @@ export class XSelect extends XUIObject {
       _disabled: "Disable select control when true.",
       _name: "Optional native select name attribute.",
       _select_id: "Optional DOM id for the internal select element.",
+      _on_change:
+        "Nano-Command/data-only handler executed when selected value changes. Receives selected value as $data.",
       class: "Optional CSS classes. xselect is applied automatically."
     },
 
@@ -52,9 +54,12 @@ export class XSelect extends XUIObject {
       "Use _options for available choices.",
       "Use _value for the selected option value.",
       "Use _placeholder when no value is selected.",
-      "Use field to wrap xselect with label/hint/error when used in forms.",
+      "Use _on_change for persisted/generated change handlers.",
+      "The _on_change handler receives the selected value as $data.",
+      "Do not use _on.change or _on._change unless maintaining backward compatibility.",
       "Do not generate _on_change as a JavaScript function.",
-      "For persisted/generated views, handlers must be Nano-Commands/data-only."
+      "For persisted/generated views, handlers must be Nano-Commands/data-only.",
+      "Use field to wrap xselect with label/hint/error when used in forms."
     ],
 
     _canonical_examples: [
@@ -66,7 +71,31 @@ export class XSelect extends XUIObject {
           { value: "active", label: "Active" },
           { value: "paused", label: "Paused" },
           { value: "archived", label: "Archived", disabled: true }
-        ]
+        ],
+        _on_change: {
+          _module: "xd",
+          _op: "set",
+          _params: {
+            key: "filters.status",
+            value: "$data"
+          }
+        }
+      },
+      {
+        _type: "xselect",
+        _value: "terminal",
+        _options: [
+          { value: "terminal", label: "Terminal" },
+          { value: "dark", label: "Dark" },
+          { value: "light", label: "Light" }
+        ],
+        _on_change: {
+          _module: "xui",
+          _op: "apply-theme",
+          _params: {
+            _theme: "$data"
+          }
+        }
       }
     ]
   };
@@ -93,6 +122,31 @@ export class XSelect extends XUIObject {
     this.parse(data);
     this.buildSkeleton();
     this.applyProps();
+  }
+
+  private getChangeHandler() {
+    const direct =
+      (this as any)._on_change;
+
+    if (direct) {
+      return direct;
+    }
+
+    const on =
+      (this as any)._on;
+
+    if (
+      on &&
+      typeof on === "object"
+    ) {
+      return (
+        on._change ??
+        on.change ??
+        undefined
+      );
+    }
+
+    return undefined;
   }
 
   private normalizeSize(value?: XSelectSize): XSelectSize {
@@ -142,7 +196,20 @@ export class XSelect extends XUIObject {
 
     if (this.__name) (control as any).name = this.__name;
     if (this.__select_id) (control as any).id = this.__select_id;
-    (control as any).disabled = this.__disabled;
+    const controlDom =
+      (control as any).dom as HTMLSelectElement | undefined;
+
+    if (controlDom) {
+      controlDom.disabled = this.__disabled;
+
+      if (this.__disabled) {
+        controlDom.setAttribute("disabled", "disabled");
+      } else {
+        controlDom.removeAttribute("disabled");
+      }
+    } else {
+      (control as any).disabled = this.__disabled ? true : undefined;
+    }
 
     this.setOptions(this.__options, true);
     this.setValue(this.__value, true);
@@ -200,7 +267,7 @@ export class XSelect extends XUIObject {
   private handleChange(xobj: any, ev: Event) {
     const val = String((ev as any)?.target?.value ?? xobj?.value ?? xobj?._value ?? "");
     this.__value = val;
-    const handler = (this as any)._on_change;
+    const handler = this.getChangeHandler();
     if (handler) this.checkAndRunInternalFunction(handler, val, ev);
   }
 
@@ -215,7 +282,7 @@ export class XSelect extends XUIObject {
       (control as any).value = this.__value;
     }
     if (!silent) {
-      const handler = (this as any)._on_change;
+      const handler = this.getChangeHandler();
       if (handler) this.checkAndRunInternalFunction(handler, this.__value, undefined);
     }
   }

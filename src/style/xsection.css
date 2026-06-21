@@ -28,6 +28,8 @@
 
   padding:
     var(--x-spacing-md);
+  display:flex;
+  flex-direction:column;
 }
 
 
@@ -117,6 +119,8 @@
 
 .xsection__body {
   width:100%;
+  display:flex;
+  flex-direction:column;
 }
 
 

@@ -133,12 +133,7 @@ export class XGrid extends XUIObject {
     this.parse(data);
 
     
-    _xlog.log("XGRID", {
-      data_gap: data._gap,
-      obj_gap: this._gap,
-      data_min: data._min_col_width,
-      obj_min: this._min_col_width
-    });
+    
     // translate props → CSS variables
     if (this._cols) {
       (this as any).style = `${(this as any).style || ""}; --x-grid-cols:${this._cols}`;

@@ -1,4 +1,4 @@
-import { XUI, XUIObject } from "@xpell/ui";
+import { _xlog, XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 
 export interface XFieldData extends XUIObjectData {
@@ -84,6 +84,9 @@ export class XField extends XUIObject {
   private readonly __control_wrap_id: string;
   private readonly __inline_row_id: string;
 
+  _data_output?: string;
+  _update_data_source_event?: string;
+
   static override getArtifactStrategy() {
     return "generator" as const;
   }
@@ -160,12 +163,16 @@ export class XField extends XUIObject {
     this.__error_id = this._id + "_error";
     this.__control_wrap_id = this._id + "_control_wrap";
     this.__inline_row_id = this._id + "_inline_row";
+    
 
     this.parse(data);
     this.applyProps();
     this.buildSkeleton();
     this.applyLayout();
     this.__initializing = false;
+    if(this._debug) {
+      _xlog.log("XField initialized with data:", data,this);
+    }
   }
 
   private normalizeSize(value?: XFieldSize): XFieldSize {
@@ -187,6 +194,22 @@ export class XField extends XUIObject {
     this.__align = this.__inline ? "inline" : "stack";
     this.__size = this.normalizeSize((this as any)._size);
     this.__has_error = this.hasError();
+
+    if (
+      this._data_output &&
+      this.__control &&
+      !this.__control._data_output
+    ) {
+      this.__control._data_output = this._data_output;
+    }
+    if (
+      this._update_data_source_event &&
+      this.__control &&
+      !this.__control._update_data_source_event
+    ) {
+      (this.__control as any)._update_data_source_event =
+        this._update_data_source_event;
+    }
   }
 
   private hasLabel(): boolean {
