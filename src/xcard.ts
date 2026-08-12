@@ -1,9 +1,13 @@
 import { XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XpellSkill } from "@xpell/ui";
+import {
+  normalizeDashboardImageSlot,
+  type XDashboardImageSlotValue,
+} from "./imageSlots";
 
 export interface XCardData extends XUIObjectData {
   _type: "card";
-  _image?: string;
+  _image?: XDashboardImageSlotValue;
   _title?: string;
   _text?: string;
   _href?: string;
@@ -13,6 +17,18 @@ export interface XCardData extends XUIObjectData {
   _hide_image?: boolean;
   class?: string;
 }
+
+type XCardOwnedData = Pick<
+  XCardData,
+  | "_image"
+  | "_image_alt"
+  | "_hide_image"
+  | "_title"
+  | "_text"
+  | "_href"
+  | "_link_text"
+  | "_actions"
+>;
 
 export class XCard extends XUIObject {
   static _xtype = "card";
@@ -28,7 +44,7 @@ export class XCard extends XUIObject {
       "Dashboard card component with optional image, title, text, link, and action buttons.",
 
     _fields: {
-      _image: "Optional card image URL. Missing/empty _image renders no image.",
+      _image: "Optional card image. Accepts a string URL shorthand or an image object with _type:'image', src, and alt. Missing/empty _image renders no image.",
       _image_alt: "Alt text for the card image.",
       _hide_image: "Hide the image area when true. Missing _image also renders no image.",
       _title: "Card title text.",
@@ -43,6 +59,7 @@ export class XCard extends XUIObject {
       "Use card for compact dashboard/content summaries.",
       "Use _title and _text for primary card content.",
       "Use _image only when visual context is useful; cards without _image render no image.",
+      "Prefer canonical _image objects in generated views: { _type:'image', src, alt }.",
       "Use _href only when the card should show a link; cards without _href render no link.",
       "Use _actions for card buttons.",
       "Do not use card as a generic layout container; use view/grid/stack instead.",
@@ -60,7 +77,11 @@ export class XCard extends XUIObject {
         _type: "card",
         _title: "Customers",
         _text: "Manage customer records and activity.",
-        _hide_image: true,
+        _image: {
+          _type: "image",
+          src: "/public/demo/assets/placeholder-record.svg",
+          alt: "Customers"
+        },
         _actions: [
           {
             _type: "button",
@@ -82,7 +103,8 @@ export class XCard extends XUIObject {
     return "merge" as const;
   }
 
-  private __image?: string;
+  private __image?: XUIObjectData | XUIObject;
+  private __image_id?: string;
   private __title?: string;
   private __text = "";
   private __href?: string;
@@ -91,7 +113,9 @@ export class XCard extends XUIObject {
   private __image_alt?: string;
   private __hide_image = false;
 
-  private readonly __image_id: string;
+  private readonly __inner_id: string;
+  private readonly __body_id: string;
+  private readonly __default_image_id: string;
   private readonly __title_id: string;
   private readonly __text_id: string;
   private readonly __link_id: string;
@@ -100,25 +124,58 @@ export class XCard extends XUIObject {
   private __suppress_root_text = false;
 
   constructor(data: XCardData) {
-    const defaults: any = {
+    const { rootData, cardData } = XCard.extractCardData(data);
+    const defaults: XUIObjectData = {
       _type: XCard._xtype,
       class: "xcard",
       _html_tag: "div",
     };
 
-    super(data, defaults, true);
+    super(rootData, defaults);
 
-    this.__image_id = this._id + "_image";
+    this.__inner_id = this._id + "_inner";
+    this.__body_id = this._id + "_body";
+    this.__default_image_id = this._id + "_image";
     this.__title_id = this._id + "_title";
     this.__text_id = this._id + "_text";
     this.__link_id = this._id + "_link";
     this.__actions_id = this._id + "_actions";
 
-    this.parse(data);
-    this.applyProps();
+    this.applyCardProps(cardData);
     this.buildSkeleton();
     this.applyLayout();
-    this.applyText();
+    this.applyText({ updateActions: false });
+  }
+
+  private static extractCardData(data: XCardData): {
+    rootData: XUIObjectData;
+    cardData: XCardOwnedData;
+  } {
+    const {
+      _image,
+      _image_alt,
+      _hide_image,
+      _title,
+      _text,
+      _href,
+      _link_text,
+      _actions,
+      ...rootData
+    } = data;
+
+    return {
+      rootData: { ...rootData },
+      cardData: {
+        _image,
+        _image_alt,
+        _hide_image,
+        _title,
+        _text,
+        _href,
+        _link_text,
+        _actions,
+      },
+    };
   }
 
   private normalizeBoolean(value?: boolean, fallback = false): boolean {
@@ -127,35 +184,63 @@ export class XCard extends XUIObject {
     return fallback;
   }
 
-  private applyProps() {
-    this.__image = (this as any)._image ? String((this as any)._image) : undefined;
-    this.__title = (this as any)._title ? String((this as any)._title) : undefined;
-    this.__text = (this as any)._text ? String((this as any)._text) : "";
-    this.__href = (this as any)._href ? String((this as any)._href) : undefined;
-    this.__link_text = (this as any)._link_text
-      ? String((this as any)._link_text)
-      : undefined;
-    this.__actions = Array.isArray((this as any)._actions) ? (this as any)._actions : undefined;
-    this.__image_alt = (this as any)._image_alt
-      ? String((this as any)._image_alt)
-      : undefined;
-    this.__hide_image = this.normalizeBoolean((this as any)._hide_image, false);
+  private applyCardProps(cardData: XCardOwnedData) {
+    this.__title = cardData._title ? String(cardData._title) : undefined;
+    this.__text = cardData._text ? String(cardData._text) : "";
+    this.__href = cardData._href ? String(cardData._href) : undefined;
+    this.__link_text = cardData._link_text ? String(cardData._link_text) : undefined;
+    this.__actions = Array.isArray(cardData._actions) ? cardData._actions : undefined;
+    this.__image_alt = cardData._image_alt ? String(cardData._image_alt) : undefined;
+    this.__hide_image = this.normalizeBoolean(cardData._hide_image, false);
+    this.__image = this.normalizeImage(cardData._image);
+    this.__image_id = this.getImageId(this.__image);
   }
 
   private hasImage(): boolean {
-    return !!this.__image?.trim() && !this.__hide_image;
+    return !!this.__image && !this.__hide_image;
   }
 
   private hasLink(): boolean {
     return !!this.__href?.trim();
   }
 
+  private normalizeImage(value: XDashboardImageSlotValue) {
+    return normalizeDashboardImageSlot(value, {
+      parent_id: this._id,
+      slot: "_image",
+      class: "xcard__image",
+      alt: this.resolveImageAlt(),
+    });
+  }
+
+  private getImageId(value: XUIObjectData | XUIObject | undefined): string | undefined {
+    if (!value) return undefined;
+    const id = (value as any)._id;
+    return typeof id === "string" && id.trim() ? id.trim() : this.__default_image_id;
+  }
+
   private resolveImage(): string {
-    return this.__image?.trim() || "";
+    if (!this.__image) return "";
+    const src = (this.__image as any).src;
+    return typeof src === "string" ? src.trim() : "";
   }
 
   private resolveImageAlt(): string {
-    return this.__image_alt?.trim() || "";
+    if (this.__image_alt?.trim()) return this.__image_alt.trim();
+    const alt = (this.__image as any)?.alt;
+    return typeof alt === "string" ? alt.trim() : "";
+  }
+
+  private imageChild(): XUIObjectData | XUIObject | undefined {
+    if (!this.hasImage()) return undefined;
+    const image = this.normalizeImage(this.__image);
+    this.__image = image;
+    this.__image_id = this.getImageId(image);
+    if (!image) return undefined;
+    (image as any).src = this.resolveImage();
+    (image as any).alt = this.resolveImageAlt();
+    if (!(image as any).class) (image as any).class = "xcard__image";
+    return image;
   }
 
   private resolveTitle(): string {
@@ -211,54 +296,60 @@ export class XCard extends XUIObject {
   }
 
   private buildSkeleton() {
-    const content: XUIObjectData = {
+    const image = this.imageChild();
+    const children: Array<XUIObjectData | XUIObject> = [];
+    if (image) children.push(image);
+
+    children.push({
       _type: "view",
-      class: "xcard__inner",
+      _id: this.__body_id,
+      class: "xcard__body",
       _children: [
         {
-          _type: "image",
-          _id: this.__image_id,
-          class: "xcard__image",
-          src: this.resolveImage(),
-          alt: this.resolveImageAlt(),
-          style: this.hasImage() ? "" : "display:none",
+          _type: "label",
+          _id: this.__title_id,
+          class: "xcard__title",
+          _text: "",
+        },
+        {
+          _type: "label",
+          _id: this.__text_id,
+          class: "xcard__text",
+          _text: "",
+        },
+        {
+          _type: "link",
+          _id: this.__link_id,
+          class: "xcard__link dash-btn",
+          _text: "",
+          href: "",
+          style: "display:none",
         },
         {
           _type: "view",
-          class: "xcard__body",
-          _children: [
-            {
-              _type: "label",
-              _id: this.__title_id,
-              class: "xcard__title",
-              _text: "",
-            },
-            {
-              _type: "label",
-              _id: this.__text_id,
-              class: "xcard__text",
-              _text: "",
-            },
-            {
-              _type: "link",
-              _id: this.__link_id,
-              class: "xcard__link dash-btn",
-              _text: "",
-              href: "",
-              style: "display:none",
-            },
-            {
-              _type: "view",
-              _id: this.__actions_id,
-              class: "xcard__actions",
-              _children: this.__actions ? [...this.__actions] : [],
-            },
-          ],
+          _id: this.__actions_id,
+          class: "xcard__actions",
+          _children: this.__actions ? [...this.__actions] : [],
         },
       ],
+    });
+
+    const content: XUIObjectData = {
+      _type: "view",
+      _id: this.__inner_id,
+      class: "xcard__inner",
+      _children: children as XUIObjectData[],
     };
 
     this.append(content);
+  }
+
+  private rebuildSkeleton() {
+    const inner = XUI.getObject(this.__inner_id) as XUIObject | undefined;
+    if (inner) this.removeChild(inner as any, true);
+    this.buildSkeleton();
+    this.applyLayout();
+    this.applyText({ updateActions: false });
   }
 
   private applyLayout() {
@@ -269,23 +360,20 @@ export class XCard extends XUIObject {
     }
   }
 
-  private applyText() {
+  private applyText(options: { updateActions?: boolean } = {}) {
     this.updateImage();
     this.updateTitle();
     this.updateText();
     this.updateLink();
-    this.updateActions();
+    if (options.updateActions !== false) {
+      this.updateActions();
+    }
   }
 
   private updateImage() {
-    const img = XUI.getObject(this.__image_id) as any;
+    if (!this.hasImage()) return;
+    const img = this.__image_id ? XUI.getObject(this.__image_id) as any : undefined;
     if (!img) return;
-
-    if (!this.hasImage()) {
-      this.updateChildAttributes(img, { src: "", alt: "" });
-      this.updateChildStyle(img, "display:none", false);
-      return;
-    }
 
     const src = this.resolveImage();
     const alt = this.resolveImageAlt();
@@ -334,10 +422,10 @@ export class XCard extends XUIObject {
     }
   }
 
-  set _image(value: string | undefined) {
-    this.__image = value ? String(value) : undefined;
-    this.applyLayout();
-    this.updateImage();
+  set _image(value: XDashboardImageSlotValue) {
+    this.__image = this.normalizeImage(value);
+    this.__image_id = this.getImageId(this.__image);
+    this.rebuildSkeleton();
   }
 
   get _image() {

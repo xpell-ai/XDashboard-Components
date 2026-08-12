@@ -1,0 +1,225 @@
+/* ==========================================================================
+   XTimeline
+   Generic data-bound chronological timeline
+   ========================================================================== */
+
+.xtimeline {
+  width:100%;
+}
+
+.xtimeline__items {
+  position:relative;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+.xtimeline__item {
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(112px, 168px) minmax(0, 1fr);
+  gap:var(--x-spacing-md, 16px);
+  position:relative;
+}
+
+.xtimeline__item--selectable {
+  cursor:pointer;
+}
+
+.xtimeline__axis {
+  min-width:0;
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) 18px;
+  gap:var(--x-spacing-sm, 8px);
+  align-items:start;
+  padding:var(--x-spacing-md, 16px) 0;
+}
+
+.xtimeline__axis::before {
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  right:8px;
+  width:2px;
+  background:var(--x-border);
+}
+
+.xtimeline__item:first-child .xtimeline__axis::before {
+  top:var(--x-spacing-md, 16px);
+}
+
+.xtimeline__item:last-child .xtimeline__axis::before {
+  bottom:calc(100% - var(--x-spacing-md, 16px) - 10px);
+}
+
+.xtimeline__date {
+  min-width:0;
+  margin:0;
+  color:var(--x-text-muted, var(--x-text));
+  font-size:12px;
+  font-weight:600;
+  line-height:1.35;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+
+.xtimeline__dot {
+  position:relative;
+  z-index:1;
+  width:12px;
+  height:12px;
+  margin-top:2px;
+  border-radius:999px;
+  background:var(--x-primary, currentColor);
+  border:2px solid var(--x-surface);
+  box-shadow:0 0 0 1px var(--x-border);
+  justify-self:center;
+}
+
+.xtimeline__card {
+  min-width:0;
+  display:flex;
+  align-items:flex-start;
+  gap:var(--x-spacing-md, 16px);
+  margin:0 0 var(--x-spacing-md, 16px);
+  padding:var(--x-spacing-md, 16px);
+  background:var(--x-surface);
+  border:1px solid var(--x-border);
+  border-radius:var(--x-radius-lg, 8px);
+  box-shadow:var(--x-shadow-sm, none);
+}
+
+.xtimeline__item--selectable:hover .xtimeline__card {
+  background:var(--x-surface-2, var(--x-surface));
+}
+
+.xtimeline__item--selected .xtimeline__card {
+  border-color:var(--x-primary, var(--x-border));
+  box-shadow:inset 3px 0 0 var(--x-primary, currentColor);
+}
+
+.xtimeline__visual {
+  flex:0 0 auto;
+  min-width:0;
+}
+
+.xtimeline__media,
+.xtimeline__icon {
+  width:40px;
+  height:40px;
+  flex:0 0 auto;
+  border-radius:var(--x-radius-md, 8px);
+  background:var(--x-surface-2, var(--x-surface));
+  border:1px solid var(--x-border);
+}
+
+.xtimeline__media {
+  display:block;
+  object-fit:cover;
+}
+
+.xtimeline__icon {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--x-text);
+  font-size:18px;
+  font-weight:700;
+  line-height:1;
+}
+
+.xtimeline__body {
+  min-width:0;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:var(--x-spacing-sm, 8px);
+}
+
+.xtimeline__header {
+  min-width:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--x-spacing-sm, 8px);
+}
+
+.xtimeline__heading {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.xtimeline__title {
+  min-width:0;
+  margin:0;
+  color:var(--x-text);
+  font-size:14px;
+  font-weight:700;
+  line-height:1.3;
+  overflow-wrap:anywhere;
+}
+
+.xtimeline__subtitle,
+.xtimeline__meta {
+  min-width:0;
+  margin:0;
+  color:var(--x-text-muted, var(--x-text));
+  font-size:12px;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+
+.xtimeline__description {
+  min-width:0;
+  margin:0;
+  color:var(--x-text-muted, var(--x-text));
+  font-size:13px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+.xtimeline__actions {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--x-spacing-sm, 8px);
+  padding-top:var(--x-spacing-xs, 6px);
+}
+
+@media (max-width: 640px) {
+  .xtimeline__item {
+    grid-template-columns:1fr;
+    gap:var(--x-spacing-xs, 6px);
+  }
+
+  .xtimeline__axis {
+    grid-template-columns:18px minmax(0, 1fr);
+    padding:var(--x-spacing-sm, 8px) 0 0;
+  }
+
+  .xtimeline__axis::before {
+    left:8px;
+    right:auto;
+  }
+
+  .xtimeline__date {
+    grid-column:2;
+    grid-row:1;
+    text-align:left;
+  }
+
+  .xtimeline__dot {
+    grid-column:1;
+    grid-row:1;
+  }
+
+  .xtimeline__card {
+    margin-left:26px;
+    margin-bottom:var(--x-spacing-md, 16px);
+  }
+}

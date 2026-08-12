@@ -1,6 +1,6 @@
 {
   "name": "@xpell/xdashboard",
-  "version": "2.0.4",
+  "version": "2.0.7",
   "description": "Dashboard XUI component library for Xpell UI",
   "private": false,
   "type": "module",
@@ -21,6 +21,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./skills": {
+      "types": "./dist/types/skills.d.ts",
+      "import": "./dist/skills.js",
+      "require": "./dist/skills.cjs"
+    },
     "./xdashboard.css": "./dist/xdashboard.css",
     "./package.json": "./package.json"
   },
@@ -29,18 +34,30 @@
   ],
   "scripts": {
     "dev": "vite",
+    "test": "pnpm run test:xcard && pnpm run test:xlist && pnpm run test:xtimeline && pnpm run test:xcalendar && pnpm run test:xkanban && pnpm run test:xstats && pnpm run test:shared-xdata && pnpm run test:skill && pnpm run test:discovery",
+    "test:xcard": "node --import ./tests/register-css-loader.mjs tests/xcard-regression.mjs",
+    "test:xlist": "node --import ./tests/register-css-loader.mjs tests/xlist.mjs",
+    "test:xtimeline": "node --import ./tests/register-css-loader.mjs tests/xtimeline.mjs",
+    "test:xcalendar": "node --import ./tests/register-css-loader.mjs tests/xcalendar.mjs",
+    "test:xkanban": "node --import ./tests/register-css-loader.mjs tests/xkanban.mjs",
+    "test:xstats": "node --import ./tests/register-css-loader.mjs tests/xstats.mjs",
+    "test:shared-xdata": "node --import ./tests/register-css-loader.mjs tests/shared-xdata.mjs",
+    "test:skill": "node --import ./tests/register-css-loader.mjs tests/skill-design.mjs",
+    "test:discovery": "node --import ./tests/register-css-loader.mjs tests/skill-discovery-node.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clean": "rm -rf dist",
     "build": "vite build && tsc -p tsconfig.build.json",
     "prepublishOnly": "pnpm clean && pnpm build"
   },
   "peerDependencies": {
-    "@xpell/core": "^2.0.4",
-    "@xpell/ui": "^2.0.4"
+    "@xpell/core": "^2.0.7"
+  },
+  "dependencies": {
+    "@xpell/ui": "^2.0.7"
   },
   "devDependencies": {
-    "@types/node": "^22.19.21",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.5"
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1"
   }
 }

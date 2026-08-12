@@ -1,5 +1,9 @@
 import { XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XpellSkill } from "@xpell/ui";
+import {
+  normalizeDashboardImageSlot,
+  type XDashboardImageSlotValue,
+} from "./imageSlots";
 
 export interface XSidebarData extends XUIObjectData {
   _type: "sidebar";
@@ -7,7 +11,7 @@ export interface XSidebarData extends XUIObjectData {
   _width?: string;
   _title?: string;
   _subtitle?: string;
-  _logo?: XUIObjectData;
+  _logo?: XDashboardImageSlotValue;
   _actions?: XUIObjectData[];
   _nav?: XUIObjectData;
   _scroll?: boolean;
@@ -46,7 +50,7 @@ export class XSidebar extends XUIObject {
       _width: "Sidebar width CSS value. Defaults to 280px.",
       _title: "Optional sidebar title.",
       _subtitle: "Optional sidebar subtitle.",
-      _logo: "Optional logo child object.",
+      _logo: "Optional logo image. Accepts a string URL shorthand or an image object with _type:'image', src, and alt.",
       _actions: "Optional header action objects.",
       _nav: "Optional navigation object, usually navlist.",
       _scroll: "Wrap sidebar body in scroll container when true.",
@@ -60,6 +64,7 @@ export class XSidebar extends XUIObject {
     _core_rules: [
       "Use sidebar for dashboard/application navigation or persistent side panels.",
       "Use _nav with navlist for navigation menus.",
+      "Prefer canonical _logo image objects in generated views: { _type:'image', src, alt }.",
       "Use _children only when custom sidebar body content is needed.",
       "Use _footer for bottom content such as user/account actions.",
       "Use _collapsed to control collapsed state.",
@@ -74,6 +79,13 @@ export class XSidebar extends XUIObject {
         _width: "280px",
         _title: "Dashboard",
         _subtitle: "Admin panel",
+        _logo: {
+          _type: "image",
+          _id: "dashboard-sidebar-logo",
+          class: "dash-sidebar__logo",
+          src: "/public/demo/assets/logo.svg",
+          alt: "Dashboard logo"
+        },
         _scroll: true,
         _dividers: true,
         _collapsed: false,
@@ -144,7 +156,7 @@ export class XSidebar extends XUIObject {
   private __width = "280px";
   private __title?: string;
   private __subtitle?: string;
-  private __logo?: XUIObjectData;
+  private __logo?: XUIObjectData | XUIObject;
   private __actions?: XUIObjectData[];
   private __nav?: XUIObjectData;
   private __scroll = true;
@@ -156,6 +168,7 @@ export class XSidebar extends XUIObject {
   private readonly __panel_id: string;
   private readonly __title_id: string;
   private readonly __subtitle_id: string;
+  private __ready = false;
 
   private static readonly managedStyles = new Set(["--xsidebar-width"]);
 
@@ -179,6 +192,7 @@ export class XSidebar extends XUIObject {
     this.parse(data);
     this.applyProps();
     this.rebuild();
+    this.__ready = true;
   }
 
   private normalizeSide(value?: XSidebarSide): XSidebarSide {
@@ -196,7 +210,15 @@ export class XSidebar extends XUIObject {
     this.__width = (this as any)._width ? String((this as any)._width) : "280px";
     this.__title = (this as any)._title ? String((this as any)._title) : undefined;
     this.__subtitle = (this as any)._subtitle ? String((this as any)._subtitle) : undefined;
-    this.__logo = (this as any)._logo as XUIObjectData | undefined;
+    this.__logo = normalizeDashboardImageSlot(
+      (this as any)._logo as XDashboardImageSlotValue,
+      {
+        parent_id: this._id,
+        slot: "_logo",
+        class: "dash-sidebar__logo",
+        alt: this.__title ?? "Logo",
+      }
+    );
     this.__actions = Array.isArray((this as any)._actions) ? (this as any)._actions : undefined;
     this.__nav = (this as any)._nav as XUIObjectData | undefined;
     this.__scroll = this.normalizeBoolean((this as any)._scroll, true);
@@ -235,7 +257,7 @@ export class XSidebar extends XUIObject {
       });
     }
 
-    const leftChildren: XUIObjectData[] = [];
+    const leftChildren: Array<XUIObjectData | XUIObject> = [];
     if (this.__logo) leftChildren.push(this.__logo);
     if (titleStackChildren.length) {
       leftChildren.push({
@@ -261,7 +283,7 @@ export class XSidebar extends XUIObject {
           _direction: "horizontal",
           _gap: 8,
           _align: "center",
-          _children: leftChildren,
+          _children: leftChildren as XUIObjectData[],
         },
       ],
     };
@@ -355,11 +377,15 @@ export class XSidebar extends XUIObject {
   private rebuild() {
     const bodyChildren = this.extractBodyChildren();
     const panel = XUI.getObject(this.__panel_id) as XUIObject | undefined;
-    if (panel && typeof (this as any).removeChild === "function") {
+    if (panel && this.__ready && typeof (this as any).removeChild === "function") {
       (this as any).removeChild(panel as any, true);
     }
     this.buildSkeleton(bodyChildren);
     this.applyLayout();
+  }
+
+  private rebuildIfReady() {
+    if (this.__ready) this.rebuild();
   }
 
   private stripManagedStyles(style: string): string {
@@ -502,9 +528,14 @@ export class XSidebar extends XUIObject {
     return this.__subtitle;
   }
 
-  set _logo(value: XUIObjectData | undefined) {
-    this.__logo = value;
-    this.rebuild();
+  set _logo(value: XDashboardImageSlotValue) {
+    this.__logo = normalizeDashboardImageSlot(value, {
+      parent_id: this._id,
+      slot: "_logo",
+      class: "dash-sidebar__logo",
+      alt: this.__title ?? "Logo",
+    });
+    this.rebuildIfReady();
   }
 
   get _logo() {
@@ -513,7 +544,7 @@ export class XSidebar extends XUIObject {
 
   set _actions(value: XUIObjectData[] | undefined) {
     this.__actions = Array.isArray(value) ? value : undefined;
-    this.rebuild();
+    this.rebuildIfReady();
   }
 
   get _actions() {
@@ -522,7 +553,7 @@ export class XSidebar extends XUIObject {
 
   set _nav(value: XUIObjectData | undefined) {
     this.__nav = value;
-    this.rebuild();
+    this.rebuildIfReady();
   }
 
   get _nav() {
@@ -531,7 +562,7 @@ export class XSidebar extends XUIObject {
 
   set _scroll(value: boolean | undefined) {
     this.__scroll = this.normalizeBoolean(value, true);
-    this.rebuild();
+    this.rebuildIfReady();
   }
 
   get _scroll() {
@@ -540,7 +571,7 @@ export class XSidebar extends XUIObject {
 
   set _dividers(value: boolean | undefined) {
     this.__dividers = this.normalizeBoolean(value, true);
-    this.rebuild();
+    this.rebuildIfReady();
   }
 
   get _dividers() {
@@ -549,7 +580,7 @@ export class XSidebar extends XUIObject {
 
   set _footer(value: XUIObjectData | undefined) {
     this.__footer = value;
-    this.rebuild();
+    this.rebuildIfReady();
   }
 
   get _footer() {

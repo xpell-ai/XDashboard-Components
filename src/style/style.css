@@ -13,6 +13,12 @@
 @import "./xspacer.css";
 @import "./xtoolbar.css";
 @import "./xtable.css";
+@import "./xlist.css";
+@import "./xtimeline.css";
+@import "./xcalendar.css";
+@import "./xgallery.css";
+@import "./xkanban.css";
+@import "./xstats.css";
 @import "./xbadge.css";
 @import "./xempty.css";
 @import "./xsearch.css";

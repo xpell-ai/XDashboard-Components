@@ -239,7 +239,16 @@ export class XModal extends XUIObject {
         _type: "button",
         class: "xmodal__close",
         _text: "×",
-        _on: { click: () => this.close() },
+        _on: {
+          click: [
+            {
+              _module: "xui",
+              _op: "hide",
+              _params: { _id: this._id },
+            },
+            () => this.close(),
+          ],
+        },
       });
     }
 
@@ -377,6 +386,7 @@ export class XModal extends XUIObject {
     this.addClass("xmodal");
     this.replaceClass("xmodal--sm xmodal--md xmodal--lg", `xmodal--${this.__size}`);
     this.replaceClass("xmodal--open", this.__open ? "xmodal--open" : "");
+    this.syncDOMOpenClass();
 
     const baseStyle = this.stripManagedStyles(String((this as any).style || ""));
     const styleParts: string[] = [];
@@ -385,6 +395,13 @@ export class XModal extends XUIObject {
     const nextStyle = styleParts.join("; ");
     (this as any).style = nextStyle;
     if (this.__width) this.setStyleAttribute("--xmodal-width", this.__width);
+  }
+
+  private syncDOMOpenClass() {
+    const dom = (this as any)._dom_object;
+    if (typeof HTMLElement === "undefined" || !(dom instanceof HTMLElement)) return;
+    dom.classList.toggle("xmodal--open", this.__open);
+    dom.classList.add("xmodal");
   }
 
   async onCreate() {
@@ -413,6 +430,7 @@ export class XModal extends XUIObject {
     const next = this.normalizeBoolean(v, false);
     const changed = next !== this.__open;
     this.__open = next;
+    (this as any)._open = next;
     this.applyLayout();
     if (!changed || silent) return;
     if (this.__open && (this as any)._on_open) {
@@ -425,10 +443,22 @@ export class XModal extends XUIObject {
 
   open() {
     this.setOpen(true);
+    return this;
   }
 
   close() {
     this.setOpen(false);
+    return this;
+  }
+
+  show() {
+    this.open();
+    return this;
+  }
+
+  hide() {
+    this.close();
+    return this;
   }
 }
 

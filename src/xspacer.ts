@@ -23,7 +23,6 @@ export class XSpacer extends XUIObject {
 
     _fields: {
       _direction: "Spacer direction: vertical or horizontal.",
-      _size: "Spacer size in pixels. Defaults to 16.",
       class: "Optional CSS classes. xspacer is applied automatically."
     },
 
@@ -38,8 +37,7 @@ export class XSpacer extends XUIObject {
     _canonical_examples: [
       {
         _type: "spacer",
-        _direction: "vertical",
-        _size: 16
+        _direction: "vertical"
       }
     ]
   };

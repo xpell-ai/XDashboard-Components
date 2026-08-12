@@ -4,10 +4,14 @@ import { resolve } from "node:path";
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: {
+        index: resolve(import.meta.dirname, "src/index.ts"),
+        skills: resolve(import.meta.dirname, "src/skills.ts"),
+      },
       name: "XDashboard",
       formats: ["es", "cjs"],
-      fileName: (format) => (format === "es" ? "index.js" : "index.cjs"),
+      fileName: (format, entryName) =>
+        `${entryName}.${format === "es" ? "js" : "cjs"}`,
     },
     cssCodeSplit: false, // ✅ one dist/xdashboard.css (good for a UI lib)
     rollupOptions: {

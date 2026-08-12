@@ -1,0 +1,189 @@
+/* ==========================================================================
+   XList
+   Generic data-bound rich/compact record list
+   ========================================================================== */
+
+.xlist {
+  width:100%;
+}
+
+.xlist__items {
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:var(--xlist-gap, 0);
+  overflow:hidden;
+  background:var(--x-surface);
+  border:1px solid var(--x-border);
+  border-radius:var(--x-radius-lg, 8px);
+}
+
+.xlist__item {
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto minmax(0, 1fr) auto;
+  align-items:center;
+  gap:var(--x-spacing-md, 16px);
+  padding:var(--x-spacing-md, 16px);
+  background:var(--x-surface);
+  border-bottom:1px solid var(--x-border);
+}
+
+.xlist__item:last-child {
+  border-bottom:0;
+}
+
+.xlist__item--selectable {
+  cursor:pointer;
+}
+
+.xlist__item--selectable:hover {
+  background:var(--x-surface-2, var(--x-surface));
+}
+
+.xlist__item--selected {
+  background:var(--x-selected-bg, var(--x-surface-2, var(--x-surface)));
+  box-shadow:inset 3px 0 0 var(--x-primary, currentColor);
+}
+
+.xlist__leading,
+.xlist__trailing {
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:var(--x-spacing-sm, 8px);
+}
+
+.xlist__leading {
+  align-self:start;
+}
+
+.xlist__trailing {
+  justify-self:end;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.xlist__media,
+.xlist__icon {
+  width:40px;
+  height:40px;
+  flex:0 0 auto;
+  border-radius:var(--x-radius-md, 8px);
+  background:var(--x-surface-2, var(--x-surface));
+  border:1px solid var(--x-border);
+}
+
+.xlist__media {
+  display:block;
+  object-fit:cover;
+}
+
+.xlist__icon {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--x-text);
+  font-size:18px;
+  font-weight:700;
+  line-height:1;
+}
+
+.xlist__leading-content,
+.xlist__trailing-content {
+  min-width:0;
+}
+
+.xlist__content {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:var(--x-spacing-xs, 6px);
+}
+
+.xlist__header {
+  min-width:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--x-spacing-sm, 8px);
+}
+
+.xlist__heading {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.xlist__title {
+  min-width:0;
+  margin:0;
+  color:var(--x-text);
+  font-size:14px;
+  font-weight:700;
+  line-height:1.3;
+  overflow-wrap:anywhere;
+}
+
+.xlist__subtitle,
+.xlist__meta {
+  min-width:0;
+  margin:0;
+  color:var(--x-text-muted, var(--x-text));
+  font-size:12px;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+
+.xlist__description {
+  min-width:0;
+  margin:0;
+  color:var(--x-text-muted, var(--x-text));
+  font-size:13px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+.xlist__actions {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+  gap:var(--x-spacing-sm, 8px);
+}
+
+.xlist--dense .xlist__item {
+  gap:var(--x-spacing-sm, 8px);
+  padding:var(--x-spacing-sm, 10px) var(--x-spacing-md, 16px);
+}
+
+.xlist--dense .xlist__media,
+.xlist--dense .xlist__icon {
+  width:32px;
+  height:32px;
+  font-size:14px;
+}
+
+.xlist--dense .xlist__description {
+  display:none;
+}
+
+@media (max-width: 640px) {
+  .xlist__item {
+    grid-template-columns:auto minmax(0, 1fr);
+    align-items:start;
+    gap:var(--x-spacing-sm, 8px);
+  }
+
+  .xlist__trailing {
+    grid-column:1 / -1;
+    justify-self:stretch;
+    justify-content:flex-start;
+    padding-left:calc(40px + var(--x-spacing-sm, 8px));
+  }
+
+  .xlist--dense .xlist__trailing {
+    padding-left:calc(32px + var(--x-spacing-sm, 8px));
+  }
+}

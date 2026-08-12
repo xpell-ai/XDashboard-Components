@@ -208,6 +208,7 @@ export class XTable extends XUIObject {
     this.buildSkeleton();
     this.__ready = true;
     this.renderBody();
+    this.hydrateFromDataSource();
   }
 
   private get tableId() {
@@ -370,13 +371,57 @@ export class XTable extends XUIObject {
     head.append(row);
   }
 
+  private normalizeRows(value: any): any[] {
+    if (Array.isArray(value)) return value;
+    if (!value || typeof value !== "object") return [];
+
+    if (Array.isArray((value as any).rows)) return (value as any).rows;
+    if (Array.isArray((value as any)._rows)) return (value as any)._rows;
+    if (Array.isArray((value as any)._tracks)) return (value as any)._tracks;
+    if (Array.isArray((value as any)._records?._data)) {
+      return (value as any)._records._data;
+    }
+
+    return [];
+  }
+
+  private readXDataValue(key: string): { hasValue: boolean; value: any } {
+    if (!_xd) return { hasValue: false, value: undefined };
+
+    if (typeof (_xd as any).get === "function") {
+      const value = (_xd as any).get(key);
+      if (value !== undefined) return { hasValue: true, value };
+    }
+
+    const legacyStore = (_xd as any)._o;
+    if (
+      legacyStore &&
+      typeof legacyStore === "object" &&
+      Object.prototype.hasOwnProperty.call(legacyStore, key)
+    ) {
+      return { hasValue: true, value: legacyStore[key] };
+    }
+
+    return { hasValue: false, value: undefined };
+  }
+
+  private hydrateFromDataSource() {
+    const dataSource = (this as any)._data_source;
+    if (typeof dataSource !== "string" || !dataSource.trim()) return;
+
+    const current = this.readXDataValue(dataSource.trim());
+    if (!current.hasValue) return;
+
+    this.__rows = this.normalizeRows(current.value);
+    if (this.__ready) this.refresh();
+  }
+
   private resolveRows(): any[] {
     if (Array.isArray(this.__rows)) return this.__rows;
-    if (typeof this.__rows === "string" && _xd && (_xd as any)._o) {
-      const data = (_xd as any)._o[this.__rows];
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray((data as any).rows)) return (data as any).rows;
-      return [];
+    if (typeof this.__rows === "string") {
+      const current = this.readXDataValue(this.__rows);
+      if (!current.hasValue) return [];
+      return this.normalizeRows(current.value);
     }
     return [];
   }
@@ -418,6 +463,89 @@ export class XTable extends XUIObject {
     return JSON.parse(JSON.stringify(action));
   }
 
+  private readRowPath(row: any, path: string): any {
+    if (!path) return row;
+
+    return path.split(".").reduce((current, key) => {
+      if (current == null) return undefined;
+      return current[key];
+    }, row);
+  }
+
+  private logUndefinedActionTemplate(
+    actionIndex: number,
+    originalValue: string,
+    row: any
+  ) {
+    const payload = {
+      table_id: this._id,
+      action_index: actionIndex,
+      original_value: originalValue,
+      row_keys: row && typeof row === "object" ? Object.keys(row) : [],
+    };
+    const logger = _xlog as any;
+
+    if (typeof logger.debug === "function") {
+      logger.debug("XTable unresolved row template", payload);
+    } else if (typeof logger.log === "function") {
+      logger.log("XTable unresolved row template", payload);
+    }
+  }
+
+  private resolveRowTemplateValue(
+    value: string,
+    row: any,
+    rowIndex: number,
+    actionIndex: number
+  ): any {
+    if (value === "$row_index") return rowIndex;
+
+    if (value === "$row") {
+      if (row === undefined) {
+        this.logUndefinedActionTemplate(actionIndex, value, row);
+      }
+      return row;
+    }
+
+    if (!value.startsWith("$row.")) return value;
+
+    const resolved = this.readRowPath(row, value.slice("$row.".length));
+    if (resolved === undefined) {
+      this.logUndefinedActionTemplate(actionIndex, value, row);
+    }
+    return resolved;
+  }
+
+  private resolveActionTemplates(
+    value: any,
+    row: any,
+    rowIndex: number,
+    actionIndex: number
+  ): any {
+    if (typeof value === "string") {
+      return this.resolveRowTemplateValue(value, row, rowIndex, actionIndex);
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item) =>
+        this.resolveActionTemplates(item, row, rowIndex, actionIndex)
+      );
+    }
+
+    if (!value || typeof value !== "object") return value;
+
+    Object.keys(value).forEach((key) => {
+      value[key] = this.resolveActionTemplates(
+        value[key],
+        row,
+        rowIndex,
+        actionIndex
+      );
+    });
+
+    return value;
+  }
+
   private renderActionCell(
     cell: XUIObject,
     col: XTableColumn,
@@ -427,7 +555,12 @@ export class XTable extends XUIObject {
     const actions = Array.isArray((col as any)._actions) ? (col as any)._actions : [];
 
     actions.forEach((action: XObjectData, actionIndex: number) => {
-      const cloned = this.cloneAction(action);
+      const cloned = this.resolveActionTemplates(
+        this.cloneAction(action),
+        row,
+        rowIndex,
+        actionIndex
+      ) as XObjectData;
 
       (cloned as any)._row = row;
       (cloned as any)._row_index = rowIndex;
@@ -436,7 +569,6 @@ export class XTable extends XUIObject {
         row,
         row_index: rowIndex
       };
-      // $row/$row_index command-time resolution belongs in the generic XObject/XUI resolver.
 
       if (!(cloned as any)._id) {
         const rowKey = this.__row_key && row && row[this.__row_key] != null
@@ -445,7 +577,7 @@ export class XTable extends XUIObject {
         (cloned as any)._id = `${this._id}_row_${rowKey}_action_${actionIndex}`;
       }
 
-      
+
       const child = XUI.create(cloned);
 
       cell.append(child);
@@ -607,31 +739,33 @@ export class XTable extends XUIObject {
   }
 
   async onData(data: any) {
+
     if (this.__data_inflight) return;
     this.__data_inflight = true;
-
-    const clear =
-      (this as any).emptyDataSource || (this as any).emptyDataSorce;
-    if (typeof clear === "function") clear.call(this);
 
     const prevRows = this.__rows;
     await super.onData(data);
 
     const hasHandler = (this as any)._on_data != null;
+
     if (!hasHandler) {
-      let nextRows: any[] = [];
-      if (Array.isArray(data)) {
-        nextRows = data;
-      } else if (data && Array.isArray((data as any).rows)) {
-        nextRows = (data as any).rows;
+      let rows = this.normalizeRows(data);
+
+      if (!rows.length) {
+        const dataSource = (this as any)._data_source;
+        if (typeof dataSource === "string" && dataSource.trim()) {
+          const current = this.readXDataValue(dataSource.trim());
+          if (current.hasValue) {
+            rows = this.normalizeRows(current.value);
+          }
+        }
       }
-      const changed = this.__rows !== nextRows;
-      this.__rows = nextRows;
-      if (changed) this.refresh();
+
+      this.__rows = rows;
+      this.refresh();
     } else if (this.__rows !== prevRows) {
       this.refresh();
     }
-
 
     this.__data_inflight = false;
   }
