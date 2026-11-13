@@ -17,6 +17,7 @@ export const XSTATS_SKILL: XDashboardDiscoverySkill = {
     "average",
     "min",
     "max",
+    "current-day-filter",
   ],
   _bindings: {
     _collection: ["_data_source", "_records"],
@@ -30,6 +31,7 @@ export const XSTATS_SKILL: XDashboardDiscoverySkill = {
     "Use _aggregate:'count', 'sum', 'average', 'min', or 'max'.",
     "Use _field for field-based numeric aggregations.",
     "Use _filter for a simple field/operator/value condition before aggregation.",
+    "Use _filter._operator:'current_day' with a date/datetime field for current-day tracker metrics.",
     "Use xstats above or beside table, xgallery, xlist, xkanban, xtimeline, or xcalendar; it complements collection presentations and does not replace them.",
   ],
   _use_cases: [
@@ -102,6 +104,7 @@ export const XSTATS_SKILL: XDashboardDiscoverySkill = {
     "Supported aggregations are count, sum, average, min, and max.",
     "Use _field for sum, average, min, and max.",
     "Use _filter only for simple field/operator/value conditions; do not invent a query language.",
+    "Supported filter operators include eq, neq, gt, gte, lt, lte, contains, truthy, falsy, and current_day.",
     "Use xstats above or beside table, xgallery, xlist, xkanban, xtimeline, or xcalendar.",
     "For persisted/generated views, handlers must be Nano-Commands/data-only.",
   ],

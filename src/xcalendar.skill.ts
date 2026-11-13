@@ -136,7 +136,7 @@ export const XCALENDAR_SKILL: XDashboardDiscoverySkill = {
       "Visible month as YYYY-MM or a date string. Defaults to the current month.",
     _week_start: "Week start: sun or mon. Defaults to sun.",
     _item:
-      "Item mapping object. Supports _title, _subtitle, _description, _meta, _icon, _image, _image_alt, _badge, and _actions. String values may use $row, $row.field, and $row_index.",
+      "Item mapping object. Supports _title, _subtitle, _description, _meta, _icon, _image, _image_alt, _badge, _actions, and _styles. Persist repeated-event presentation under _item._styles.<surface>._style.",
     _actions:
       "Optional per-item action child objects used when _item._actions is not set. Action templates receive _row, _row_index, and _context.",
     _row_key: "Optional row field used for stable item and action ids.",
@@ -162,6 +162,7 @@ export const XCALENDAR_SKILL: XDashboardDiscoverySkill = {
     "Use _month to set or update the visible month.",
     "Use _item to map generic record fields; do not add domain-specific rendering logic.",
     "Supported item mappings include _title, _subtitle, _description, _meta, _icon, _image, _image_alt, _badge, and _actions.",
+    "Keep event-template presentation under _item._styles.<surface>._style; do not use _title_style, _event_style, _card_style, root _title_style, instance _design, or event styles for calendar chrome/day cells/navigation/month grid.",
     "Use _item._actions or _actions for per-item buttons, links, or menu controls.",
     "Per-item action templates may reference $row, $row.field, and $row_index.",
     "Item clicks emit xcalendar:item-select and may invoke runtime _on_select.",
@@ -184,6 +185,10 @@ export const XCALENDAR_SKILL: XDashboardDiscoverySkill = {
         _subtitle: "$row.location",
         _description: "$row.notes",
         _badge: "$row.status",
+        _styles: {
+          _item: { _style: { "border-left": "3px solid var(--x-accent)" } },
+          _title: { _style: { "font-weight": 700 } },
+        },
         _actions: [
           {
             _type: "button",

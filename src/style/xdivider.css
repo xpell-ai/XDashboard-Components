@@ -23,6 +23,12 @@
     var(--xdivider-color);
 }
 
+[data-theme="xdashboard-2026-light"] .xdivider,
+[data-theme="xdashboard-2026-dark"] .xdivider {
+  --xdivider-color:
+    var(--x-divider, var(--x-border-subtle, var(--x-border)));
+}
+
 
 /* ==========================================================================
    Semantic Tone Variants
@@ -32,7 +38,7 @@
 .xdivider--tone-muted {
 
   --xdivider-color:
-    var(--x-divider-muted, var(--x-border));
+    var(--x-divider-muted, var(--x-border-subtle, var(--x-border)));
 }
 
 

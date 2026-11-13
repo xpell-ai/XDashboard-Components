@@ -4,6 +4,11 @@ import {
   normalizeDashboardImageSlot,
   type XDashboardImageSlotValue,
 } from "./imageSlots";
+import {
+  buildDashboardRootClassName,
+  splitDashboardClassNames,
+  type XDashboardSemanticClassField,
+} from "./xsemantic";
 
 export type XCollectionRowsValue = any[] | string | undefined;
 
@@ -16,7 +21,40 @@ export type XCollectionItemMap = {
   _meta?: any;
   _badge?: any;
   _actions?: XObjectData[];
+  _styles?: XCollectionTemplateStyles;
 };
+
+export type XCollectionValueFormat =
+  | "text"
+  | "number"
+  | "date"
+  | "time"
+  | "datetime"
+  | "relative-datetime";
+
+export type XCollectionValueTemplate = {
+  _field?: string;
+  _value?: any;
+  _format?: XCollectionValueFormat;
+  _fallback?: any;
+  _prefix?: string;
+  _suffix?: string;
+};
+
+export type XCollectionTemplateStyle = {
+  _style?: Record<string, string | number | null | undefined> | null;
+};
+
+export type XCollectionTemplateStyles = Record<
+  string,
+  XCollectionTemplateStyle | undefined
+>;
+
+function isCollectionStyleObject(
+  value: unknown
+): value is Record<string, string | number | null | undefined> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 export function normalizeCollectionBoolean(
   value: any,
@@ -34,6 +72,24 @@ export function normalizeCollectionNumber(value: any, fallback: number): number 
 
 export function normalizeCollectionDataKey(value: any): string | undefined {
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+export const splitCollectionClassNames = splitDashboardClassNames;
+
+export function buildCollectionRootClassName(
+  baseClass: string,
+  existingClass: string,
+  source: Record<string, any>,
+  fields: Array<"_variant" | "_density" | "_elevation">,
+  extraClasses: string[] = []
+): string {
+  return buildDashboardRootClassName(
+    baseClass,
+    existingClass,
+    source,
+    fields as XDashboardSemanticClassField[],
+    extraClasses
+  );
 }
 
 export function readCollectionXDataValue(
@@ -114,6 +170,127 @@ export function resolveCollectionTemplateValue(
   return readCollectionRowPath(row, value.slice("$row.".length));
 }
 
+function isCollectionValueTemplate(value: any): value is XCollectionValueTemplate {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  if (typeof value._type === "string" && value._type.trim()) return false;
+  return (
+    typeof value._field === "string" ||
+    Object.prototype.hasOwnProperty.call(value, "_value") ||
+    typeof value._format === "string"
+  );
+}
+
+function parseCollectionDate(value: any): Date | undefined {
+  if (value instanceof Date) {
+    return Number.isFinite(value.getTime()) ? value : undefined;
+  }
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const date = new Date(value);
+    return Number.isFinite(date.getTime()) ? date : undefined;
+  }
+  if (typeof value !== "string" || !value.trim()) return undefined;
+  const raw = value.trim();
+  // Keep unzoned values local; timezone-bearing strings must use Date's parser.
+  const localDateTime = raw.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?$/u
+  );
+  if (localDateTime) {
+    const date = new Date(
+      Number(localDateTime[1]),
+      Number(localDateTime[2]) - 1,
+      Number(localDateTime[3]),
+      localDateTime[4] ? Number(localDateTime[4]) : 0,
+      localDateTime[5] ? Number(localDateTime[5]) : 0,
+      localDateTime[6] ? Number(localDateTime[6]) : 0
+    );
+    return Number.isFinite(date.getTime()) ? date : undefined;
+  }
+
+  const date = new Date(raw);
+  return Number.isFinite(date.getTime()) ? date : undefined;
+}
+
+function sameCollectionDay(left: Date, right: Date): boolean {
+  return left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate();
+}
+
+function collectionDayLabel(date: Date): string {
+  const today = new Date();
+  if (sameCollectionDay(date, today)) return "Today";
+
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (sameCollectionDay(date, yesterday)) return "Yesterday";
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  if (sameCollectionDay(date, tomorrow)) return "Tomorrow";
+
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: date.getFullYear() === today.getFullYear() ? undefined : "numeric",
+  });
+}
+
+export function formatCollectionValue(
+  value: any,
+  format?: XCollectionValueFormat | string
+): string {
+  if (value === undefined || value === null) return "";
+  const normalizedFormat =
+    typeof format === "string" ? format.trim().toLowerCase() : "";
+  if (!normalizedFormat || normalizedFormat === "text") return collectionTextValue(value);
+
+  if (normalizedFormat === "number") {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return collectionTextValue(value);
+    return Number.isInteger(number) ? String(number) : String(Number(number.toFixed(2)));
+  }
+
+  if (
+    normalizedFormat === "date" ||
+    normalizedFormat === "time" ||
+    normalizedFormat === "datetime" ||
+    normalizedFormat === "relative-datetime"
+  ) {
+    const date = parseCollectionDate(value);
+    if (!date) return collectionTextValue(value);
+    if (normalizedFormat === "date") return collectionDayLabel(date);
+    const time = date.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    if (normalizedFormat === "time") return time;
+    return `${collectionDayLabel(date)}, ${time}`;
+  }
+
+  return collectionTextValue(value);
+}
+
+function resolveCollectionValueTemplate(
+  value: XCollectionValueTemplate,
+  row: any,
+  rowIndex: number
+): string {
+  const rawValue = typeof value._field === "string"
+    ? value._field.startsWith("$row") || value._field === "$row_index"
+      ? resolveCollectionTemplateValue(value._field, row, rowIndex)
+      : readCollectionRowPath(row, value._field)
+    : Object.prototype.hasOwnProperty.call(value, "_value")
+      ? resolveCollectionTemplates(value._value, row, rowIndex)
+      : undefined;
+  const fallback = rawValue === undefined || rawValue === null || rawValue === ""
+    ? resolveCollectionTemplates(value._fallback, row, rowIndex)
+    : rawValue;
+  const text = formatCollectionValue(fallback, value._format);
+  if (!text) return "";
+  return `${value._prefix ?? ""}${text}${value._suffix ?? ""}`;
+}
+
 export function resolveCollectionTemplates(
   value: any,
   row: any,
@@ -128,6 +305,9 @@ export function resolveCollectionTemplates(
   }
 
   if (!value || typeof value !== "object") return value;
+  if (isCollectionValueTemplate(value)) {
+    return resolveCollectionValueTemplate(value, row, rowIndex);
+  }
 
   const next: Record<string, any> = {};
   Object.keys(value).forEach((key) => {
@@ -185,6 +365,47 @@ export function cloneCollectionAction(action: XObjectData): XObjectData {
     }
   }
   return JSON.parse(JSON.stringify(action));
+}
+
+export function collectionTemplateSurfaceStyle(
+  styles: XCollectionTemplateStyles | undefined,
+  surface: string
+): Record<string, string | number | null | undefined> | undefined {
+  const style = styles?.[surface]?._style;
+  if (!isCollectionStyleObject(style)) return undefined;
+  const next = { ...style };
+  return Object.keys(next).length ? next : undefined;
+}
+
+export function applyCollectionTemplateStyle<
+  T extends XObjectData | XUIObject | undefined
+>(
+  value: T,
+  styles: XCollectionTemplateStyles | undefined,
+  surface: string
+): T {
+  if (!value) return value;
+
+  const templateStyle = collectionTemplateSurfaceStyle(styles, surface);
+  if (!templateStyle) return value;
+
+  const existingStyle = isCollectionStyleObject((value as any)._style)
+    ? { ...((value as any)._style as Record<string, string | number | null | undefined>) }
+    : {};
+  const mergedStyle = {
+    ...templateStyle,
+    ...existingStyle,
+  };
+
+  if (value instanceof XUIObject) {
+    (value as any)._style = mergedStyle;
+    return value;
+  }
+
+  return {
+    ...(value as XObjectData),
+    _style: mergedStyle,
+  } as unknown as T;
 }
 
 export function buildCollectionActions(

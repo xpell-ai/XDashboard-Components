@@ -1,6 +1,8 @@
 import { _xem, XUI, XUIObject } from "@xpell/ui";
 import type { XObjectData, XUIObjectData, XpellSkill } from "@xpell/ui";
 import {
+  applyCollectionTemplateStyle,
+  buildCollectionRootClassName,
   buildCollectionActions,
   buildCollectionBadge,
   buildCollectionImage,
@@ -16,6 +18,7 @@ import {
   resolveCollectionTemplates,
   safeCollectionIdSegment,
   type XCollectionRowsValue,
+  type XCollectionTemplateStyles,
 } from "./xcollection";
 import type { XDashboardDiscoverySkill } from "./xskills";
 import { XLIST_SKILL } from "./xlist.skill";
@@ -33,6 +36,7 @@ export type XListItemMap = {
   _leading?: any;
   _trailing?: any;
   _actions?: XObjectData[];
+  _styles?: XCollectionTemplateStyles;
 };
 
 export interface XListData extends XUIObjectData {
@@ -43,6 +47,8 @@ export interface XListData extends XUIObjectData {
   _actions?: XObjectData[];
   _row_key?: string;
   _dense?: boolean;
+  _variant?: "plain" | "subtle" | "card";
+  _density?: "compact" | "comfortable" | "spacious";
   _selectable?: boolean;
   _selected_key?: string;
   _gap?: number;
@@ -158,11 +164,14 @@ export class XList extends XUIObject {
 
   private buildClassName(): string {
     const existing = String((this as any).class || "");
-    const remove = new Set(["xlist", "xlist--dense"]);
-    const filtered = this.splitClasses(existing).filter((c) => !remove.has(c));
-    const tokens = ["xlist", ...filtered];
-    if (this.__dense) tokens.push("xlist--dense");
-    return Array.from(new Set(tokens)).join(" ");
+    const extra = this.__dense ? ["xlist--dense", "xlist--density-compact"] : [];
+    return buildCollectionRootClassName(
+      "xlist",
+      existing,
+      this as any,
+      ["_variant", "_density"],
+      extra
+    );
   }
 
   private applyLayout() {
@@ -244,13 +253,21 @@ export class XList extends XUIObject {
     return { ...value, class: `${existing} ${className}` };
   }
 
+  private applyTemplateStyle<T extends XObjectData | XUIObject | undefined>(
+    value: T,
+    surface: string
+  ): T {
+    return applyCollectionTemplateStyle(value, this.__item._styles, surface);
+  }
+
   private buildSlot(
     value: XListSlotValue | null | undefined,
     row: any,
     rowIndex: number,
     itemId: string,
     slot: string,
-    className: string
+    className: string,
+    styleSurface?: string
   ): XObjectData[] {
     const resolved = resolveCollectionTemplates(value, row, rowIndex);
     if (resolved === undefined || resolved === null || resolved === "") return [];
@@ -277,7 +294,12 @@ export class XList extends XUIObject {
         if (!(next as any)._id) (next as any)._id = `${itemId}_${slot}_${index}`;
         return this.withClass(next, className);
       })
-      .filter(Boolean) as XObjectData[];
+      .filter(Boolean)
+      .map((slotObject) =>
+        styleSurface
+          ? this.applyTemplateStyle(slotObject as XObjectData, styleSurface)
+          : slotObject
+      ) as XObjectData[];
   }
 
   private buildVisual(
@@ -304,19 +326,28 @@ export class XList extends XUIObject {
         ])
       ) || title;
 
+    const imageSurface = imageValue ? "_image" : "_avatar";
     const image = buildCollectionImage(
       imageValue ?? avatarValue,
       imageAlt,
       itemId,
       "xlist__media",
-      imageValue ? "_image" : "_avatar"
+      imageSurface
     );
-    if (image) return image;
+    if (image) return this.applyTemplateStyle(image, imageSurface);
 
     const iconValue = this.resolveField(this.__item._icon, row, rowIndex, [
       "icon",
     ]);
-    const icon = this.buildSlot(iconValue, row, rowIndex, itemId, "icon", "xlist__icon");
+    const icon = this.buildSlot(
+      iconValue,
+      row,
+      rowIndex,
+      itemId,
+      "icon",
+      "xlist__icon",
+      "_icon"
+    );
     return icon[0];
   }
 
@@ -326,7 +357,10 @@ export class XList extends XUIObject {
     rowIndex: number,
     itemId: string
   ): XObjectData | undefined {
-    return buildCollectionBadge(value, row, rowIndex, itemId);
+    return this.applyTemplateStyle(
+      buildCollectionBadge(value, row, rowIndex, itemId),
+      "_badge"
+    );
   }
 
   private buildActions(row: any, rowIndex: number, itemId: string): XObjectData[] {
@@ -454,7 +488,8 @@ export class XList extends XUIObject {
       rowIndex,
       itemId,
       "leading",
-      "xlist__leading-content"
+      "xlist__leading-content",
+      "_leading"
     );
     const trailing = this.buildSlot(
       this.__item._trailing,
@@ -462,26 +497,37 @@ export class XList extends XUIObject {
       rowIndex,
       itemId,
       "trailing",
-      "xlist__trailing-content"
+      "xlist__trailing-content",
+      "_trailing"
     );
     const actions = this.buildActions(row, rowIndex, itemId);
 
     const headingChildren: XObjectData[] = [];
     if (title) {
-      headingChildren.push({
-        _type: "label",
-        _id: `${itemId}_title`,
-        class: "xlist__title",
-        _text: title,
-      });
+      headingChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_title`,
+            class: "xlist__title",
+            _text: title,
+          },
+          "_title"
+        )
+      );
     }
     if (subtitle) {
-      headingChildren.push({
-        _type: "label",
-        _id: `${itemId}_subtitle`,
-        class: "xlist__subtitle",
-        _text: subtitle,
-      });
+      headingChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_subtitle`,
+            class: "xlist__subtitle",
+            _text: subtitle,
+          },
+          "_subtitle"
+        )
+      );
     }
 
     const contentChildren: XObjectData[] = [
@@ -502,103 +548,124 @@ export class XList extends XUIObject {
     ];
 
     if (description) {
-      contentChildren.push({
-        _type: "label",
-        _id: `${itemId}_description`,
-        class: "xlist__description",
-        _text: description,
-      });
+      contentChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_description`,
+            class: "xlist__description",
+            _text: description,
+          },
+          "_description"
+        )
+      );
     }
     if (meta) {
-      contentChildren.push({
-        _type: "label",
-        _id: `${itemId}_meta`,
-        class: "xlist__meta",
-        _text: meta,
-      });
+      contentChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_meta`,
+            class: "xlist__meta",
+            _text: meta,
+          },
+          "_meta"
+        )
+      );
     }
 
     const trailingChildren: XObjectData[] = [
       ...trailing,
       ...(actions.length
         ? [
-            {
-              _type: "view",
-              _id: `${itemId}_actions`,
-              class: "xlist__actions",
-              _children: actions,
-            } as XObjectData,
+            this.applyTemplateStyle(
+              {
+                _type: "view",
+                _id: `${itemId}_actions`,
+                class: "xlist__actions",
+                _children: actions,
+              } as XObjectData,
+              "_actions"
+            ),
           ]
         : []),
     ];
 
     const selected = key === this.__selected_key;
 
-    return {
-      _type: "view",
-      _id: itemId,
-      class: [
-        "xlist__item",
-        selected ? "xlist__item--selected" : "",
-        this.__selectable ? "xlist__item--selectable" : "",
-      ]
-        .filter(Boolean)
-        .join(" "),
-      role: this.__selectable ? "button" : undefined,
-      tabindex: this.__selectable ? "0" : undefined,
-      "aria-selected": selected ? "true" : "false",
-      _row: row,
-      _row_index: rowIndex,
-      _context: {
-        row,
-        row_index: rowIndex,
-        key,
-      },
-      _on: this.__selectable
-        ? {
-            click: (event: any) => {
-              if (this.itemClickIsFromTrailing(event)) return;
-              this.selectItem(row, rowIndex, key);
-            },
-            keydown: (event: any) => {
-              if (event?.key !== "Enter" && event?.key !== " ") return;
-              if (event?.preventDefault) event.preventDefault();
-              this.selectItem(row, rowIndex, key);
-            },
-          }
-        : undefined,
-      _children: [
-        ...(visual || leading.length
-          ? [
-              {
-                _type: "view",
-                _id: `${itemId}_leading`,
-                class: "xlist__leading",
-                _children: [
-                  ...(visual ? [visual as XObjectData] : []),
-                  ...leading,
-                ],
-              } as XObjectData,
-            ]
-          : []),
-        {
-          _type: "view",
-          _id: `${itemId}_content`,
-          class: "xlist__content",
-          _children: contentChildren,
+    return this.applyTemplateStyle(
+      {
+        _type: "view",
+        _id: itemId,
+        class: [
+          "xlist__item",
+          selected ? "xlist__item--selected" : "",
+          this.__selectable ? "xlist__item--selectable" : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+        role: this.__selectable ? "button" : undefined,
+        tabindex: this.__selectable ? "0" : undefined,
+        "aria-selected": selected ? "true" : "false",
+        _row: row,
+        _row_index: rowIndex,
+        _context: {
+          row,
+          row_index: rowIndex,
+          key,
         },
-        ...(trailingChildren.length
-          ? [
-              {
-                _type: "view",
-                _id: `${itemId}_trailing`,
-                class: "xlist__trailing",
-                _children: trailingChildren,
-              } as XObjectData,
-            ]
-          : []),
-      ],
-    };
+        ...(this.__selectable
+          ? {
+              _on: {
+                click: (event: any) => {
+                  if (this.itemClickIsFromTrailing(event)) return;
+                  this.selectItem(row, rowIndex, key);
+                },
+                keydown: (event: any) => {
+                  if (event?.key !== "Enter" && event?.key !== " ") return;
+                  if (event?.preventDefault) event.preventDefault();
+                  this.selectItem(row, rowIndex, key);
+                },
+              },
+            }
+          : {}),
+        _children: [
+          ...(visual || leading.length
+            ? [
+                {
+                  _type: "view",
+                  _id: `${itemId}_leading`,
+                  class: "xlist__leading",
+                  _children: [
+                    ...(visual ? [visual as XObjectData] : []),
+                    ...leading,
+                  ],
+                } as XObjectData,
+              ]
+            : []),
+          this.applyTemplateStyle(
+            {
+              _type: "view",
+              _id: `${itemId}_content`,
+              class: "xlist__content",
+              _children: contentChildren,
+            },
+            "_content"
+          ),
+          ...(trailingChildren.length
+            ? [
+                {
+                  _type: "view",
+                  _id: `${itemId}_trailing`,
+                  class: "xlist__trailing",
+                  _children: trailingChildren,
+                } as XObjectData,
+              ]
+            : []),
+        ],
+      },
+      "_item"
+    );
   }
 
   private buildEmpty(): XObjectData {
@@ -614,6 +681,7 @@ export class XList extends XUIObject {
       _id: `${this._id}_empty`,
       _title: this.__empty_text,
       _size: "md",
+      _variant: "section",
       _align: "center",
     };
   }

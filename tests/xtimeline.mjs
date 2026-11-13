@@ -244,6 +244,10 @@ function getObject(id) {
   return object;
 }
 
+function styleOf(id) {
+  return getObject(id)._style;
+}
+
 function childIds(object) {
   return Array.isArray(object._children)
     ? object._children.map((child) => child?._id)
@@ -353,6 +357,108 @@ assert.ok(imageTimeline);
 assert.equal(getObject("xtimeline-image_item_img_image")._type, "image");
 assert.equal(getObject("xtimeline-image_item_img_image").src, "/assets/event.png");
 assert.equal(getObject("xtimeline-image_item_img_image").alt, "Image row");
+
+const styled = createTimeline({
+  _id: "xtimeline-styled",
+  _items: [
+    {
+      id: "styled",
+      created_at: "2026-08-04",
+      title: "Styled",
+      type: "Change",
+      notes: "Styled notes",
+      meta: "Updated",
+      status: "Open",
+      image_url: "/assets/timeline.png",
+    },
+  ],
+  _date_field: "created_at",
+  _row_key: "id",
+  _item: {
+    _title: "$row.title",
+    _subtitle: "$row.type",
+    _description: "$row.notes",
+    _meta: "$row.meta",
+    _image: {
+      _type: "image",
+      src: "$row.image_url",
+      alt: "$row.title",
+      _style: { width: "60px", border: "1px solid green" },
+    },
+    _badge: {
+      _text: "$row.status",
+      _style: { color: "green" },
+    },
+    _actions: [{ _type: "button", _text: "Open" }],
+    _styles: {
+      _item: { _style: { display: "grid" } },
+      _axis: { _style: { width: "120px" } },
+      _date: { _style: { color: "navy" } },
+      _dot: { _style: { "background-color": "navy" } },
+      _card: { _style: { border: "1px solid blue" } },
+      _body: { _style: { padding: "10px" } },
+      _image: { _style: { width: "32px", height: "32px", border: "1px solid red" } },
+      _icon: { _style: { color: "orange" } },
+      _title: { _style: { "font-weight": 700 } },
+      _subtitle: { _style: { color: "gray" } },
+      _description: { _style: { "font-size": "12px" } },
+      _meta: { _style: { opacity: 0.8 } },
+      _badge: { _style: { color: "red", "font-weight": 700 } },
+      _actions: { _style: { gap: "6px" } },
+    },
+  },
+});
+assert.ok(styled);
+assert.deepEqual(styleOf("xtimeline-styled_item_styled"), { display: "grid" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_axis"), { width: "120px" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_date"), { color: "navy" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_dot"), { "background-color": "navy" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_card"), { border: "1px solid blue" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_body"), { padding: "10px" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_image"), {
+  width: "60px",
+  height: "32px",
+  border: "1px solid green",
+});
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_title"), { "font-weight": 700 });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_subtitle"), { color: "gray" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_description"), { "font-size": "12px" });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_meta"), { opacity: 0.8 });
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_badge"), {
+  color: "green",
+  "font-weight": 700,
+});
+assert.deepEqual(styleOf("xtimeline-styled_item_styled_actions"), { gap: "6px" });
+assert.equal(styleOf("xtimeline-styled_item_styled_visual"), undefined);
+
+createTimeline({
+  _id: "xtimeline-icon-style",
+  _items: [{ id: "icon", created_at: "2026-08-05", title: "Icon", icon: "I" }],
+  _date_field: "created_at",
+  _row_key: "id",
+  _item: {
+    _title: "$row.title",
+    _icon: "$row.icon",
+    _styles: {
+      _icon: { _style: { color: "orange" } },
+    },
+  },
+});
+assert.deepEqual(styleOf("xtimeline-icon-style_item_icon_icon"), { color: "orange" });
+
+const plain = createTimeline({
+  _id: "xtimeline-plain-style",
+  _items: [{ id: "plain", created_at: "2026-08-06", title: "Plain" }],
+  _date_field: "created_at",
+  _row_key: "id",
+  _item: { _title: "$row.title" },
+});
+assert.ok(plain);
+assert.equal(styleOf("xtimeline-plain-style_item_plain"), undefined);
+assert.equal(styleOf("xtimeline-plain-style_item_plain_title"), undefined);
+styled._item = { _title: "$row.title" };
+assert.equal(styleOf("xtimeline-styled_item_styled"), undefined);
+assert.equal(styleOf("xtimeline-styled_item_styled_title"), undefined);
 
 assert.doesNotThrow(() =>
   createTimeline({

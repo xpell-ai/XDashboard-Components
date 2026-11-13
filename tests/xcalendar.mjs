@@ -244,6 +244,10 @@ function getObject(id) {
   return object;
 }
 
+function styleOf(id) {
+  return getObject(id)._style;
+}
+
 function childIds(object) {
   return Array.isArray(object._children)
     ? object._children.map((child) => child?._id)
@@ -371,6 +375,120 @@ assert.equal(getObject("event-calendar_title")._text, "August 2026");
 getObject("event-calendar_today")._on.click({});
 assert.equal(bound._month, monthKey());
 assert.equal(getObject("event-calendar_title")._text, monthTitle());
+
+const styled = createCalendar({
+  _id: "xcalendar-styled",
+  _items: [
+    {
+      id: "styled",
+      start_at: "2026-08-05",
+      title: "Styled",
+      location: "Room",
+      notes: "Styled notes",
+      meta: "09:00",
+      status: "Confirmed",
+      image_url: "/assets/calendar.png",
+    },
+  ],
+  _date_field: "start_at",
+  _month: "2026-08",
+  _row_key: "id",
+  _item: {
+    _title: "$row.title",
+    _subtitle: "$row.location",
+    _description: "$row.notes",
+    _meta: "$row.meta",
+    _image: {
+      _type: "image",
+      src: "$row.image_url",
+      alt: "$row.title",
+      _style: { width: "48px", border: "1px solid green" },
+    },
+    _badge: {
+      _text: "$row.status",
+      _style: { color: "green" },
+    },
+    _actions: [{ _type: "button", _text: "Open" }],
+    _styles: {
+      _item: { _style: { border: "1px solid blue" } },
+      _image: { _style: { width: "32px", height: "32px", border: "1px solid red" } },
+      _icon: { _style: { color: "orange" } },
+      _title: { _style: { "font-weight": 700 } },
+      _subtitle: { _style: { color: "gray" } },
+      _description: { _style: { "font-size": "12px" } },
+      _meta: { _style: { opacity: 0.8 } },
+      _badge: { _style: { color: "red", "font-weight": 700 } },
+      _actions: { _style: { gap: "6px" } },
+    },
+  },
+});
+assert.ok(styled);
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05"), {
+  border: "1px solid blue",
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_image"), {
+  width: "48px",
+  height: "32px",
+  border: "1px solid green",
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_title"), {
+  "font-weight": 700,
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_subtitle"), {
+  color: "gray",
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_description"), {
+  "font-size": "12px",
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_meta"), {
+  opacity: 0.8,
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_badge"), {
+  color: "green",
+  "font-weight": 700,
+});
+assert.deepEqual(styleOf("xcalendar-styled_item_styled_2026-08-05_actions"), {
+  gap: "6px",
+});
+assert.equal(styleOf("xcalendar-styled_nav"), undefined);
+assert.equal(styleOf("xcalendar-styled_title"), undefined);
+assert.equal(styleOf("xcalendar-styled_weekday_0"), undefined);
+assert.equal(styleOf("xcalendar-styled_day_2026-08-05"), undefined);
+assert.equal(styleOf("xcalendar-styled_day_2026-08-05_number"), undefined);
+assert.equal(styleOf("xcalendar-styled_day_2026-08-05_events"), undefined);
+
+createCalendar({
+  _id: "xcalendar-icon-style",
+  _items: [{ id: "icon", start_at: "2026-08-06", title: "Icon", icon: "I" }],
+  _date_field: "start_at",
+  _month: "2026-08",
+  _row_key: "id",
+  _item: {
+    _title: "$row.title",
+    _icon: "$row.icon",
+    _styles: {
+      _icon: { _style: { color: "orange" } },
+    },
+  },
+});
+assert.deepEqual(styleOf("xcalendar-icon-style_item_icon_2026-08-06_icon"), {
+  color: "orange",
+});
+
+const plain = createCalendar({
+  _id: "xcalendar-plain-style",
+  _items: [{ id: "plain", start_at: "2026-08-07", title: "Plain" }],
+  _date_field: "start_at",
+  _month: "2026-08",
+  _row_key: "id",
+  _item: { _title: "$row.title" },
+});
+assert.ok(plain);
+assert.equal(styleOf("xcalendar-plain-style_item_plain_2026-08-07"), undefined);
+assert.equal(styleOf("xcalendar-plain-style_item_plain_2026-08-07_title"), undefined);
+styled._item = { _title: "$row.title" };
+assert.equal(styleOf("xcalendar-styled_item_styled_2026-08-05"), undefined);
+assert.equal(styleOf("xcalendar-styled_item_styled_2026-08-05_title"), undefined);
 
 assert.doesNotThrow(() =>
   createCalendar({

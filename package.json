@@ -1,6 +1,6 @@
 {
   "name": "@xpell/xdashboard",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Dashboard XUI component library for Xpell UI",
   "private": false,
   "type": "module",
@@ -30,12 +30,23 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "vite",
-    "test": "pnpm run test:xcard && pnpm run test:xlist && pnpm run test:xtimeline && pnpm run test:xcalendar && pnpm run test:xkanban && pnpm run test:xstats && pnpm run test:shared-xdata && pnpm run test:skill && pnpm run test:discovery",
+    "test": "pnpm run test:foundation && pnpm run test:core2026 && pnpm run test:data2026 && pnpm run test:composition2026 && pnpm run test:toolbar-igroup && pnpm run test:xbadge && pnpm run test:xcard && pnpm run test:xsection && pnpm run test:xgallery && pnpm run test:xlist && pnpm run test:xtimeline && pnpm run test:xcalendar && pnpm run test:xkanban && pnpm run test:xstats && pnpm run test:shared-xdata && pnpm run test:skill && pnpm run test:discovery",
+    "test:foundation": "node tests/xdashboard-foundations.mjs",
+    "test:core2026": "node tests/xdashboard-core-2026.mjs",
+    "test:data2026": "node tests/xdashboard-data-2026.mjs",
+    "test:composition2026": "node tests/xdashboard-composition-2026.mjs",
+    "test:toolbar-igroup": "node --import ./tests/register-css-loader.mjs tests/toolbar-igroup-semantic.mjs",
+    "test:xbadge": "node --import ./tests/register-css-loader.mjs tests/xbadge.mjs",
     "test:xcard": "node --import ./tests/register-css-loader.mjs tests/xcard-regression.mjs",
+    "test:xsection": "node --import ./tests/register-css-loader.mjs tests/xsection.mjs",
+    "test:xgallery": "node --import ./tests/register-css-loader.mjs tests/xgallery.mjs",
     "test:xlist": "node --import ./tests/register-css-loader.mjs tests/xlist.mjs",
     "test:xtimeline": "node --import ./tests/register-css-loader.mjs tests/xtimeline.mjs",
     "test:xcalendar": "node --import ./tests/register-css-loader.mjs tests/xcalendar.mjs",
@@ -50,14 +61,18 @@
     "prepublishOnly": "pnpm clean && pnpm build"
   },
   "peerDependencies": {
-    "@xpell/core": "^2.0.7"
+    "@xpell/core": "workspace:*"
   },
   "dependencies": {
-    "@xpell/ui": "^2.0.7"
+    "@xpell/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2",
     "vite": "^8.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xpell-ai/XDashboard-Components.git"
   }
 }

@@ -1,8 +1,11 @@
 import { XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XpellSkill } from "@xpell/ui";
+import { buildDashboardRootClassName } from "./xsemantic";
 
 export interface XInputGroupData extends XUIObjectData {
   _type: "igroup";
+  _variant?: "plain" | "subtle" | "merged" | string;
+  _density?: "compact" | "comfortable" | "spacious" | string;
   _gap?: number;
   _align?: "start" | "center" | "end" | "stretch";
   _wrap?: boolean;
@@ -28,6 +31,8 @@ export class XInputGroup extends XUIObject {
 
     _fields: {
       _children: "Child controls or action objects inside the group.",
+      _variant: "Input group surface variant: plain, subtle, or merged.",
+      _density: "Input group density: compact, comfortable, or spacious.",
       _gap: "Gap between children in pixels. Defaults to 8.",
       _align: "Cross-axis alignment: start, center, end, or stretch.",
       _wrap: "Allow controls to wrap onto multiple lines.",
@@ -71,6 +76,7 @@ export class XInputGroup extends XUIObject {
   }
 
   private __gap = 8;
+  private __hasExplicitGap = false;
   private __align: XInputGroupAlign = "center";
   private __wrap = false;
   private __dense = false;
@@ -119,6 +125,13 @@ export class XInputGroup extends XUIObject {
     return "stretch";
   }
 
+  private splitClasses(value: string): string[] {
+    return value
+      .split(/\s+/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+
   private stripManagedStyles(style: string): string {
     if (!style) return "";
     const parts = style
@@ -140,20 +153,32 @@ export class XInputGroup extends XUIObject {
     return kept.join("; ");
   }
 
+  private buildClassName(): string {
+    const existing = String((this as any).class || "");
+    const filtered = this
+      .splitClasses(existing)
+      .filter((c) => c !== "xigroup--dense" && c !== "xigroup--merged");
+    const extraClasses = [];
+    if (this.__dense) extraClasses.push("xigroup--dense", "xigroup--density-compact");
+    if (this.__merged) extraClasses.push("xigroup--merged", "xigroup--variant-merged");
+
+    return buildDashboardRootClassName(
+      "xigroup",
+      filtered.join(" "),
+      this as any,
+      ["_variant", "_density"],
+      extraClasses
+    );
+  }
+
   private applyLayout() {
-    this.addClass("xigroup");
-    const allMods = ["xigroup--dense", "xigroup--merged"];
-    const nextMods: string[] = [];
-    if (this.__dense) nextMods.push("xigroup--dense");
-    if (this.__merged) nextMods.push("xigroup--merged");
-    this.replaceClass(allMods.join(" "), nextMods.join(" "));
+    (this as any).class = this.buildClassName();
 
     const baseStyle = this.stripManagedStyles(String((this as any).style || ""));
     const styleParts: string[] = [];
     if (baseStyle) styleParts.push(baseStyle);
     styleParts.push("display:flex");
-    styleParts.push(`gap:${this.__gap}px`);
-    styleParts.push(`--xigroup-gap:${this.__gap}px`);
+    if (this.__hasExplicitGap) styleParts.push(`--xigroup-gap:${this.__gap}px`);
     styleParts.push(`align-items:${this.mapAlign(this.__align)}`);
     if (this.__wrap) styleParts.push("flex-wrap:wrap");
 
@@ -162,6 +187,7 @@ export class XInputGroup extends XUIObject {
   }
 
   set _gap(value: number | undefined) {
+    this.__hasExplicitGap = value !== undefined && value !== null;
     this.__gap = this.normalizeGap(value);
     this.applyLayout();
   }

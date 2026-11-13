@@ -4,6 +4,11 @@ import {
   normalizeDashboardImageSlot,
   type XDashboardImageSlotValue,
 } from "./imageSlots";
+import {
+  applyCollectionTemplateStyle,
+  buildCollectionRootClassName,
+  type XCollectionTemplateStyles,
+} from "./xcollection";
 import type { XDashboardDiscoverySkill } from "./xskills";
 import { XKANBAN_SKILL } from "./xkanban.skill";
 
@@ -21,6 +26,7 @@ export type XKanbanItemMap = {
   _meta?: any;
   _badge?: any;
   _actions?: XObjectData[];
+  _styles?: XCollectionTemplateStyles;
 };
 
 export type XKanbanMovePayload = {
@@ -43,6 +49,7 @@ export interface XKanbanData extends XUIObjectData {
   _row_key?: string;
   _min_col_width?: number;
   _gap?: number;
+  _density?: "compact" | "comfortable" | "spacious";
   _empty_text?: string;
   _empty_column_text?: string;
   _empty?: XObjectData;
@@ -204,8 +211,12 @@ export class XKanban extends XUIObject {
 
   private buildClassName(): string {
     const existing = String((this as any).class || "");
-    const filtered = this.splitClasses(existing).filter((c) => c !== "xkanban");
-    return Array.from(new Set(["xkanban", ...filtered])).join(" ");
+    return buildCollectionRootClassName(
+      "xkanban",
+      existing,
+      this as any,
+      ["_density"]
+    );
   }
 
   private applyLayout() {
@@ -537,6 +548,13 @@ export class XKanban extends XUIObject {
     return image;
   }
 
+  private applyTemplateStyle<T extends XObjectData | XUIObject | undefined>(
+    value: T,
+    surface: string
+  ): T {
+    return applyCollectionTemplateStyle(value, this.__item._styles, surface);
+  }
+
   private makeMovePayload(
     row: any,
     rowIndex: number,
@@ -638,31 +656,47 @@ export class XKanban extends XUIObject {
     const imageAlt = this.textValue(
       this.resolveField(this.__item._image_alt, row, rowIndex, ["image_alt", "alt"])
     ) || title;
-    const badge = this.buildBadge(
-      this.resolveField(this.__item._badge, row, rowIndex, ["badge", "status"]),
-      row,
-      rowIndex,
-      itemId
+    const badge = this.applyTemplateStyle(
+      this.buildBadge(
+        this.resolveField(this.__item._badge, row, rowIndex, ["badge", "status"]),
+        row,
+        rowIndex,
+        itemId
+      ),
+      "_badge"
     );
     const actions = this.buildActions(row, rowIndex, itemId);
-    const image = this.buildImage(imageValue, imageAlt, itemId);
+    const image = this.applyTemplateStyle(
+      this.buildImage(imageValue, imageAlt, itemId),
+      "_image"
+    );
 
     const headerChildren: XObjectData[] = [];
     if (title) {
-      headerChildren.push({
-        _type: "label",
-        _id: `${itemId}_title`,
-        class: "xkanban__title",
-        _text: title,
-      });
+      headerChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_title`,
+            class: "xkanban__title",
+            _text: title,
+          },
+          "_title"
+        )
+      );
     }
     if (subtitle) {
-      headerChildren.push({
-        _type: "label",
-        _id: `${itemId}_subtitle`,
-        class: "xkanban__subtitle",
-        _text: subtitle,
-      });
+      headerChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_subtitle`,
+            class: "xkanban__subtitle",
+            _text: subtitle,
+          },
+          "_subtitle"
+        )
+      );
     }
 
     const bodyChildren: XObjectData[] = [
@@ -683,31 +717,46 @@ export class XKanban extends XUIObject {
     ];
 
     if (description) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_description`,
-        class: "xkanban__description",
-        _text: description,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_description`,
+            class: "xkanban__description",
+            _text: description,
+          },
+          "_description"
+        )
+      );
     }
     if (meta) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_meta`,
-        class: "xkanban__meta",
-        _text: meta,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_meta`,
+            class: "xkanban__meta",
+            _text: meta,
+          },
+          "_meta"
+        )
+      );
     }
     if (actions.length) {
-      bodyChildren.push({
-        _type: "view",
-        _id: `${itemId}_actions`,
-        class: "xkanban__actions",
-        _children: actions,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_actions`,
+            class: "xkanban__actions",
+            _children: actions,
+          },
+          "_actions"
+        )
+      );
     }
 
-    return {
+    return this.applyTemplateStyle({
       _type: "view",
       _id: itemId,
       class: `xkanban__card${image ? "" : " xkanban__card--no-image"}`,
@@ -726,14 +775,17 @@ export class XKanban extends XUIObject {
       },
       _children: [
         ...(image ? [image as XObjectData] : []),
-        {
-          _type: "view",
-          _id: `${itemId}_body`,
-          class: "xkanban__card-body",
-          _children: bodyChildren,
-        },
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_body`,
+            class: "xkanban__card-body",
+            _children: bodyChildren,
+          },
+          "_body"
+        ),
       ],
-    };
+    }, "_item");
   }
 
   private buildBoardEmpty(): XObjectData {
@@ -749,6 +801,7 @@ export class XKanban extends XUIObject {
       _id: `${this._id}_empty`,
       _title: this.__empty_text,
       _size: "md",
+      _variant: "section",
       _align: "center",
     };
   }
@@ -760,6 +813,7 @@ export class XKanban extends XUIObject {
       class: "xkanban__column-empty",
       _title: this.__empty_column_text,
       _size: "sm",
+      _variant: "inline",
       _align: "center",
     };
   }

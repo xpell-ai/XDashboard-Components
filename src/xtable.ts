@@ -1,12 +1,19 @@
 import { _xlog, XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XObjectData, XpellSkill } from "@xpell/ui";
 import { _xd } from "@xpell/ui";
+import {
+  buildCollectionRootClassName,
+  formatCollectionValue,
+  type XCollectionValueFormat,
+} from "./xcollection";
 
 export type XTableColumn = {
   key?: string;
   label?: string;
   _key?: string;
   _title?: string;
+  _value_type?: string;
+  _format?: XCollectionValueFormat;
   _type?: "text" | "actions";
   _actions?: XObjectData[];
   width?: string;
@@ -23,6 +30,8 @@ export interface XTableData extends XUIObjectData {
   _on_data?: ((xobj: XTable, data: any) => void) | string;
   _row_key?: string;
   _dense?: boolean;
+  _variant?: "plain" | "subtle" | "card";
+  _density?: "compact" | "comfortable" | "spacious";
   _striped?: boolean;
   _hover?: boolean;
   _bordered?: boolean;
@@ -46,7 +55,7 @@ export class XTable extends XUIObject {
 
     _fields: {
       _columns:
-        "Required table columns. Supports text columns with { key, label? } or aliases { _key, _title }, and action columns with { _key:'actions', _title:'Actions', _type:'actions', _actions:[...] }. Prefer _key/_title in generated Xpell JSON. Do not generate render functions.",
+        "Required table columns. Supports text columns with { key, label? } or aliases { _key, _title }, _value_type/_format for generic display formatting, and action columns with { _key:'actions', _title:'Actions', _type:'actions', _actions:[...] }. Prefer _key/_title in generated Xpell JSON. Do not generate render functions.",
       _rows:
         "Table rows as an array of objects, or a string XData key resolving to rows.",
       _data_source:
@@ -243,6 +252,15 @@ export class XTable extends XUIObject {
     };
   }
 
+  private columnFormat(col: XTableColumn): XCollectionValueFormat | undefined {
+    if (col._format) return col._format;
+    if (col._value_type === "datetime" || col._value_type === "date") {
+      return col._value_type;
+    }
+    if (col._value_type === "number") return "number";
+    return undefined;
+  }
+
   private applyPropsFromData() {
     const dataColumns = (this as any)._columns;
     this.__columns = Array.isArray(dataColumns)
@@ -275,8 +293,6 @@ export class XTable extends XUIObject {
   }
 
   private applyLayout() {
-    this.addClass("xtable");
-
     const allMods = [
       "xtable--dense",
       "xtable--striped",
@@ -284,10 +300,18 @@ export class XTable extends XUIObject {
       "xtable--bordered",
     ];
     const nextMods: string[] = [];
-    if (this.__dense) nextMods.push("xtable--dense");
+    if (this.__dense) nextMods.push("xtable--dense", "xtable--density-compact");
     if (this.__striped) nextMods.push("xtable--striped");
     if (this.__hover) nextMods.push("xtable--hover");
     if (this.__bordered) nextMods.push("xtable--bordered");
+
+    (this as any).class = buildCollectionRootClassName(
+      "xtable",
+      String((this as any).class || ""),
+      this as any,
+      ["_variant", "_density"],
+      nextMods
+    );
 
     this.replaceClass(allMods.join(" "), nextMods.join(" "));
   }
@@ -645,7 +669,7 @@ export class XTable extends XUIObject {
           const output = col.render(value, row, rowIndex);
           this.appendCellContent(td as XUIObject, output);
         } else {
-          this.setCellText(td as XUIObject, String(value ?? ""));
+          this.setCellText(td as XUIObject, formatCollectionValue(value, this.columnFormat(col)));
         }
 
         tr.append(td);

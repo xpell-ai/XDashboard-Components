@@ -93,6 +93,8 @@ class FakeElement {
     this.attributes = new Map();
     this.childNodes = [];
     this.parentElement = null;
+    this.id = "";
+    this._listeners = new Map();
     this.style = new FakeStyleDeclaration();
     this._classTokens = new Set();
     this.classList = new FakeClassList(this);
@@ -125,6 +127,9 @@ class FakeElement {
       this.style.cssText = value;
       return;
     }
+    if (attr === "id") {
+      this.id = String(value);
+    }
     this.attributes.set(attr, String(value));
   }
 
@@ -147,6 +152,9 @@ class FakeElement {
     if (attr === "class") {
       this.className = "";
       return;
+    }
+    if (attr === "id") {
+      this.id = "";
     }
     this.attributes.delete(attr);
   }
@@ -199,9 +207,45 @@ class FakeElement {
     return null;
   }
 
-  addEventListener() {}
+  addEventListener(type, listener) {
+    const name = String(type);
+    const listeners = this._listeners.get(name) ?? [];
+    listeners.push(listener);
+    this._listeners.set(name, listeners);
+  }
 
-  removeEventListener() {}
+  removeEventListener(type, listener) {
+    const name = String(type);
+    const listeners = this._listeners.get(name);
+    if (!listeners) return;
+    const idx = listeners.indexOf(listener);
+    if (idx >= 0) listeners.splice(idx, 1);
+    if (listeners.length === 0) this._listeners.delete(name);
+  }
+
+  async dispatchEvent(event) {
+    const target = {
+      id: this.id,
+      getAttribute: (name) => this.getAttribute(name),
+    };
+    const nextEvent = {
+      target,
+      currentTarget: target,
+      preventDefault() {},
+      stopPropagation() {},
+      ...event,
+      type: event?.type,
+    };
+    const listeners = this._listeners.get(String(nextEvent.type)) ?? [];
+    for (const listener of listeners.slice()) {
+      await listener(nextEvent);
+    }
+    return true;
+  }
+
+  async click() {
+    return this.dispatchEvent({ type: "click" });
+  }
 }
 
 const localStorage = createStorage();
@@ -226,7 +270,7 @@ globalThis.Node = {
   TEXT_NODE: 3,
 };
 
-const { XUI, _xd } = await import("@xpell/ui");
+const { XUI, _x, _xd } = await import("@xpell/ui");
 const { XDashPack } = await import("../dist/index.js");
 
 XUI.importObjectPack(XDashPack);
@@ -236,6 +280,10 @@ function createList(data) {
     _type: "xlist",
     ...data,
   });
+}
+
+function flushMounts() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 function getObject(id) {
@@ -248,6 +296,10 @@ function childIds(object) {
   return Array.isArray(object._children)
     ? object._children.map((child) => child?._id)
     : [];
+}
+
+function styleOf(id) {
+  return getObject(id)._style ?? {};
 }
 
 assert.equal(XDashPack.getObjects().xlist?._xtype, "xlist");
@@ -309,6 +361,88 @@ assert.equal(getObject("pot-rich-list_item_fern_badge")._text, "ok");
 assert.equal(getObject("pot-rich-list_item_fern_action_0")._text, "Open Fern");
 assert.equal(getObject("pot-rich-list_item_fern_action_0")._row.name, "Fern");
 assert.equal(getObject("pot-rich-list_item_fern_action_0")._context.row_index, 0);
+assert.equal(getObject("pot-rich-list_item_mint_action_0")._text, "Open Mint");
+assert.notEqual(
+  getObject("pot-rich-list_item_fern_action_0")._id,
+  getObject("pot-rich-list_item_mint_action_0")._id,
+);
+
+const flowActionCommands = [];
+const originalExecute = _x.execute;
+const flowActionRecords = [
+  { _id: "record-a", name: "Record A" },
+  { _id: "record-b", name: "Record B" },
+];
+try {
+  _xd.set("xlist-flow-actions.records", { records: flowActionRecords });
+  _x.execute = async (cmd) => {
+    flowActionCommands.push(cmd);
+    const deletedId = cmd?._params?._event_payload?._id;
+    _xd.set("xlist-flow-actions.records", {
+      records: flowActionRecords.filter((record) => record._id !== deletedId),
+    });
+    return { _ok: true };
+  };
+  const flowList = createList({
+    _id: "xlist-flow-actions",
+    _data_source: "xlist-flow-actions.records",
+    _row_key: "_id",
+    _item: {
+      _title: "$row.name",
+      _actions: [
+        {
+          _type: "button",
+          _text: "Delete",
+          _on: {
+            click: {
+              _module: "flow-client",
+              _op: "trigger",
+              _params: {
+                _flow_id: "delete_record",
+                _event_name: "click",
+                _event_payload: {
+                  _id: "$row._id",
+                },
+                _object_id: "$event.currentTarget.id",
+                _source: "ui",
+              },
+            },
+          },
+        },
+      ],
+    },
+  });
+  await flowList.onMount();
+  await flushMounts();
+  const rowADelete = getObject("xlist-flow-actions_item_record-a_action_0");
+  const rowBDelete = getObject("xlist-flow-actions_item_record-b_action_0");
+  const rowB = getObject("xlist-flow-actions_item_record-b");
+  await flushMounts();
+
+  assert.notEqual(rowADelete._id, rowBDelete._id);
+  assert.equal(rowADelete._on.click._params._event_payload._id, "record-a");
+  assert.equal(rowBDelete._on.click._params._event_payload._id, "record-b");
+  assert.equal(XUI.getObject(rowADelete._id), rowADelete);
+  assert.equal(XUI.getObject(rowBDelete._id), rowBDelete);
+  assert.equal(rowB._mounted, true);
+  assert.equal(rowBDelete._mounted, true);
+  assert.equal(rowBDelete.dom.id, rowBDelete._id);
+  assert.equal(rowBDelete.dom._listeners.get("click")?.length, 1);
+
+  await rowBDelete.dom.click();
+  assert.equal(flowActionCommands.length, 1);
+  assert.equal(flowActionCommands[0]._module, "flow-client");
+  assert.equal(flowActionCommands[0]._op, "trigger");
+  assert.equal(flowActionCommands[0]._params._event_payload._id, "record-b");
+  assert.equal(flowActionCommands[0]._params._object_id, rowBDelete._id);
+  await flushMounts();
+  assert.deepEqual(childIds(getObject("xlist-flow-actions_list")), [
+    "xlist-flow-actions_item_record-a",
+  ]);
+  assert.equal(getObject("xlist-flow-actions_item_record-a_title")._text, "Record A");
+} finally {
+  _x.execute = originalExecute;
+}
 
 assert.doesNotThrow(() =>
   createList({
@@ -422,5 +556,244 @@ assert.equal(getObject("xlist-arbitrary_item_r-1_title")._text, "Nested Name");
 assert.equal(getObject("xlist-arbitrary_item_r-1_subtitle")._text, "Ops");
 assert.equal(getObject("xlist-arbitrary_item_r-1_meta")._text, "42");
 assert.equal(getObject("xlist-arbitrary_item_r-1_badge")._text, "ready");
+
+const styled = createList({
+  _id: "xlist-styled",
+  _items: [
+    {
+      id: "styled",
+      name: "Styled row",
+      avatar: "/avatar.png",
+      status: "ready",
+      action_label: "Open",
+    },
+  ],
+  _row_key: "id",
+  _item: {
+    _title: "$row.name",
+    _avatar: "$row.avatar",
+    _badge: "$row.status",
+    _leading: "L",
+    _trailing: "T",
+    _actions: [{ _type: "button", _text: "$row.action_label" }],
+    _styles: {
+      _item: { _style: { padding: "18px", "border-radius": "12px" } },
+      _content: { _style: { gap: "10px" } },
+      _title: { _style: { "font-size": "22px", "font-weight": "600" } },
+      _avatar: { _style: { width: "48px", height: "48px" } },
+      _badge: { _style: { color: "var(--x-primary)", padding: "2px 6px" } },
+      _leading: { _style: { color: "red", padding: "4px" } },
+      _trailing: { _style: { margin: "0" } },
+      _actions: { _style: { "justify-content": "flex-start" } },
+    },
+  },
+});
+assert.ok(styled);
+assert.equal(styleOf("xlist-styled_item_styled").padding, "18px");
+assert.equal(styleOf("xlist-styled_item_styled")["border-radius"], "12px");
+assert.equal(styleOf("xlist-styled_item_styled_content").gap, "10px");
+assert.equal(styleOf("xlist-styled_item_styled_title")["font-size"], "22px");
+assert.equal(styleOf("xlist-styled_item_styled_title")["font-weight"], "600");
+assert.equal(styleOf("xlist-styled_item_styled_avatar").width, "48px");
+assert.equal(styleOf("xlist-styled_item_styled_avatar").height, "48px");
+assert.equal(styleOf("xlist-styled_item_styled_badge").color, "var(--x-primary)");
+assert.equal(styleOf("xlist-styled_item_styled_badge").padding, "2px 6px");
+assert.equal(styleOf("xlist-styled_item_styled_leading_0").color, "red");
+assert.equal(styleOf("xlist-styled_item_styled_leading_0").padding, "4px");
+assert.equal(styleOf("xlist-styled_item_styled_trailing_0").margin, "0");
+assert.equal(styleOf("xlist-styled_item_styled_actions")["justify-content"], "flex-start");
+
+createList({
+  _id: "xlist-icon-style",
+  _items: [{ id: "icon", name: "Icon row", icon: "I" }],
+  _row_key: "id",
+  _item: {
+    _title: "$row.name",
+    _icon: "$row.icon",
+    _styles: {
+      _icon: { _style: { color: "blue", width: "36px" } },
+    },
+  },
+});
+assert.equal(styleOf("xlist-icon-style_item_icon_icon_0").color, "blue");
+assert.equal(styleOf("xlist-icon-style_item_icon_icon_0").width, "36px");
+
+createList({
+  _id: "xlist-image-style",
+  _items: [{ id: "img", name: "Image row", image: "/row.png" }],
+  _row_key: "id",
+  _item: {
+    _title: "$row.name",
+    _image: "$row.image",
+    _styles: {
+      _image: { _style: { "border-radius": "10px" } },
+    },
+  },
+});
+assert.equal(styleOf("xlist-image-style_item_img_image")["border-radius"], "10px");
+
+createList({
+  _id: "xlist-structured-merge",
+  _items: [{ id: "merge", name: "Merge row", status: "ready" }],
+  _row_key: "id",
+  _item: {
+    _title: "$row.name",
+    _badge: {
+      _text: "$row.status",
+      _variant: "success",
+      _style: {
+        color: "green",
+      },
+    },
+    _leading: {
+      _type: "label",
+      _text: "Lead",
+      _style: {
+        color: "blue",
+      },
+    },
+    _styles: {
+      _badge: {
+        _style: {
+          color: "red",
+          "font-size": "12px",
+        },
+      },
+      _leading: {
+        _style: {
+          color: "red",
+          padding: "6px",
+        },
+      },
+    },
+  },
+});
+assert.equal(styleOf("xlist-structured-merge_item_merge_badge").color, "green");
+assert.equal(styleOf("xlist-structured-merge_item_merge_badge")["font-size"], "12px");
+assert.equal(styleOf("xlist-structured-merge_item_merge_leading_0").color, "blue");
+assert.equal(styleOf("xlist-structured-merge_item_merge_leading_0").padding, "6px");
+
+function localDateTime(offsetDays, hour, minute = 0) {
+  const value = new Date();
+  value.setDate(value.getDate() + offsetDays);
+  value.setHours(hour, minute, 0, 0);
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  const hours = String(value.getHours()).padStart(2, "0");
+  const minutes = String(value.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+createList({
+  _id: "xlist-formatted-values",
+  _items: [
+    {
+      id: "run",
+      occurred_at: localDateTime(0, 7, 30),
+      distance_kilometers: 3.456,
+    },
+  ],
+  _row_key: "id",
+  _item: {
+    _title: {
+      _field: "occurred_at",
+      _format: "relative-datetime",
+    },
+    _trailing: {
+      _field: "distance_kilometers",
+      _format: "number",
+      _suffix: " km",
+    },
+  },
+});
+assert.match(getObject("xlist-formatted-values_item_run_title")._text, /^Today, \d{2}:\d{2}$/);
+assert.equal(getObject("xlist-formatted-values_item_run_trailing_0")._text, "3.46 km");
+
+// Equivalent instants must render identically, regardless of input representation.
+// Run this suite under UTC and both positive/negative-offset host timezones.
+const timestampCases = [
+  "2026-11-13T00:30:00Z",
+  "2026-11-13T02:30:00+02:00",
+  "2026-11-12T19:30:00-05:00",
+  "2026-11-13T23:30:00.123Z",
+];
+let timestampCase = 0;
+function formattedTimestamp(value, format) {
+  const id = "xlist-timestamp-" + timestampCase++;
+  createList({
+    _id: id,
+    _items: [{ id: "row", occurred_at: value }],
+    _row_key: "id",
+    _item: { _title: { _field: "occurred_at", _format: format } },
+  });
+  return getObject(id + "_item_row_title")._text;
+}
+for (const timestamp of timestampCases) {
+  const instant = new Date(timestamp);
+  for (const format of ["time", "date", "datetime", "relative-datetime"]) {
+    const expected = formattedTimestamp(instant, format);
+    assert.equal(formattedTimestamp(timestamp, format), expected, timestamp + " / " + format);
+    assert.equal(formattedTimestamp(instant.getTime(), format), expected);
+    if (format === "time") {
+      assert.equal(expected, instant.toLocaleTimeString(undefined, {
+        hour: "2-digit", minute: "2-digit", hour12: false,
+      }));
+    }
+  }
+}
+for (const [timestamp, localDate] of [
+  ["2026-11-13", new Date(2026, 10, 13)],
+  ["2026-11-13T07:30:00", new Date(2026, 10, 13, 7, 30)],
+]) {
+  for (const format of ["time", "date", "datetime"]) {
+    assert.equal(formattedTimestamp(timestamp, format), formattedTimestamp(localDate, format));
+  }
+}
+
+const mappingTemplate = {
+  _title: "$row.name",
+  _styles: {
+    _title: {
+      _style: {
+        "font-size": "22px",
+        "font-weight": "600",
+      },
+    },
+    _subtitle: {
+      _style: {
+        color: "gray",
+      },
+    },
+  },
+};
+mappingTemplate._title = "$row.label";
+assert.equal(mappingTemplate._title, "$row.label");
+assert.equal(mappingTemplate._styles._title._style["font-size"], "22px");
+mappingTemplate._styles._title._style["font-size"] = "24px";
+assert.equal(mappingTemplate._styles._title._style["font-weight"], "600");
+assert.equal(mappingTemplate._styles._subtitle._style.color, "gray");
+
+const removable = createList({
+  _id: "xlist-remove-style",
+  _items: [{ id: "remove", name: "Remove style" }],
+  _row_key: "id",
+  _item: {
+    _title: "$row.name",
+    _styles: {
+      _title: {
+        _style: {
+          "font-size": "24px",
+        },
+      },
+    },
+  },
+});
+assert.equal(styleOf("xlist-remove-style_item_remove_title")["font-size"], "24px");
+removable._item = {
+  _title: "$row.name",
+};
+assert.equal(getObject("xlist-remove-style_item_remove_title")._style, undefined);
+assert.equal(getObject("pot-rich-list_item_fern_title")._style, undefined);
 
 console.log("xlist collection component passed");

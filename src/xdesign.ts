@@ -1,12 +1,24 @@
 import type { XpellSkill } from "@xpell/core";
 
 type XpellSkillDesign = NonNullable<XpellSkill["_design"]>;
-type XpellSkillInspectorField = NonNullable<
+type XpellCoreSkillInspectorField = NonNullable<
   NonNullable<XpellSkillDesign["_inspector"]>["_fields"]
 >[number];
+type XDashboardInspectorGroup = "design" | "content" | "data" | "interactions" | "advanced";
+type XpellSkillInspectorField = XpellCoreSkillInspectorField & {
+  _group?: XDashboardInspectorGroup;
+  _capabilities?: string[];
+};
+type XDashboardSkillDesign = XpellSkillDesign & {
+  _capabilities?: string[];
+};
 type XpellSkillChildDesign = NonNullable<XpellSkillDesign["_children"]>;
+type XpellSkillSemanticChild = NonNullable<XpellSkillDesign["_semantic_children"]>[number];
 
 type XDashboardType =
+  | "xshell"
+  | "xpage"
+  | "xpage-header"
   | "card"
   | "grid"
   | "navlist"
@@ -41,7 +53,157 @@ const sections: NonNullable<XpellSkillDesign["_inspector"]>["_sections"] = [
   "raw-json",
 ];
 
+const rootContainerCapabilities = ["spacing", "layout", "appearance"];
+const rootTextCapabilities = ["typography", "spacing", "appearance"];
+const rootSurfaceCapabilities = ["spacing", "appearance"];
+
+const advancedInspectorKeys = new Set([
+  "class",
+  "_class",
+  "_on_data",
+  "_on_change",
+  "_top",
+  "_input_id",
+  "_select_id",
+  "_name",
+  "_href",
+  "_width",
+  "_max_height",
+  "_max_width",
+  "_autofocus",
+  "_data_output",
+  "_selected_data_source",
+  "_update_data_source_event",
+]);
+
+const designInspectorKeys = new Set([
+  "_variant",
+  "_density",
+  "_size",
+  "_elevation",
+  "_side",
+  "_direction",
+  "_gap",
+  "_cols",
+  "_min_col_width",
+  "_align",
+  "_justify",
+  "_wrap",
+  "_grow",
+  "_bordered",
+  "_striped",
+  "_hover",
+  "_pill",
+  "_dot",
+  "_orientation",
+  "_thickness",
+  "_length",
+  "_inset",
+  "_muted",
+  "_hide_image",
+  "_hide_scrollbar",
+  "_scroll",
+  "_dividers",
+  "_collapsed",
+  "_overlay",
+  "_inline",
+  "_required",
+  "_clearable",
+  "_icon",
+  "_view",
+  "_week_start",
+]);
+
+const contentInspectorKeys = new Set([
+  "_title",
+  "_subtitle",
+  "_meta",
+  "_text",
+  "_description",
+  "_label",
+  "_value",
+  "_delta",
+  "_delta_state",
+  "_empty_text",
+  "_empty_column_text",
+  "_undated_text",
+  "_placeholder",
+  "_image",
+  "_image_alt",
+  "_link_text",
+  "_logo",
+  "_empty",
+  "_content",
+  "_children",
+  "_control",
+  "_nav",
+  "_sidebar",
+  "_footer",
+]);
+
+const dataInspectorKeys = new Set([
+  "_items",
+  "_rows",
+  "_records",
+  "_columns",
+  "_data_source",
+  "_row_key",
+  "_item",
+  "_group_by",
+  "_date_field",
+  "_end_date_field",
+  "_order",
+  "_month",
+  "_options",
+]);
+
+const interactionInspectorKeys = new Set([
+  "_actions",
+  "_action",
+  "_open",
+  "_active",
+  "_selectable",
+  "_selected_key",
+  "_draggable",
+  "_disabled",
+  "_closable",
+  "_close_on_backdrop",
+  "_auto_close_ms",
+  "_position",
+  "_merged",
+]);
+
+function inferInspectorGroup(
+  _key: string,
+  extra: Partial<XpellSkillInspectorField>
+): XDashboardInspectorGroup | undefined {
+  if (extra._group) return extra._group;
+  if (extra._advanced || advancedInspectorKeys.has(_key)) return "advanced";
+  if (designInspectorKeys.has(_key)) return "design";
+  if (dataInspectorKeys.has(_key)) return "data";
+  if (interactionInspectorKeys.has(_key)) return "interactions";
+  if (contentInspectorKeys.has(_key)) return "content";
+  return undefined;
+}
+
+function inferDesignCapabilities(
+  fields: XpellSkillInspectorField[],
+  children: XpellSkillDesign["_children"]
+): string[] | undefined {
+  const capabilitySet = new Set<string>();
+  if (children?._allowed) rootContainerCapabilities.forEach((capability) => capabilitySet.add(capability));
+  if (fields.some((field) => field._group === "content")) {
+    rootTextCapabilities.forEach((capability) => capabilitySet.add(capability));
+  }
+  if (fields.some((field) => field._group === "design")) {
+    rootSurfaceCapabilities.forEach((capability) => capabilitySet.add(capability));
+  }
+  return capabilitySet.size ? Array.from(capabilitySet) : undefined;
+}
+
 const dashboardChildren = [
+  "xpage",
+  "xpage-header",
   "card",
   "grid",
   "stack",
@@ -67,6 +229,46 @@ const dashboardChildren = [
   "xsection",
 ];
 
+const shellChildren = [
+  "xpage",
+  "scroll",
+  "stack",
+  "xsection",
+  "toolbar",
+  "grid",
+  "table",
+  "xlist",
+  "xgallery",
+  "xkanban",
+  "xtimeline",
+  "xcalendar",
+  "xstats",
+  "drawer",
+  "modal",
+  "toast",
+];
+
+const pageChildren = [
+  "xpage-header",
+  "toolbar",
+  "xsection",
+  "grid",
+  "stack",
+  "table",
+  "xlist",
+  "xgallery",
+  "xkanban",
+  "xtimeline",
+  "xcalendar",
+  "xstats",
+  "empty",
+  "divider",
+  "scroll",
+  "drawer",
+  "modal",
+  "toast",
+];
+
 function field(
   _key: string,
   _label: string,
@@ -74,7 +276,14 @@ function field(
   _description: string,
   extra: Partial<XpellSkillInspectorField> = {}
 ): XpellSkillInspectorField {
-  return { _key, _label, _input, _description, ...extra };
+  return {
+    _key,
+    _label,
+    _input,
+    _description,
+    _group: inferInspectorGroup(_key, extra),
+    ...extra,
+  };
 }
 
 function selectField(
@@ -105,20 +314,288 @@ function container(_accepted_types = dashboardChildren): XpellSkillChildDesign {
   };
 }
 
+function semanticGroup(
+  _id: string,
+  _label: string,
+  _role: string,
+  _children: XpellSkillSemanticChild[],
+  _path = "",
+  extra: Partial<XpellSkillSemanticChild> = {}
+): XpellSkillSemanticChild {
+  return {
+    _id,
+    _label,
+    _role,
+    _kind: "group",
+    _path,
+    _children,
+    ...extra,
+  };
+}
+
+function semanticProperty(
+  _id: string,
+  _label: string,
+  _role: string,
+  _path: string,
+  extra: Partial<XpellSkillSemanticChild> = {}
+): XpellSkillSemanticChild {
+  return {
+    _id,
+    _label,
+    _role,
+    _kind: "property",
+    _path,
+    _actions: ["editable"],
+    ...extra,
+  };
+}
+
+function semanticObject(
+  _id: string,
+  _label: string,
+  _role: string,
+  _path: string
+): XpellSkillSemanticChild {
+  return {
+    _id,
+    _label,
+    _role,
+    _kind: "object",
+    _path,
+    _actions: ["editable"],
+  };
+}
+
+function semanticObjectArray(
+  _id: string,
+  _label: string,
+  _role: string,
+  _path: string,
+  extra: Partial<XpellSkillSemanticChild> = {}
+): XpellSkillSemanticChild {
+  return {
+    _id,
+    _label,
+    _role,
+    _kind: "object-array",
+    _path,
+    _actions: ["editable"],
+    ...extra,
+  };
+}
+
+const templateSurfaceCapabilities = ["spacing", "layout", "appearance"];
+const templateTextCapabilities = ["typography", "spacing", "appearance"];
+const templateMediaCapabilities = ["spacing", "layout", "appearance"];
+const templateBadgeCapabilities = ["typography", "spacing", "appearance"];
+
+function templateStylePath(surface: string): string {
+  return `_styles.${surface}._style`;
+}
+
+function semanticTemplateStyleTarget(
+  _id: string,
+  _label: string,
+  _role: string,
+  surface: string,
+  _capabilities: string[]
+): XpellSkillSemanticChild {
+  return semanticGroup(_id, _label, _role, [], `_styles.${surface}`, {
+    _style_path: templateStylePath(surface),
+    _capabilities,
+  });
+}
+
+function semanticTemplateProperty(
+  _id: string,
+  _label: string,
+  _role: string,
+  _path: string,
+  surface: string,
+  _capabilities: string[]
+): XpellSkillSemanticChild {
+  return semanticProperty(_id, _label, _role, _path, {
+    _style_path: templateStylePath(surface),
+    _capabilities,
+  });
+}
+
+function semanticTemplateObjectArray(
+  _id: string,
+  _label: string,
+  _role: string,
+  _path: string,
+  surface: string,
+  _capabilities: string[]
+): XpellSkillSemanticChild {
+  return semanticObjectArray(_id, _label, _role, _path, {
+    _style_path: templateStylePath(surface),
+    _capabilities,
+  });
+}
+
+const gallerySemanticChildren: XpellSkillSemanticChild[] = [
+  semanticGroup("item-template", "Item Template", "collection-item-template", [
+    semanticTemplateStyleTarget("item-card", "Card", "item-card", "_item", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-image", "Image", "image", "_image", "_image", templateMediaCapabilities),
+    semanticProperty("item-image-alt", "Image Alt", "image-alt", "_image_alt"),
+    semanticTemplateStyleTarget("item-body", "Body", "body", "_body", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-title", "Title", "title", "_title", "_title", templateTextCapabilities),
+    semanticTemplateProperty("item-subtitle", "Subtitle", "subtitle", "_subtitle", "_subtitle", templateTextCapabilities),
+    semanticTemplateProperty("item-description", "Description", "description", "_description", "_description", templateTextCapabilities),
+    semanticTemplateProperty("item-meta", "Meta", "meta", "_meta", "_meta", templateTextCapabilities),
+    semanticTemplateProperty("item-badge", "Badge", "badge", "_badge", "_badge", templateBadgeCapabilities),
+    semanticTemplateObjectArray("item-actions", "Actions", "actions", "_actions", "_actions", templateSurfaceCapabilities),
+  ], "_item"),
+  semanticObjectArray("fallback-actions", "Fallback Actions", "fallback-actions", "_actions"),
+  semanticGroup("empty-state", "Empty State", "empty-state", [
+    semanticProperty("empty-text", "Empty Text", "empty-text", "_empty_text"),
+    semanticObject("empty-object", "Empty Object", "empty-object", "_empty"),
+  ]),
+];
+
+const listSemanticChildren: XpellSkillSemanticChild[] = [
+  semanticGroup("item-template", "Item Template", "collection-item-template", [
+    semanticTemplateStyleTarget("item-row", "Row", "item-row", "_item", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-leading", "Leading", "leading", "_leading", "_leading", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-image", "Image", "image", "_image", "_image", templateMediaCapabilities),
+    semanticTemplateProperty("item-avatar", "Avatar", "avatar", "_avatar", "_avatar", templateMediaCapabilities),
+    semanticTemplateProperty("item-icon", "Icon", "icon", "_icon", "_icon", templateMediaCapabilities),
+    semanticProperty("item-image-alt", "Image Alt", "image-alt", "_image_alt"),
+    semanticTemplateStyleTarget("item-content", "Content", "content", "_content", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-title", "Title", "title", "_title", "_title", templateTextCapabilities),
+    semanticTemplateProperty("item-subtitle", "Subtitle", "subtitle", "_subtitle", "_subtitle", templateTextCapabilities),
+    semanticTemplateProperty("item-description", "Description", "description", "_description", "_description", templateTextCapabilities),
+    semanticTemplateProperty("item-meta", "Meta", "meta", "_meta", "_meta", templateTextCapabilities),
+    semanticTemplateProperty("item-badge", "Badge", "badge", "_badge", "_badge", templateBadgeCapabilities),
+    semanticTemplateProperty("item-trailing", "Trailing", "trailing", "_trailing", "_trailing", templateSurfaceCapabilities),
+    semanticTemplateObjectArray("item-actions", "Actions", "actions", "_actions", "_actions", templateSurfaceCapabilities),
+  ], "_item"),
+  semanticObjectArray("fallback-actions", "Fallback Actions", "fallback-actions", "_actions"),
+  semanticGroup("empty-state", "Empty State", "empty-state", [
+    semanticProperty("empty-text", "Empty Text", "empty-text", "_empty_text"),
+    semanticObject("empty-object", "Empty Object", "empty-object", "_empty"),
+  ]),
+];
+
+const kanbanSemanticChildren: XpellSkillSemanticChild[] = [
+  semanticGroup("kanban-configuration", "Board Configuration", "configuration", [
+    semanticProperty("group-by", "Group By", "group-by", "_group_by"),
+    semanticProperty("columns", "Columns", "columns", "_columns"),
+    semanticProperty("row-key", "Row Key", "row-key", "_row_key"),
+    semanticProperty("min-column-width", "Min Column Width", "min-column-width", "_min_col_width"),
+    semanticProperty("gap", "Gap", "gap", "_gap"),
+    semanticProperty("draggable", "Draggable", "draggable", "_draggable"),
+  ]),
+  semanticGroup("item-template", "Card Template", "collection-item-template", [
+    semanticTemplateStyleTarget("item-card", "Card", "item-card", "_item", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-image", "Image", "image", "_image", "_image", templateMediaCapabilities),
+    semanticProperty("item-image-alt", "Image Alt", "image-alt", "_image_alt"),
+    semanticTemplateStyleTarget("item-body", "Body", "body", "_body", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-title", "Title", "title", "_title", "_title", templateTextCapabilities),
+    semanticTemplateProperty("item-subtitle", "Subtitle", "subtitle", "_subtitle", "_subtitle", templateTextCapabilities),
+    semanticTemplateProperty("item-description", "Description", "description", "_description", "_description", templateTextCapabilities),
+    semanticTemplateProperty("item-meta", "Meta", "meta", "_meta", "_meta", templateTextCapabilities),
+    semanticTemplateProperty("item-badge", "Badge", "badge", "_badge", "_badge", templateBadgeCapabilities),
+    semanticTemplateObjectArray("item-actions", "Actions", "actions", "_actions", "_actions", templateSurfaceCapabilities),
+  ], "_item"),
+  semanticObjectArray("fallback-actions", "Fallback Actions", "fallback-actions", "_actions"),
+  semanticGroup("empty-state", "Empty State", "empty-state", [
+    semanticProperty("empty-text", "Empty Text", "empty-text", "_empty_text"),
+    semanticProperty("empty-column-text", "Empty Column Text", "empty-column-text", "_empty_column_text"),
+    semanticObject("empty-object", "Empty Object", "empty-object", "_empty"),
+  ]),
+];
+
+const timelineSemanticChildren: XpellSkillSemanticChild[] = [
+  semanticGroup("timeline-configuration", "Timeline Configuration", "configuration", [
+    semanticProperty("date-field", "Date Field", "date-field", "_date_field"),
+    semanticProperty("order", "Order", "order", "_order"),
+    semanticProperty("row-key", "Row Key", "row-key", "_row_key"),
+    semanticProperty("selectable", "Selectable", "selectable", "_selectable"),
+    semanticProperty("selected-key", "Selected Key", "selected-key", "_selected_key"),
+    semanticProperty("undated-text", "Undated Text", "undated-text", "_undated_text"),
+  ]),
+  semanticGroup("item-template", "Entry Template", "collection-item-template", [
+    semanticTemplateStyleTarget("item-entry", "Entry", "entry", "_item", templateSurfaceCapabilities),
+    semanticTemplateStyleTarget("item-axis", "Axis", "axis", "_axis", templateSurfaceCapabilities),
+    semanticTemplateStyleTarget("item-date", "Date", "date", "_date", templateTextCapabilities),
+    semanticTemplateStyleTarget("item-marker", "Marker", "marker", "_dot", templateMediaCapabilities),
+    semanticTemplateStyleTarget("item-card", "Card", "item-card", "_card", templateSurfaceCapabilities),
+    semanticTemplateStyleTarget("item-body", "Body", "body", "_body", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-image", "Image", "image", "_image", "_image", templateMediaCapabilities),
+    semanticTemplateProperty("item-icon", "Icon", "icon", "_icon", "_icon", templateMediaCapabilities),
+    semanticProperty("item-image-alt", "Image Alt", "image-alt", "_image_alt"),
+    semanticTemplateProperty("item-title", "Title", "title", "_title", "_title", templateTextCapabilities),
+    semanticTemplateProperty("item-subtitle", "Subtitle", "subtitle", "_subtitle", "_subtitle", templateTextCapabilities),
+    semanticTemplateProperty("item-description", "Description", "description", "_description", "_description", templateTextCapabilities),
+    semanticTemplateProperty("item-meta", "Meta", "meta", "_meta", "_meta", templateTextCapabilities),
+    semanticTemplateProperty("item-badge", "Badge", "badge", "_badge", "_badge", templateBadgeCapabilities),
+    semanticTemplateObjectArray("item-actions", "Actions", "actions", "_actions", "_actions", templateSurfaceCapabilities),
+  ], "_item"),
+  semanticObjectArray("fallback-actions", "Fallback Actions", "fallback-actions", "_actions"),
+  semanticGroup("empty-state", "Empty State", "empty-state", [
+    semanticProperty("empty-text", "Empty Text", "empty-text", "_empty_text"),
+    semanticObject("empty-object", "Empty Object", "empty-object", "_empty"),
+  ]),
+];
+
+const calendarSemanticChildren: XpellSkillSemanticChild[] = [
+  semanticGroup("calendar-configuration", "Calendar Configuration", "configuration", [
+    semanticProperty("date-field", "Date Field", "date-field", "_date_field"),
+    semanticProperty("end-date-field", "End Date Field", "end-date-field", "_end_date_field"),
+    semanticProperty("view", "View", "view", "_view"),
+    semanticProperty("month", "Month", "month", "_month"),
+    semanticProperty("week-start", "Week Start", "week-start", "_week_start"),
+    semanticProperty("row-key", "Row Key", "row-key", "_row_key"),
+    semanticProperty("selectable", "Selectable", "selectable", "_selectable"),
+    semanticProperty("selected-key", "Selected Key", "selected-key", "_selected_key"),
+  ]),
+  semanticGroup("item-template", "Event Template", "collection-item-template", [
+    semanticTemplateStyleTarget("item-event", "Event", "event", "_item", templateSurfaceCapabilities),
+    semanticTemplateProperty("item-image", "Image", "image", "_image", "_image", templateMediaCapabilities),
+    semanticTemplateProperty("item-icon", "Icon", "icon", "_icon", "_icon", templateMediaCapabilities),
+    semanticProperty("item-image-alt", "Image Alt", "image-alt", "_image_alt"),
+    semanticTemplateProperty("item-title", "Title", "title", "_title", "_title", templateTextCapabilities),
+    semanticTemplateProperty("item-subtitle", "Subtitle", "subtitle", "_subtitle", "_subtitle", templateTextCapabilities),
+    semanticTemplateProperty("item-description", "Description", "description", "_description", "_description", templateTextCapabilities),
+    semanticTemplateProperty("item-meta", "Meta", "meta", "_meta", "_meta", templateTextCapabilities),
+    semanticTemplateProperty("item-badge", "Badge", "badge", "_badge", "_badge", templateBadgeCapabilities),
+    semanticTemplateObjectArray("item-actions", "Actions", "actions", "_actions", "_actions", templateSurfaceCapabilities),
+  ], "_item"),
+  semanticObjectArray("fallback-actions", "Fallback Actions", "fallback-actions", "_actions"),
+  semanticGroup("empty-state", "Empty State", "empty-state", [
+    semanticProperty("empty-text", "Empty Text", "empty-text", "_empty_text"),
+    semanticObject("empty-object", "Empty Object", "empty-object", "_empty"),
+  ]),
+];
+
+const pageHeaderSemanticChildren: XpellSkillSemanticChild[] = [
+  semanticProperty("title", "Title", "title", "_title"),
+  semanticProperty("subtitle", "Subtitle", "subtitle", "_subtitle"),
+  semanticProperty("meta", "Metadata", "metadata", "_meta"),
+  semanticObjectArray("actions", "Actions", "actions", "_actions"),
+];
+
 function design(
   _title: string,
   _category: string,
   _icon: string,
   _default_object: Record<string, any>,
   _fields: XpellSkillInspectorField[],
-  _children: XpellSkillDesign["_children"]
-): XpellSkillDesign {
+  _children: XpellSkillDesign["_children"],
+  _semantic_children: XpellSkillSemanticChild[] = []
+): XDashboardSkillDesign {
+  const capabilities = inferDesignCapabilities(_fields, _children);
   return {
     _inspector: {
       _fields,
       _sections: sections,
     },
     _children,
+    ...(_semantic_children.length > 0 ? { _semantic_children } : {}),
+    ...(capabilities ? { _capabilities: capabilities } : {}),
     _palette: {
       _title,
       _category,
@@ -128,7 +605,98 @@ function design(
   };
 }
 
-export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = {
+export const XDashboardSkillDesigns: Record<XDashboardType, XDashboardSkillDesign> = {
+  xshell: design(
+    "App Shell",
+    "Composition",
+    "app-window",
+    {
+      _type: "xshell",
+      _scroll: true,
+      _children: [
+        {
+          _type: "xpage",
+          _children: [
+            {
+              _type: "xpage-header",
+              _title: "Page title",
+              _subtitle: "Page subtitle",
+            },
+          ],
+        },
+      ],
+    },
+    [
+      field("_sidebar", "Sidebar", "json", "Optional sidebar object for app navigation."),
+      field("_children", "Main Children", "json", "Main application region children, usually xpage objects."),
+      field("_scroll", "Main Scroll", "checkbox", "Let the shell main region own vertical scrolling."),
+      field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
+    ],
+    container(shellChildren)
+  ),
+
+  xpage: design(
+    "Page",
+    "Composition",
+    "file-text",
+    {
+      _type: "xpage",
+      _width: "contained",
+      _children: [
+        {
+          _type: "xpage-header",
+          _title: "Page title",
+          _subtitle: "Page subtitle",
+        },
+        {
+          _type: "toolbar",
+          _variant: "plain",
+          _children: [],
+        },
+        {
+          _type: "xsection",
+          _title: "Section",
+          _children: [],
+        },
+      ],
+    },
+    [
+      selectField("_width", "Width", "Page width mode.", ["full", "contained", "readable"], { _group: "design" }),
+      selectField("_density", "Density", "Page rhythm density.", ["compact", "comfortable", "spacious"]),
+      field("_children", "Children", "json", "Page content children."),
+      field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
+    ],
+    container(pageChildren)
+  ),
+
+  "xpage-header": design(
+    "Page Header",
+    "Composition",
+    "heading-1",
+    {
+      _type: "xpage-header",
+      _title: "Customers",
+      _subtitle: "Manage customer accounts",
+      _actions: [
+        {
+          _type: "button",
+          _text: "Add Customer",
+          _variant: "primary",
+        },
+      ],
+    },
+    [
+      field("_title", "Title", "text", "Page title text."),
+      field("_subtitle", "Subtitle", "textarea", "Page subtitle or description."),
+      field("_meta", "Metadata", "text", "Optional status or metadata text."),
+      field("_actions", "Actions", "json", "Page-level action child objects.", { _group: "content" }),
+      selectField("_density", "Density", "Header spacing density.", ["compact", "comfortable", "spacious"]),
+      field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
+    ],
+    leaf(),
+    pageHeaderSemanticChildren
+  ),
+
   card: design(
     "Dashboard Card",
     "Cards",
@@ -149,6 +717,9 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
         _advanced: true,
       }),
       field("_hide_image", "Hide Image", "checkbox", "Hide the image area."),
+      selectField("_variant", "Variant", "Card variant.", ["default", "interactive", "elevated"]),
+      selectField("_density", "Density", "Card density.", ["compact", "comfortable", "spacious"]),
+      selectField("_elevation", "Elevation", "Card elevation.", ["none", "xs", "sm", "md"]),
       field("_href", "Link URL", "text", "Optional link URL.", {
         _advanced: true,
       }),
@@ -183,6 +754,7 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_cols", "Columns", "number", "Fixed column count. Ignored when minimum column width is set."),
       field("_gap", "Gap", "number", "Gap between grid items in pixels."),
       field("_min_col_width", "Min Column Width", "number", "Responsive auto-fit minimum column width in pixels."),
+      selectField("_density", "Density", "Grid gap density.", ["compact", "comfortable", "spacious"]),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
     container(["card", "kpi-card", "table", "badge", "field", "stack", "toolbar", "empty", "xsection"])
@@ -253,13 +825,14 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       _empty_text: "No records",
     },
     [
-      field("_columns", "Columns", "json", "Table columns. Prefer _key and _title; do not use render functions.", {
+      field("_columns", "Columns", "json", "Table columns. Prefer _key and _title; use _format or _value_type for date, datetime, and number display; do not use render functions.", {
         _required: true,
       }),
       field("_rows", "Rows", "json", "Static row array or XData key string."),
       field("_data_source", "Data Source", "text", "XData key used to hydrate/update rows."),
       field("_row_key", "Row Key", "text", "Row field used as the stable row key."),
-      field("_dense", "Dense", "checkbox", "Use compact row spacing."),
+      selectField("_variant", "Variant", "Table surface variant.", ["plain", "subtle", "card"]),
+      selectField("_density", "Density", "Table row density.", ["compact", "comfortable", "spacious"]),
       field("_striped", "Striped", "checkbox", "Use striped row styling."),
       field("_hover", "Hover", "checkbox", "Enable row hover styling."),
       field("_bordered", "Bordered", "checkbox", "Enable bordered table styling."),
@@ -304,7 +877,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       }),
       field("_actions", "Actions", "json", "Fallback per-item action child objects when _item._actions is not set."),
       field("_row_key", "Row Key", "text", "Row field used for stable item and action ids."),
-      field("_dense", "Dense", "checkbox", "Use compact row spacing."),
+      selectField("_variant", "Variant", "List surface variant.", ["plain", "subtle", "card"]),
+      selectField("_density", "Density", "List row density.", ["compact", "comfortable", "spacious"]),
       field("_selectable", "Selectable", "checkbox", "Enable item click and keyboard selection."),
       field("_selected_key", "Selected Key", "text", "Selected row key."),
       field("_gap", "Gap", "number", "Gap between list rows in pixels."),
@@ -313,7 +887,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_on_data", "Data Handler", "json", "Optional data-only handler for incoming record data.", { _advanced: true }),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
-    leaf()
+    leaf(),
+    listSemanticChildren
   ),
 
   xtimeline: design(
@@ -352,15 +927,17 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       }),
       field("_actions", "Actions", "json", "Fallback per-item action child objects when _item._actions is not set."),
       field("_row_key", "Row Key", "text", "Row field used for stable item and action ids."),
+      selectField("_density", "Density", "Timeline item density.", ["compact", "comfortable", "spacious"]),
       field("_selectable", "Selectable", "checkbox", "Enable item click and keyboard selection."),
       field("_selected_key", "Selected Key", "text", "Selected row key."),
       field("_empty_text", "Empty Text", "text", "Message shown when there are no records."),
       field("_empty", "Empty State", "json", "Optional empty-state child object.", { _advanced: true }),
-      field("_undated_text", "Undated Text", "text", "Text shown when a record has no usable date.", { _advanced: true }),
+      field("_undated_text", "Undated Text", "text", "Text shown when a record has no usable date.", { _advanced: true, _group: "content" }),
       field("_on_data", "Data Handler", "json", "Optional data-only handler for incoming record data.", { _advanced: true }),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
-    leaf()
+    leaf(),
+    timelineSemanticChildren
   ),
 
   xcalendar: design(
@@ -407,6 +984,7 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       }),
       field("_actions", "Actions", "json", "Fallback per-item action child objects when _item._actions is not set."),
       field("_row_key", "Row Key", "text", "Row field used for stable item and action ids."),
+      selectField("_density", "Density", "Calendar density.", ["compact", "comfortable", "spacious"]),
       field("_selectable", "Selectable", "checkbox", "Enable item click and keyboard selection."),
       field("_selected_key", "Selected Key", "text", "Selected row key."),
       field("_empty_text", "Empty Text", "text", "Message shown when the visible month has no records."),
@@ -414,7 +992,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_on_data", "Data Handler", "json", "Optional data-only handler for incoming record data.", { _advanced: true }),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
-    leaf()
+    leaf(),
+    calendarSemanticChildren
   ),
 
   xgallery: design(
@@ -455,6 +1034,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       }),
       field("_actions", "Actions", "json", "Fallback per-item action child objects when _item._actions is not set."),
       field("_row_key", "Row Key", "text", "Row field used for stable item and action ids."),
+      selectField("_variant", "Variant", "Gallery card surface variant.", ["plain", "subtle", "card"]),
+      selectField("_density", "Density", "Gallery card density.", ["compact", "comfortable", "spacious"]),
       field("_columns", "Columns", "number", "Preferred desktop column count."),
       field("_min_col_width", "Min Card Width", "number", "Responsive auto-fit minimum card width in pixels."),
       field("_gap", "Gap", "number", "Gap between gallery cards in pixels."),
@@ -463,7 +1044,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_on_data", "Data Handler", "json", "Optional data-only handler for incoming record data.", { _advanced: true }),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
-    leaf()
+    leaf(),
+    gallerySemanticChildren
   ),
 
   xkanban: design(
@@ -510,6 +1092,7 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       }),
       field("_actions", "Actions", "json", "Fallback per-item action child objects when _item._actions is not set."),
       field("_row_key", "Row Key", "text", "Row field used for stable card and action ids."),
+      selectField("_density", "Density", "Kanban board density.", ["compact", "comfortable", "spacious"]),
       field("_min_col_width", "Min Column Width", "number", "Responsive minimum column width in pixels."),
       field("_gap", "Gap", "number", "Gap between Kanban columns and cards in pixels."),
       field("_empty_text", "Empty Text", "text", "Message shown when there are no records."),
@@ -519,7 +1102,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_on_data", "Data Handler", "json", "Optional data-only handler for incoming record data.", { _advanced: true }),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
-    leaf()
+    leaf(),
+    kanbanSemanticChildren
   ),
 
   modal: design(
@@ -618,6 +1202,7 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_children", "Children", "json", "Child UI objects arranged by the stack."),
       selectField("_direction", "Direction", "Stack direction.", ["vertical", "horizontal"]),
       field("_gap", "Gap", "number", "Gap between child objects in pixels."),
+      selectField("_density", "Density", "Stack gap density.", ["compact", "comfortable", "spacious"]),
       selectField("_align", "Align", "Cross-axis alignment.", ["start", "center", "end", "stretch"]),
       selectField("_justify", "Justify", "Main-axis distribution.", ["start", "center", "end", "space-between", "space-around", "space-evenly"]),
       field("_wrap", "Wrap", "checkbox", "Allow child objects to wrap."),
@@ -644,6 +1229,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_value", "Value", "text", "Primary metric value."),
       field("_delta", "Delta", "text", "Optional change text."),
       selectField("_delta_state", "Delta State", "Trend state.", ["up", "down", "flat"]),
+      selectField("_variant", "Variant", "KPI card variant.", ["default", "interactive", "elevated"]),
+      selectField("_density", "Density", "KPI card density.", ["compact", "comfortable", "spacious"]),
       field("_icon", "Icon Text", "text", "Optional icon text.", { _advanced: true }),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
@@ -679,9 +1266,11 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_records", "Records", "json", "Optional static record array or XData key string.", {
         _advanced: true,
       }),
-      field("_items", "Metric Items", "json", "Metric definitions with _aggregate, _field, and optional _filter configuration.", {
+      field("_items", "Metric Items", "json", "Metric definitions with _aggregate, _field, optional _filter, and optional _value_prefix/_value_suffix/_unit display text.", {
         _required: true,
       }),
+      selectField("_variant", "Variant", "Stats card surface variant.", ["plain", "subtle", "card", "elevated"]),
+      selectField("_density", "Density", "Stats card density.", ["compact", "comfortable", "spacious"]),
       field("_min_col_width", "Min Card Width", "number", "Responsive minimum metric card width in pixels."),
       field("_gap", "Gap", "number", "Gap between metric cards in pixels."),
       field("_empty_text", "Empty Text", "text", "Message shown when no metrics are configured."),
@@ -746,6 +1335,8 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
     [
       field("_children", "Children", "json", "Toolbar child objects."),
       field("_gap", "Gap", "number", "Gap between toolbar items in pixels."),
+      selectField("_variant", "Variant", "Toolbar surface variant.", ["plain", "subtle", "sticky"]),
+      selectField("_density", "Density", "Toolbar density.", ["compact", "comfortable", "spacious"]),
       selectField("_align", "Align", "Cross-axis alignment.", ["start", "center", "end", "stretch"]),
       selectField("_justify", "Justify", "Main-axis distribution.", ["start", "center", "end", "space-between"]),
       field("_wrap", "Wrap", "checkbox", "Allow toolbar items to wrap."),
@@ -774,6 +1365,7 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
       field("_description", "Description", "textarea", "Descriptive empty-state text."),
       field("_icon", "Icon", "json", "Optional icon or visual child object.", { _advanced: true }),
       field("_action", "Action", "json", "Optional recovery action child object."),
+      selectField("_variant", "Variant", "Empty-state scope.", ["inline", "section", "page"]),
       selectField("_size", "Size", "Empty-state size.", ["sm", "md", "lg"]),
       selectField("_align", "Align", "Content alignment.", ["start", "center"]),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
@@ -798,9 +1390,10 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
     [
       field("_children", "Children", "json", "Grouped controls or action objects."),
       field("_gap", "Gap", "number", "Gap between children in pixels."),
+      selectField("_variant", "Variant", "Input group surface variant.", ["plain", "subtle", "merged"]),
+      selectField("_density", "Density", "Input group density.", ["compact", "comfortable", "spacious"]),
       selectField("_align", "Align", "Cross-axis alignment.", ["start", "center", "end", "stretch"]),
       field("_wrap", "Wrap", "checkbox", "Allow controls to wrap."),
-      field("_dense", "Dense", "checkbox", "Use compact spacing."),
       field("_merged", "Merged", "checkbox", "Use connected control styling."),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
@@ -976,10 +1569,48 @@ export const XDashboardSkillDesigns: Record<XDashboardType, XpellSkillDesign> = 
     [
       field("_title", "Title", "text", "Section title."),
       field("_subtitle", "Subtitle", "textarea", "Section subtitle or description."),
-      field("_actions", "Actions", "json", "Header action child objects."),
+      selectField("_variant", "Variant", "Section surface variant.", ["plain", "subtle", "card"]),
+      selectField("_density", "Density", "Section density.", ["compact", "comfortable", "spacious"]),
+      selectField("_elevation", "Elevation", "Section elevation.", ["none", "xs", "sm", "md"]),
+      field("_actions", "Actions", "json", "Header action child objects.", { _group: "content" }),
       field("_children", "Body Children", "json", "Section body content."),
       field("class", "CSS Classes", "text", "Additional CSS classes.", { _advanced: true }),
     ],
-    container()
+    container(),
+    [
+      {
+        _id: "title",
+        _label: "Title",
+        _role: "title",
+        _kind: "property",
+        _path: "_title",
+        _actions: ["editable"],
+      },
+      {
+        _id: "subtitle",
+        _label: "Subtitle",
+        _role: "subtitle",
+        _kind: "property",
+        _path: "_subtitle",
+        _actions: ["editable"],
+      },
+      {
+        _id: "actions",
+        _label: "Actions",
+        _role: "actions",
+        _kind: "object-array",
+        _path: "_actions",
+        _actions: ["editable"],
+      },
+      {
+        _id: "body",
+        _label: "Body",
+        _role: "body",
+        _kind: "children",
+        _path: "_children",
+        _accepted_types: dashboardChildren,
+        _actions: ["add-child"],
+      },
+    ]
   ),
 };
