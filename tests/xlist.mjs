@@ -797,3 +797,6 @@ assert.equal(getObject("xlist-remove-style_item_remove_title")._style, undefined
 assert.equal(getObject("pot-rich-list_item_fern_title")._style, undefined);
 
 console.log("xlist collection component passed");
+
+const { runDashboardRuntimeRegressions } = await import("./dashboard-runtime-regressions.mjs");
+runDashboardRuntimeRegressions(XUI);

@@ -29,13 +29,13 @@ export class XShell extends XUIObject {
     const userChildren = Array.isArray((data as any)._children)
       ? [...((data as any)._children as XUIObjectData[])]
       : [];
-    if (Array.isArray((data as any)._children)) (data as any)._children = [];
+    const rootData = { ...data, _children: [] };
 
-    super(data, defaults, true);
+    super(rootData, defaults, true);
     this.__main_id = this._id + "_main";
     this.__main_children = userChildren;
 
-    this.parse(data);
+    this.parse(rootData);
     this.applyProps();
     this.applyClassName();
     this.buildShell();

@@ -281,7 +281,10 @@ export class XStats extends XUIObject {
 
     if (typeof value !== "string" || !value.trim()) return undefined;
     const raw = value.trim();
-    const localDateMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s])/u);
+    // Unzoned values name a local day; explicit offsets must be parsed as instants.
+    const localDateMatch = raw.match(
+      /^(\d{4})-(\d{2})-(\d{2})(?:[T\s]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)?$/u
+    );
     if (localDateMatch) {
       return {
         y: Number(localDateMatch[1]),

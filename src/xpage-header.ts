@@ -1,4 +1,4 @@
-import { XUIObject } from "@xpell/ui";
+import { XUI, XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XpellSkill } from "@xpell/ui";
 import { XPAGE_HEADER_SKILL } from "./xpage-header.skill";
 
@@ -23,6 +23,8 @@ export class XPageHeader extends XUIObject {
   private __meta = "";
   private __actions: XUIObjectData[] = [];
   private __density?: XPageHeaderDensity;
+  private __initializing = true;
+  private __actions_dirty = true;
 
   private readonly __title_id: string;
   private readonly __subtitle_id: string;
@@ -46,6 +48,7 @@ export class XPageHeader extends XUIObject {
     this.applyProps();
     this.applyClassName();
     this.buildHeader();
+    this.__initializing = false;
   }
 
   private normalizeDensity(value: any): XPageHeaderDensity | undefined {
@@ -133,6 +136,64 @@ export class XPageHeader extends XUIObject {
       });
     }
 
-    children.forEach((child) => this.append(child));
+    children.forEach((data) => {
+      const child = this.ui_children.find((child) => child._id === data._id);
+      if (child) {
+        if (data._id === this.__actions_id && this.__actions_dirty) {
+          // Recreate owned actions so edits include handlers, not only DOM fields.
+          [...child.ui_children].forEach((action) => XUI.remove(action._id));
+        }
+        const nextIds = new Set((data._children ?? []).map((child) => child._id));
+        child.ui_children.forEach((previous) => {
+          if (!nextIds.has(previous._id)) XUI.remove(previous._id);
+        });
+        child.update(data);
+      } else this.append(data);
+    });
+    if (!this.__actions.length) {
+      const actions = this.ui_children.find((child) => child._id === this.__actions_id);
+      if (actions) XUI.remove(actions._id);
+    }
+    this.__actions_dirty = false;
+  }
+
+  set _title(value: string | undefined) {
+    this.__title = String(value ?? "");
+    if (!this.__initializing) this.buildHeader();
+  }
+
+  get _title() { return this.__title; }
+
+  set _subtitle(value: string | undefined) {
+    this.__subtitle = String(value ?? "");
+    if (!this.__initializing) this.buildHeader();
+  }
+
+  get _subtitle() { return this.__subtitle; }
+
+  set _meta(value: string | undefined) {
+    this.__meta = String(value ?? "");
+    if (!this.__initializing) this.buildHeader();
+  }
+
+  get _meta() { return this.__meta; }
+
+  set _actions(value: XUIObjectData[] | undefined) {
+    this.__actions = Array.isArray(value) ? [...value] : [];
+    this.__actions_dirty = true;
+    if (!this.__initializing) this.buildHeader();
+  }
+
+  get _actions() { return this.__actions; }
+
+  update(next: XUIObjectData) {
+    if (!next) return;
+    super.update({ ...next, class: next.class ?? (this as any).class });
+    for (const field of ["_title", "_subtitle", "_meta", "_actions"] as const) {
+      if (Object.prototype.hasOwnProperty.call(next, field)) {
+        (this as any)[field] = (next as any)[field];
+      }
+    }
+    this.buildHeader();
   }
 }

@@ -2,6 +2,8 @@
 
 ## [2.0.8] — 2026-11-13 (unreleased candidate)
 
+- Preserve reusable shell children; refresh editable page-header regions with stable IDs; respect timestamp offsets in current-day metrics; clear legacy dense list styling while honoring authored density.
+
 - Compared with public 2.0.7 declarations: include XShell, XPage and XPageHeader plus semantic child/style, collection formatting and density metadata.
 - Coordinate the existing semantic dashboard object pack, skill metadata and stylesheet with UI/Core 2.0.8.
 - Correct palette qualification to request the stable ID that the test asserts; omitted IDs continue to use XUI-generated IDs.
