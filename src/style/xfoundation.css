@@ -1,0 +1,182 @@
+/* ==========================================================================
+   XDashboard 2026 Foundations
+   --------------------------------------------------------------------------
+   XDashboard consumes canonical XUI --x-* tokens here. This file does not
+   define a parallel dashboard or component-global token system.
+   ========================================================================== */
+
+:where(.xdash, .xdash-bg) {
+  font-family:
+    var(--x-font, var(--x-font-sans, system-ui, sans-serif));
+
+  font-size:
+    var(--x-type-body-size, 14px);
+
+  font-weight:
+    var(--x-type-body-weight, 400);
+
+  line-height:
+    var(--x-type-body-line-height, 1.5);
+
+  letter-spacing:0;
+
+  color:
+    var(--x-text);
+
+  background:
+    var(--x-bg);
+}
+
+/* Typography roles */
+
+.xdash-text,
+.xdash-type-body {
+  font-size:var(--x-type-body-size, 14px);
+  font-weight:var(--x-type-body-weight, 400);
+  line-height:var(--x-type-body-line-height, 1.5);
+}
+
+.xdash-title,
+.xdash-type-title {
+  font-size:var(--x-type-title-size, 14px);
+  font-weight:var(--x-type-title-weight, 650);
+  line-height:var(--x-type-title-line-height, 1.35);
+}
+
+.xdash-section-title,
+.xdash-type-section-title {
+  font-size:var(--x-type-section-title-size, 16px);
+  font-weight:var(--x-type-section-title-weight, 650);
+  line-height:var(--x-type-section-title-line-height, 1.3);
+}
+
+.xdash-subtitle,
+.xdash-type-subtitle {
+  font-size:var(--x-type-section-subtitle-size, 13px);
+  font-weight:var(--x-type-section-subtitle-weight, 400);
+  line-height:var(--x-type-section-subtitle-line-height, 1.45);
+  color:var(--x-text-muted);
+}
+
+.xdash-meta,
+.xdash-caption,
+.xdash-type-caption {
+  font-size:var(--x-type-caption-size, 12px);
+  font-weight:var(--x-type-caption-weight, 400);
+  line-height:var(--x-type-caption-line-height, 1.35);
+  color:var(--x-text-muted);
+}
+
+.xdash-label,
+.xdash-type-label {
+  font-size:var(--x-type-label-size, 12px);
+  font-weight:var(--x-type-label-weight, 600);
+  line-height:var(--x-type-label-line-height, 1.3);
+}
+
+/* Shared surface vocabulary */
+
+.xdash-surface,
+.xdash-surface--card {
+  background:var(--x-surface);
+  border:1px solid var(--x-border-subtle, var(--x-border));
+  border-radius:var(--x-radius-lg, var(--x-radius-md));
+  box-shadow:var(--x-shadow-xs, none);
+}
+
+.xdash-surface--plain {
+  background:transparent;
+  border-color:transparent;
+  box-shadow:none;
+}
+
+.xdash-surface--subtle {
+  background:var(--x-surface-muted, var(--x-surface-2, var(--x-surface)));
+  border:1px solid var(--x-border-subtle, var(--x-border));
+  box-shadow:none;
+}
+
+.xdash-surface--elevated {
+  background:var(--x-surface-elevated, var(--x-surface));
+  border:1px solid var(--x-border, currentColor);
+  box-shadow:var(--x-shadow-md, var(--x-shadow-sm, none));
+}
+
+/* Border vocabulary */
+
+.xdash-border {
+  border-color:var(--x-border);
+}
+
+.xdash-border--subtle {
+  border-color:var(--x-border-subtle, var(--x-border));
+}
+
+.xdash-border--strong {
+  border-color:var(--x-border-strong, var(--x-border));
+}
+
+/* Shared density vocabulary. Comfortable is the documented XDashboard 2026 default. */
+
+.xdash-density--compact,
+.xdash--density-compact {
+  padding:var(--x-density-compact-padding, var(--x-spacing-sm));
+  gap:var(--x-density-compact-gap, var(--x-spacing-xs));
+}
+
+.xdash-density--comfortable,
+.xdash--density-comfortable {
+  padding:var(--x-density-comfortable-padding, var(--x-spacing-md));
+  gap:var(--x-density-comfortable-gap, var(--x-spacing-sm));
+}
+
+.xdash-density--spacious,
+.xdash--density-spacious {
+  padding:var(--x-density-spacious-padding, var(--x-spacing-lg));
+  gap:var(--x-density-spacious-gap, var(--x-spacing-md));
+}
+
+/* Responsive composition helpers */
+
+.xdash-contained {
+  width:min(100%, var(--x-page-max-width, 1200px));
+  margin-inline:auto;
+  padding-inline:var(--x-page-padding-x, var(--x-spacing-md));
+}
+
+.xdash-readable {
+  width:min(100%, var(--x-page-readable-width, 760px));
+}
+
+.xdash-content {
+  display:flex;
+  flex-direction:column;
+  gap:var(--x-content-gap, var(--x-spacing-md));
+}
+
+.xdash-section-stack {
+  display:flex;
+  flex-direction:column;
+  gap:var(--x-section-gap, var(--x-spacing-lg));
+}
+
+.xdash-toolbar-wrap {
+  display:flex;
+  align-items:center;
+  gap:var(--x-toolbar-gap, var(--x-content-gap, var(--x-spacing-sm)));
+  flex-wrap:wrap;
+}
+
+@media (max-width: 640px) {
+  .xdash-contained {
+    padding-inline:var(--x-page-padding-x-mobile, var(--x-spacing-sm));
+  }
+
+  .xdash-toolbar-wrap > * {
+    min-width:0;
+  }
+
+  .xdash-toolbar-wrap > :where(button, .xbutton, .dash-btn, .xsearch, .xselect) {
+    width:100%;
+  }
+}

@@ -457,6 +457,24 @@ const regressionNoImage = createCard({
 assert.equal(XUI.getObject("dashboard-card-without-image_image"), undefined);
 assert.ok(String(regressionNoImage.class).includes("xcard--no-image"));
 
+const semanticCard = createCard({
+  _id: "xcard-semantic-overrides",
+  _variant: "card",
+  _density: "compact",
+  _elevation: "xs",
+  class: "custom-surface-class",
+  _style: {
+    "--custom-card-token": "1",
+  },
+});
+const semanticCardClass = String(semanticCard.dom?.className ?? semanticCard.class);
+assert.ok(semanticCardClass.includes("xcard"));
+assert.ok(semanticCardClass.includes("xcard--variant-card"), semanticCardClass);
+assert.ok(semanticCardClass.includes("xcard--density-compact"));
+assert.ok(semanticCardClass.includes("xcard--elevation-xs"));
+assert.ok(semanticCardClass.includes("custom-surface-class"));
+assert.equal(semanticCard.dom?.style?.getPropertyValue("--custom-card-token"), "1");
+
 assert.doesNotThrow(() =>
   createTable({
     _id: "xtable-scalar-cells",
@@ -466,6 +484,38 @@ assert.doesNotThrow(() =>
 );
 assert.equal(XUI.getObject("xtable-scalar-cells_logo"), undefined);
 assert.equal(XUI.getObject("xtable-scalar-cells_image"), undefined);
+
+function localDateTime(offsetDays, hour, minute = 0) {
+  const value = new Date();
+  value.setDate(value.getDate() + offsetDays);
+  value.setHours(hour, minute, 0, 0);
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  const hours = String(value.getHours()).padStart(2, "0");
+  const minutes = String(value.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+const formattedTableDate = localDateTime(0, 9, 15);
+const formattedTable = createTable({
+  _id: "xtable-formatted-cells",
+  _columns: [
+    { _key: "occurred_at", _title: "When", _format: "relative-datetime" },
+    { _key: "distance_kilometers", _title: "Distance", _format: "number" },
+  ],
+  _rows: [
+    {
+      _id: "row-1",
+      occurred_at: formattedTableDate,
+      distance_kilometers: 3.456,
+    },
+  ],
+});
+const formattedTableText = formattedTable.dom?.textContent ?? "";
+assert.match(formattedTableText, /Today, \d{2}:\d{2}/);
+assert.ok(formattedTableText.includes("3.46"));
+assert.equal(formattedTableText.includes(formattedTableDate), false);
 
 const gallery = createGallery({
   _id: "xgallery-products",

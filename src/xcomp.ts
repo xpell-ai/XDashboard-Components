@@ -26,6 +26,9 @@ import { XToast } from "./xtoast";
 import { XCard } from "./xcard";
 import { XKpiCard } from "./xkpicard";
 import { XGrid } from "./xgrid";
+import { XShell } from "./xshell";
+import { XPage } from "./xpage";
+import { XPageHeader } from "./xpage-header";
 import { XDashboardSkillDesigns } from "./xdesign";
 
 
@@ -55,6 +58,9 @@ export class XDashPack extends XObjectPack {
     static getObjects() {
         return attachSkillDesigns({
             [XCard._xtype]:XCard, 
+            [XShell._xtype]:XShell,
+            [XPage._xtype]:XPage,
+            [XPageHeader._xtype]:XPageHeader,
             [XGrid._xtype]:XGrid,
             [XNavList._xtype]:XNavList,
             [XBadge._xtype]:XBadge,

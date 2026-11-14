@@ -1,8 +1,11 @@
 import { XUIObject } from "@xpell/ui";
 import type { XUIObjectData, XpellSkill } from "@xpell/ui";
+import { buildDashboardRootClassName } from "./xsemantic";
 
 export interface XToolbarData extends XUIObjectData {
   _type?: "toolbar";
+  _variant?: "plain" | "subtle" | "sticky" | string;
+  _density?: "compact" | "comfortable" | "spacious" | string;
   _gap?: number;
   _align?: "start" | "center" | "end" | "stretch";
   _justify?: "start" | "center" | "end" | "space-between";
@@ -30,6 +33,8 @@ export class XToolbar extends XUIObject {
 
     _fields: {
       _children: "Toolbar child objects, usually buttons, inputs, filters, or action groups.",
+      _variant: "Toolbar surface variant: plain, subtle, or sticky.",
+      _density: "Toolbar density: compact, comfortable, or spacious.",
       _gap: "Gap between toolbar children in pixels. Defaults to 8.",
       _align: "Cross-axis alignment: start, center, end, or stretch.",
       _justify: "Main-axis distribution: start, center, end, or space-between.",
@@ -70,6 +75,7 @@ export class XToolbar extends XUIObject {
     ]
   };
   private __gap = 8;
+  private __hasExplicitGap = false;
   private __align: XToolbarAlign = "center";
   private __justify: XToolbarJustify = "start";
   private __wrap = false;
@@ -169,27 +175,33 @@ export class XToolbar extends XUIObject {
     return kept.join("; ");
   }
 
-  private buildClassName(elevated: boolean): string {
+  private buildClassName(elevated: boolean, sticky: boolean): string {
     const existing = String((this as any).class || "");
     const filtered = this
       .splitClasses(existing)
-      .filter((c) => c !== "xtoolbar" && c !== "xtoolbar--elevated");
+      .filter((c) => c !== "xtoolbar--elevated" && c !== "xtoolbar--sticky");
+    const extraClasses = [];
+    if (elevated) extraClasses.push("xtoolbar--elevated");
+    if (sticky) extraClasses.push("xtoolbar--sticky");
 
-    const tokens = ["xtoolbar", ...filtered];
-    if (elevated) tokens.push("xtoolbar--elevated");
-
-    return Array.from(new Set(tokens.filter(Boolean))).join(" ");
+    return buildDashboardRootClassName(
+      "xtoolbar",
+      filtered.join(" "),
+      this as any,
+      ["_variant", "_density"],
+      extraClasses
+    );
   }
 
   private applyLayout() {
-    const nextClass = this.buildClassName(this.__elevated);
+    const nextClass = this.buildClassName(this.__elevated, this.__sticky);
     (this as any).class = nextClass;
 
     const baseStyle = this.stripManagedStyles(String((this as any).style || ""));
     const styleParts: string[] = [];
     if (baseStyle) styleParts.push(baseStyle);
 
-    styleParts.push(`--xtoolbar-gap:${this.__gap}px`);
+    if (this.__hasExplicitGap) styleParts.push(`--xtoolbar-gap:${this.__gap}px`);
     styleParts.push(`align-items:${this.mapAlign(this.__align)}`);
     styleParts.push(`justify-content:${this.mapJustify(this.__justify)}`);
 
@@ -205,6 +217,7 @@ export class XToolbar extends XUIObject {
   }
 
   set _gap(value: number | undefined) {
+    this.__hasExplicitGap = value !== undefined && value !== null;
     this.__gap = this.normalizeGap(value);
     this.applyLayout();
   }

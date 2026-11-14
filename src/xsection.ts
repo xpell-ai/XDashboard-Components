@@ -14,6 +14,12 @@ type XSectionHeader = {
   actions: XUIObjectData[];
 };
 
+const sectionSemanticClassFields = [
+  "_variant",
+  "_density",
+  "_elevation",
+] as const;
+
 export class XSection extends XUIObject {
   static _xtype = "xsection";
   static _skill: XpellSkill = {
@@ -105,6 +111,7 @@ export class XSection extends XUIObject {
     this.__body_id = this._id + "_body";
 
     this.parse(data);
+    this.applySectionSemanticClasses();
     this.applyProps();
     this.__body_children = userChildren;
     this.buildSkeleton();
@@ -113,6 +120,14 @@ export class XSection extends XUIObject {
 
   private normalizeActions(value?: XUIObjectData[]): XUIObjectData[] {
     return Array.isArray(value) ? value : [];
+  }
+
+  private applySectionSemanticClasses() {
+    sectionSemanticClassFields.forEach((field) => {
+      const value = (this as any)[field];
+      if (value === undefined || value === null || value === "") return;
+      this.addClass(`xsection--${field.slice(1)}-${String(value)}`);
+    });
   }
 
   private applyProps() {

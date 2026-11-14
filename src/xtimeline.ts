@@ -1,6 +1,8 @@
 import { _xem, XUI, XUIObject } from "@xpell/ui";
 import type { XObjectData, XUIObjectData, XpellSkill } from "@xpell/ui";
 import {
+  applyCollectionTemplateStyle,
+  buildCollectionRootClassName,
   buildCollectionActions,
   buildCollectionBadge,
   buildCollectionImage,
@@ -15,6 +17,7 @@ import {
   resolveCollectionItems,
   resolveCollectionTemplates,
   safeCollectionIdSegment,
+  type XCollectionTemplateStyles,
   type XCollectionRowsValue,
 } from "./xcollection";
 import type { XDashboardDiscoverySkill } from "./xskills";
@@ -32,6 +35,7 @@ export type XTimelineItemMap = {
   _image_alt?: any;
   _badge?: any;
   _actions?: XObjectData[];
+  _styles?: XCollectionTemplateStyles;
 };
 
 export interface XTimelineData extends XUIObjectData {
@@ -45,6 +49,7 @@ export interface XTimelineData extends XUIObjectData {
   _row_key?: string;
   _selectable?: boolean;
   _selected_key?: string;
+  _density?: "compact" | "comfortable" | "spacious";
   _empty_text?: string;
   _empty?: XObjectData;
   _undated_text?: string;
@@ -182,9 +187,12 @@ export class XTimeline extends XUIObject {
 
   private buildClassName(): string {
     const existing = String((this as any).class || "");
-    const remove = new Set(["xtimeline"]);
-    const filtered = this.splitClasses(existing).filter((c) => !remove.has(c));
-    return Array.from(new Set(["xtimeline", ...filtered])).join(" ");
+    return buildCollectionRootClassName(
+      "xtimeline",
+      existing,
+      this as any,
+      ["_density"]
+    );
   }
 
   private applyLayout() {
@@ -250,6 +258,13 @@ export class XTimeline extends XUIObject {
 
   private safeIdSegment(value: string): string {
     return safeCollectionIdSegment(value);
+  }
+
+  private applyTemplateStyle<T extends XObjectData | XUIObject | undefined>(
+    value: T,
+    surface: string
+  ): T {
+    return applyCollectionTemplateStyle(value, this.__item._styles, surface);
   }
 
   private readDateValue(row: any, rowIndex: number): any {
@@ -333,19 +348,22 @@ export class XTimeline extends XUIObject {
       itemId,
       "xtimeline__media"
     );
-    if (image) return image;
+    if (image) return this.applyTemplateStyle(image, "_image");
 
     const icon = this.textValue(
       this.resolveField(this.__item._icon, row, rowIndex, ["icon"])
     );
     if (!icon) return undefined;
 
-    return {
-      _type: "label",
-      _id: `${itemId}_icon`,
-      class: "xtimeline__icon",
-      _text: icon,
-    };
+    return this.applyTemplateStyle(
+      {
+        _type: "label",
+        _id: `${itemId}_icon`,
+        class: "xtimeline__icon",
+        _text: icon,
+      },
+      "_icon"
+    );
   }
 
   private buildActions(row: any, rowIndex: number, itemId: string): XObjectData[] {
@@ -459,14 +477,17 @@ export class XTimeline extends XUIObject {
         "updated_at",
       ])
     );
-    const badge = buildCollectionBadge(
-      this.resolveField(this.__item._badge, row, rowIndex, [
-        "badge",
-        "status",
-      ]),
-      row,
-      rowIndex,
-      itemId
+    const badge = this.applyTemplateStyle(
+      buildCollectionBadge(
+        this.resolveField(this.__item._badge, row, rowIndex, [
+          "badge",
+          "status",
+        ]),
+        row,
+        rowIndex,
+        itemId
+      ),
+      "_badge"
     );
     const visual = this.buildImageOrIcon(row, rowIndex, itemId, title);
     const actions = this.buildActions(row, rowIndex, itemId);
@@ -474,20 +495,30 @@ export class XTimeline extends XUIObject {
 
     const headingChildren: XObjectData[] = [];
     if (title) {
-      headingChildren.push({
-        _type: "label",
-        _id: `${itemId}_title`,
-        class: "xtimeline__title",
-        _text: title,
-      });
+      headingChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_title`,
+            class: "xtimeline__title",
+            _text: title,
+          },
+          "_title"
+        )
+      );
     }
     if (subtitle) {
-      headingChildren.push({
-        _type: "label",
-        _id: `${itemId}_subtitle`,
-        class: "xtimeline__subtitle",
-        _text: subtitle,
-      });
+      headingChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_subtitle`,
+            class: "xtimeline__subtitle",
+            _text: subtitle,
+          },
+          "_subtitle"
+        )
+      );
     }
 
     const bodyChildren: XObjectData[] = [
@@ -508,31 +539,46 @@ export class XTimeline extends XUIObject {
     ];
 
     if (description) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_description`,
-        class: "xtimeline__description",
-        _text: description,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_description`,
+            class: "xtimeline__description",
+            _text: description,
+          },
+          "_description"
+        )
+      );
     }
     if (meta) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_meta`,
-        class: "xtimeline__meta",
-        _text: meta,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_meta`,
+            class: "xtimeline__meta",
+            _text: meta,
+          },
+          "_meta"
+        )
+      );
     }
     if (actions.length) {
-      bodyChildren.push({
-        _type: "view",
-        _id: `${itemId}_actions`,
-        class: "xtimeline__actions",
-        _children: actions,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_actions`,
+            class: "xtimeline__actions",
+            _children: actions,
+          },
+          "_actions"
+        )
+      );
     }
 
-    return {
+    return this.applyTemplateStyle({
       _type: "view",
       _id: itemId,
       class: [
@@ -569,49 +615,64 @@ export class XTimeline extends XUIObject {
           }
         : undefined,
       _children: [
-        {
-          _type: "view",
-          _id: `${itemId}_axis`,
-          class: "xtimeline__axis",
-          _children: [
-            {
-              _type: "label",
-              _id: `${itemId}_date`,
-              class: "xtimeline__date",
-              _text: dateText,
-            },
-            {
-              _type: "view",
-              _id: `${itemId}_dot`,
-              class: "xtimeline__dot",
-            },
-          ],
-        },
-        {
-          _type: "view",
-          _id: `${itemId}_card`,
-          class: "xtimeline__card",
-          _children: [
-            ...(visual
-              ? [
-                  {
-                    _type: "view",
-                    _id: `${itemId}_visual`,
-                    class: "xtimeline__visual",
-                    _children: [visual as XObjectData],
-                  } as XObjectData,
-                ]
-              : []),
-            {
-              _type: "view",
-              _id: `${itemId}_body`,
-              class: "xtimeline__body",
-              _children: bodyChildren,
-            },
-          ],
-        },
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_axis`,
+            class: "xtimeline__axis",
+            _children: [
+              this.applyTemplateStyle(
+                {
+                  _type: "label",
+                  _id: `${itemId}_date`,
+                  class: "xtimeline__date",
+                  _text: dateText,
+                },
+                "_date"
+              ),
+              this.applyTemplateStyle(
+                {
+                  _type: "view",
+                  _id: `${itemId}_dot`,
+                  class: "xtimeline__dot",
+                },
+                "_dot"
+              ),
+            ],
+          },
+          "_axis"
+        ),
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_card`,
+            class: "xtimeline__card",
+            _children: [
+              ...(visual
+                ? [
+                    {
+                      _type: "view",
+                      _id: `${itemId}_visual`,
+                      class: "xtimeline__visual",
+                      _children: [visual as XObjectData],
+                    } as XObjectData,
+                  ]
+                : []),
+              this.applyTemplateStyle(
+                {
+                  _type: "view",
+                  _id: `${itemId}_body`,
+                  class: "xtimeline__body",
+                  _children: bodyChildren,
+                },
+                "_body"
+              ),
+            ],
+          },
+          "_card"
+        ),
       ],
-    };
+    }, "_item");
   }
 
   private buildEmpty(): XObjectData {
@@ -627,6 +688,7 @@ export class XTimeline extends XUIObject {
       _id: `${this._id}_empty`,
       _title: this.__empty_text,
       _size: "md",
+      _variant: "section",
       _align: "center",
     };
   }

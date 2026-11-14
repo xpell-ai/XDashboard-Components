@@ -4,6 +4,8 @@
 */
 
 
+@import "./xfoundation.css";
+@import "./xcomposition.css";
 @import "./xcomp.css";
 @import "./xkpicard.css";
 @import "./xgrid.css";

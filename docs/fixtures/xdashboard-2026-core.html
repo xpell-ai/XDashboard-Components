@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>XDashboard 2026 Core Fixture</title>
+    <link rel="stylesheet" href="../../../packages/xpell-ui/src/XUI/Style/xui.css" />
+    <link rel="stylesheet" href="../../src/style/style.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: var(--x-font);
+        background: var(--x-bg);
+        color: var(--x-text);
+      }
+
+      .fixture-shell {
+        min-height: 100vh;
+        padding: var(--x-page-padding-y) var(--x-page-padding-x);
+      }
+
+      .fixture-page {
+        max-width: var(--x-page-max-width);
+        margin: 0 auto;
+      }
+
+      .fixture-heading {
+        display: flex;
+        flex-direction: column;
+        gap: var(--x-spacing-xs);
+      }
+
+      .fixture-heading h1 {
+        margin: 0;
+        font-size: var(--x-type-page-title-size);
+        line-height: var(--x-type-page-title-line-height);
+      }
+
+      .fixture-heading p {
+        margin: 0;
+        color: var(--x-text-muted);
+        font-size: var(--x-type-page-subtitle-size);
+      }
+
+      .fixture-split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--x-section-gap);
+      }
+
+      @media (max-width: 900px) {
+        .fixture-split {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="fixture-shell" data-theme="xdashboard-2026-light">
+      <div class="fixture-page xdash-section-stack">
+        <header class="xtoolbar xtoolbar--variant-plain xtoolbar--density-comfortable">
+          <div class="fixture-heading">
+            <h1>Customers</h1>
+            <p>Review accounts, filters, and recent product activity.</p>
+          </div>
+          <div class="xigroup xigroup--density-comfortable">
+            <div class="xsearch xsearch--md"><span class="xsearch__icon">Search</span><input class="xsearch__input" placeholder="Search customers" /></div>
+            <button class="dash-btn">Create</button>
+          </div>
+        </header>
+
+        <section class="xsection xsection--variant-plain xsection--density-comfortable">
+          <div class="xsection__container">
+            <div class="xsection__header">
+              <div class="xsection__headings">
+                <h2 class="xsection__title">Overview</h2>
+                <p class="xsection__subtitle">Quiet sections rely on spacing and typography before borders.</p>
+              </div>
+            </div>
+            <div class="xsection__body">
+              <div class="xgrid xgrid--density-comfortable" style="--x-grid-min-col:220px">
+                <article class="xkpi-card xkpi-card--variant-default">
+                  <div class="kpi-body">
+                    <div class="kpi-top"><span class="kpi-label">Active customers</span></div>
+                    <div class="kpi-value">1,248</div>
+                    <div class="kpi-delta kpi-delta--up">+8.2%</div>
+                  </div>
+                </article>
+                <article class="xkpi-card xkpi-card--variant-default">
+                  <div class="kpi-body">
+                    <div class="kpi-top"><span class="kpi-label">Open issues</span></div>
+                    <div class="kpi-value">18</div>
+                    <div class="kpi-delta kpi-delta--flat">stable</div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="fixture-split">
+          <section class="xsection xsection--variant-card xsection--density-comfortable">
+            <div class="xsection__container">
+              <div class="xsection__header">
+                <div class="xsection__headings">
+                  <h2 class="xsection__title">Segments</h2>
+                  <p class="xsection__subtitle">A card section is explicit.</p>
+                </div>
+              </div>
+              <div class="xsection__body">
+                <article class="xcard xcard--variant-interactive">
+                  <div class="xcard__inner">
+                    <div class="xcard__body">
+                      <h3 class="xcard__title">Enterprise accounts</h3>
+                      <p class="xcard__text">142 accounts need a quarterly review.</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="xsection xsection--variant-subtle xsection--density-compact">
+            <div class="xsection__container">
+              <div class="xsection__header">
+                <div class="xsection__headings">
+                  <h2 class="xsection__title">No matches</h2>
+                  <p class="xsection__subtitle">Empty states stay proportional to their context.</p>
+                </div>
+              </div>
+              <div class="xsection__body">
+                <div class="xempty xempty--variant-section xempty--align-center xempty--md">
+                  <div class="xempty__stack xstack xstack--v">
+                    <strong class="xempty__title">No customers match these filters</strong>
+                    <span class="xempty__desc">Adjust the search or clear filters to return to all customers.</span>
+                    <button class="dash-btn">Clear filters</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <main class="fixture-shell" data-theme="xdashboard-2026-dark">
+      <div class="fixture-page xdash-section-stack">
+        <div class="xtoolbar xtoolbar--variant-subtle xtoolbar--density-compact">
+          <strong class="xdash-section-title">Dark theme check</strong>
+          <span class="xdash-subtitle">Same core primitives under xdashboard-2026-dark.</span>
+        </div>
+        <section class="xsection xsection--variant-card xsection--density-comfortable">
+          <div class="xsection__container">
+            <div class="xsection__header">
+              <div class="xsection__headings">
+                <h2 class="xsection__title">Activity</h2>
+                <p class="xsection__subtitle">Borders remain subtle and shadows restrained.</p>
+              </div>
+            </div>
+            <div class="xsection__body">
+              <div class="xempty xempty--variant-inline xempty--align-start xempty--sm">
+                <div class="xempty__stack xstack xstack--v">
+                  <strong class="xempty__title">No activity yet</strong>
+                  <span class="xempty__desc">Inline empty states avoid oversized boxes.</span>
+                </div>
+              </div>
+              <div class="xdivider xdivider--h"></div>
+              <article class="xcard xcard--variant-elevated">
+                <div class="xcard__inner">
+                  <div class="xcard__body">
+                    <h3 class="xcard__title">Intentional elevation</h3>
+                    <p class="xcard__text">Raised treatment is reserved for important floating content.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

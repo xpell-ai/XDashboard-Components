@@ -1,6 +1,8 @@
 import { _xem, XUI, XUIObject } from "@xpell/ui";
 import type { XObjectData, XUIObjectData, XpellSkill } from "@xpell/ui";
 import {
+  applyCollectionTemplateStyle,
+  buildCollectionRootClassName,
   buildCollectionActions,
   buildCollectionBadge,
   buildCollectionImage,
@@ -14,6 +16,7 @@ import {
   resolveCollectionField,
   resolveCollectionItems,
   safeCollectionIdSegment,
+  type XCollectionTemplateStyles,
   type XCollectionRowsValue,
 } from "./xcollection";
 import { XCALENDAR_SKILL } from "./xcalendar.skill";
@@ -31,6 +34,7 @@ export type XCalendarItemMap = {
   _image_alt?: any;
   _badge?: any;
   _actions?: XObjectData[];
+  _styles?: XCollectionTemplateStyles;
 };
 
 export interface XCalendarData extends XUIObjectData {
@@ -47,6 +51,7 @@ export interface XCalendarData extends XUIObjectData {
   _row_key?: string;
   _selectable?: boolean;
   _selected_key?: string;
+  _density?: "compact" | "comfortable" | "spacious";
   _empty_text?: string;
   _empty?: XObjectData;
   _on_select?: (
@@ -246,9 +251,12 @@ export class XCalendar extends XUIObject {
 
   private buildClassName(): string {
     const existing = String((this as any).class || "");
-    const remove = new Set(["xcalendar"]);
-    const filtered = this.splitClasses(existing).filter((c) => !remove.has(c));
-    return Array.from(new Set(["xcalendar", ...filtered])).join(" ");
+    return buildCollectionRootClassName(
+      "xcalendar",
+      existing,
+      this as any,
+      ["_density"]
+    );
   }
 
   private applyLayout() {
@@ -370,6 +378,13 @@ export class XCalendar extends XUIObject {
 
   private safeIdSegment(value: string): string {
     return safeCollectionIdSegment(value);
+  }
+
+  private applyTemplateStyle<T extends XObjectData | XUIObject | undefined>(
+    value: T,
+    surface: string
+  ): T {
+    return applyCollectionTemplateStyle(value, this.__item._styles, surface);
   }
 
   private pad(value: number): string {
@@ -566,19 +581,22 @@ export class XCalendar extends XUIObject {
       itemId,
       "xcalendar__media"
     );
-    if (image) return image;
+    if (image) return this.applyTemplateStyle(image, "_image");
 
     const icon = this.textValue(
       this.resolveField(this.__item._icon, row, rowIndex, ["icon"])
     );
     if (!icon) return undefined;
 
-    return {
-      _type: "label",
-      _id: `${itemId}_icon`,
-      class: "xcalendar__icon",
-      _text: icon,
-    };
+    return this.applyTemplateStyle(
+      {
+        _type: "label",
+        _id: `${itemId}_icon`,
+        class: "xcalendar__icon",
+        _text: icon,
+      },
+      "_icon"
+    );
   }
 
   private buildActions(row: any, rowIndex: number, itemId: string): XObjectData[] {
@@ -700,14 +718,17 @@ export class XCalendar extends XUIObject {
         "date",
       ])
     );
-    const badge = buildCollectionBadge(
-      this.resolveField(this.__item._badge, row, rowIndex, [
-        "badge",
-        "status",
-      ]),
-      row,
-      rowIndex,
-      itemId
+    const badge = this.applyTemplateStyle(
+      buildCollectionBadge(
+        this.resolveField(this.__item._badge, row, rowIndex, [
+          "badge",
+          "status",
+        ]),
+        row,
+        rowIndex,
+        itemId
+      ),
+      "_badge"
     );
     const visual = this.buildImageOrIcon(row, rowIndex, itemId, title);
     const actions = this.buildActions(row, rowIndex, itemId);
@@ -720,51 +741,74 @@ export class XCalendar extends XUIObject {
         class: "xcalendar__event-header",
         _children: [
           ...(visual ? [visual as XObjectData] : []),
-          {
-            _type: "label",
-            _id: `${itemId}_title`,
-            class: "xcalendar__event-title",
-            _text: title,
-          },
+          this.applyTemplateStyle(
+            {
+              _type: "label",
+              _id: `${itemId}_title`,
+              class: "xcalendar__event-title",
+              _text: title,
+            },
+            "_title"
+          ),
           ...(badge ? [badge] : []),
         ],
       },
     ];
 
     if (subtitle) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_subtitle`,
-        class: "xcalendar__event-subtitle",
-        _text: subtitle,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_subtitle`,
+            class: "xcalendar__event-subtitle",
+            _text: subtitle,
+          },
+          "_subtitle"
+        )
+      );
     }
     if (description) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_description`,
-        class: "xcalendar__event-description",
-        _text: description,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_description`,
+            class: "xcalendar__event-description",
+            _text: description,
+          },
+          "_description"
+        )
+      );
     }
     if (meta) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_meta`,
-        class: "xcalendar__event-meta",
-        _text: meta,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_meta`,
+            class: "xcalendar__event-meta",
+            _text: meta,
+          },
+          "_meta"
+        )
+      );
     }
     if (actions.length) {
-      bodyChildren.push({
-        _type: "view",
-        _id: `${itemId}_actions`,
-        class: "xcalendar__actions",
-        _children: actions,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_actions`,
+            class: "xcalendar__actions",
+            _children: actions,
+          },
+          "_actions"
+        )
+      );
     }
 
-    return {
+    return this.applyTemplateStyle({
       _type: "view",
       _id: itemId,
       class: [
@@ -805,7 +849,7 @@ export class XCalendar extends XUIObject {
           }
         : undefined,
       _children: bodyChildren,
-    };
+    }, "_item");
   }
 
   private buildDay(day: CalendarDay): XObjectData {
@@ -851,6 +895,7 @@ export class XCalendar extends XUIObject {
       _id: `${this._id}_empty`,
       _title: this.__empty_text,
       _size: "md",
+      _variant: "section",
       _align: "center",
     };
   }

@@ -41,7 +41,9 @@
   border-radius:
     var(--x-radius-md);
 
-  font-size:13px;
+  font-size:
+    var(--x-type-label-size, 13px);
+
   font-weight:700;
 
   background:
@@ -78,7 +80,7 @@
   outline:none;
 
   box-shadow:
-    0 0 0 3px rgba(79,70,229,.24);
+    0 0 0 3px var(--x-focus, rgba(79,70,229,.24));
 }
 
 
@@ -129,4 +131,13 @@
 
   color:
     var(--x-text);
+}
+
+[data-theme="xdashboard-2026-light"] .dash-btn,
+[data-theme="xdashboard-2026-dark"] .dash-btn {
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:
+    var(--x-shadow-xs, none);
 }

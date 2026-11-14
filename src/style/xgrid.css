@@ -31,7 +31,7 @@
     repeat(
       auto-fit,
       minmax(
-        var(--x-grid-min-col),
+        min(var(--x-grid-min-col), 100%),
         1fr
       )
     );
@@ -43,26 +43,31 @@
    ========================================================================== */
 
 .xgrid--dense,
-.xgrid--density-dense {
+.xgrid--density-dense,
+.xgrid--density-compact {
 
   --x-grid-gap:
-    var(--x-spacing-sm);
+    var(--x-density-compact-gap, var(--x-spacing-sm));
 }
 
 
 .xgrid--normal,
-.xgrid--density-normal {
+.xgrid--density-normal,
+.xgrid--comfortable,
+.xgrid--density-comfortable {
 
   --x-grid-gap:
-    var(--x-spacing-md);
+    var(--x-density-comfortable-gap, var(--x-spacing-md));
 }
 
 
 .xgrid--loose,
-.xgrid--density-loose {
+.xgrid--density-loose,
+.xgrid--spacious,
+.xgrid--density-spacious {
 
   --x-grid-gap:
-    var(--x-spacing-lg);
+    var(--x-density-spacious-gap, var(--x-spacing-lg));
 }
 
 
@@ -112,4 +117,11 @@
 
 .xgrid--cols-6 {
   --x-grid-cols:6;
+}
+
+@media (max-width: 640px) {
+  [data-theme="xdashboard-2026-light"] .xgrid,
+  [data-theme="xdashboard-2026-dark"] .xgrid {
+    --x-grid-cols:1;
+  }
 }

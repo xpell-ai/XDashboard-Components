@@ -18,6 +18,11 @@
     var(--x-shadow-md);
 
   overflow:hidden;
+
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease;
 }
 
 
@@ -61,7 +66,7 @@
 .xcard__body {
 
   padding:
-    var(--x-spacing-md);
+    var(--xcard-padding, var(--x-spacing-md));
 
   display:flex;
 
@@ -78,11 +83,13 @@
 
 .xcard__title {
 
-  font-size:14px;
+  font-size:
+    var(--x-type-title-size, 14px);
 
-  font-weight:700;
+  font-weight:
+    var(--x-type-title-weight, 700);
 
-  letter-spacing:.2px;
+  letter-spacing:0;
 
   margin:0;
 
@@ -97,7 +104,8 @@
 
 .xcard__text {
 
-  font-size:13px;
+  font-size:
+    var(--x-type-small-size, 13px);
 
   color:
     var(--x-text-muted);
@@ -141,6 +149,66 @@
    Semantic Variants
    ========================================================================== */
 
+.xcard--variant-plain {
+  background:transparent;
+  border-color:transparent;
+  box-shadow:none;
+}
+
+.xcard--variant-subtle {
+  background:
+    var(--x-surface-muted, var(--x-surface-2, var(--x-surface)));
+
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:none;
+}
+
+.xcard--variant-default,
+.xcard--variant-card {
+  background:
+    var(--x-surface);
+
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:
+    var(--x-shadow-xs, none);
+}
+
+.xcard--elevated,
+.xcard--variant-elevated {
+  background:
+    var(--x-surface-elevated, var(--x-surface));
+
+  box-shadow:
+    var(--x-shadow-md, var(--x-shadow-sm, none));
+}
+
+.xcard--interactive,
+.xcard--variant-interactive {
+  background:
+    var(--x-surface);
+
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:
+    var(--x-shadow-xs, none);
+}
+
+.xcard--interactive:hover,
+.xcard--variant-interactive:hover,
+.xcard--interactive:focus-within,
+.xcard--variant-interactive:focus-within {
+  border-color:
+    var(--x-border-strong, var(--x-border));
+
+  box-shadow:
+    var(--x-shadow-sm, var(--x-shadow-xs, none));
+}
+
 .xcard--primary,
 .xcard--variant-primary {
 
@@ -180,11 +248,21 @@
    ========================================================================== */
 
 .xcard--flat,
-.xcard--elevation-flat {
+.xcard--elevation-flat,
+.xcard--elevation-none {
 
   box-shadow:none;
 }
 
+.xcard--elevation-xs {
+  box-shadow:
+    var(--x-shadow-xs, none);
+}
+
+.xcard--elevation-sm {
+  box-shadow:
+    var(--x-shadow-sm, none);
+}
 
 .xcard--elevated,
 .xcard--elevation-md {
@@ -199,10 +277,11 @@
    ========================================================================== */
 
 .xcard--dense,
-.xcard--density-dense {
+.xcard--density-dense,
+.xcard--density-compact {
 
   --xcard-padding:
-    var(--x-spacing-sm);
+    var(--x-density-compact-padding, var(--x-spacing-sm));
 }
 
 
@@ -210,21 +289,41 @@
 .xcard--density-comfortable {
 
   --xcard-padding:
-    var(--x-spacing-lg);
+    var(--x-density-comfortable-padding, var(--x-spacing-md));
+}
+
+
+.xcard--spacious,
+.xcard--density-spacious {
+
+  --xcard-padding:
+    var(--x-density-spacious-padding, var(--x-spacing-lg));
 }
 
 
 .xcard--dense .xcard__body,
-.xcard--density-dense .xcard__body {
+.xcard--density-dense .xcard__body,
+.xcard--density-compact .xcard__body {
 
   padding:
-    var(--x-spacing-sm);
+    var(--xcard-padding);
 }
 
 
 .xcard--comfortable .xcard__body,
-.xcard--density-comfortable .xcard__body {
+.xcard--density-comfortable .xcard__body,
+.xcard--spacious .xcard__body,
+.xcard--density-spacious .xcard__body {
 
   padding:
-    var(--x-spacing-lg);
+    var(--xcard-padding);
+}
+
+[data-theme="xdashboard-2026-light"] .xcard:not(.xcard--variant-elevated):not(.xcard--elevated):not(.xcard--elevation-md),
+[data-theme="xdashboard-2026-dark"] .xcard:not(.xcard--variant-elevated):not(.xcard--elevated):not(.xcard--elevation-md) {
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:
+    var(--x-shadow-xs, none);
 }

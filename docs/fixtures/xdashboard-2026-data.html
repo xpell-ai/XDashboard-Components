@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>XDashboard 2026 Data Components</title>
+    <link rel="stylesheet" href="../../../packages/xpell-ui/src/XUI/Style/xui.css" />
+    <link rel="stylesheet" href="../../src/style/style.css" />
+    <style>
+      body {
+        margin:0;
+        font-family:var(--x-font-body, system-ui, sans-serif);
+        background:var(--x-bg);
+        color:var(--x-text);
+      }
+
+      .fixture-shell {
+        min-height:100vh;
+        padding:var(--x-page-padding-x, 32px);
+        display:flex;
+        flex-direction:column;
+        gap:var(--x-section-gap, 32px);
+      }
+
+      .fixture-title {
+        margin:0;
+        font-size:var(--x-type-page-title-size, 28px);
+        line-height:var(--x-type-title-line-height, 1.15);
+      }
+
+      .fixture-band {
+        display:flex;
+        flex-direction:column;
+        gap:var(--x-content-gap, 16px);
+      }
+
+      .fixture-media {
+        height:128px;
+        background:
+          linear-gradient(135deg, var(--x-primary), var(--x-surface-muted));
+      }
+
+      @media (max-width: 720px) {
+        .fixture-shell {
+          padding:var(--x-page-padding-x-mobile, 16px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="fixture-shell" data-theme="xdashboard-2026-light">
+      <header class="fixture-band">
+        <h1 class="fixture-title">Data Operations</h1>
+        <div class="xstats xstats--variant-card xstats--density-comfortable">
+          <div class="xstats__grid">
+            <article class="xstats__card">
+              <div class="xstats__header"><p class="xstats__title">Open orders</p><span class="xbadge xbadge--size-sm">Live</span></div>
+              <p class="xstats__value">128</p>
+              <p class="xstats__trend">+8.4% week over week</p>
+            </article>
+            <article class="xstats__card">
+              <div class="xstats__header"><p class="xstats__title">Fulfillment SLA</p></div>
+              <p class="xstats__value">96.2%</p>
+              <p class="xstats__meta">Last 30 days</p>
+            </article>
+            <article class="xstats__card">
+              <div class="xstats__header"><p class="xstats__title">At risk</p></div>
+              <p class="xstats__value">7</p>
+              <p class="xstats__subtitle">Needs review</p>
+            </article>
+          </div>
+        </div>
+      </header>
+
+      <section class="xsection xsection--variant-card xsection--density-comfortable">
+        <div class="xsection__container">
+          <div class="xsection__header">
+            <div class="xsection__headings">
+              <h2 class="xsection__title">Orders</h2>
+              <p class="xsection__subtitle">Compact table with row separators and safe horizontal overflow.</p>
+            </div>
+          </div>
+          <div class="xsection__body">
+            <div class="xtable xtable--bordered xtable--hover xtable--striped xtable--density-compact">
+              <table class="xtable__table">
+                <thead class="xtable__head">
+                  <tr class="xtable__row">
+                    <th class="xtable__th">Order</th>
+                    <th class="xtable__th">Customer</th>
+                    <th class="xtable__th">Status</th>
+                    <th class="xtable__th">Total</th>
+                    <th class="xtable__th">Owner</th>
+                  </tr>
+                </thead>
+                <tbody class="xtable__body">
+                  <tr class="xtable__row">
+                    <td class="xtable__td">ORD-1048</td>
+                    <td class="xtable__td">Northwind Labs</td>
+                    <td class="xtable__td"><span class="xtable__badge xtable__badge--success">Ready</span></td>
+                    <td class="xtable__td">$12,480</td>
+                    <td class="xtable__td">Maya</td>
+                  </tr>
+                  <tr class="xtable__row xtable__row--selected" aria-selected="true">
+                    <td class="xtable__td">ORD-1051</td>
+                    <td class="xtable__td">Atlas Supply</td>
+                    <td class="xtable__td"><span class="xtable__badge xtable__badge--warning">Review</span></td>
+                    <td class="xtable__td">$8,920</td>
+                    <td class="xtable__td">Lee</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="xsection xsection--variant-plain xsection--density-comfortable">
+        <div class="xsection__container">
+          <div class="xsection__body">
+            <div class="xlist xlist--variant-plain xlist--density-comfortable">
+              <div class="xlist__items">
+                <article class="xlist__item xlist__item--selectable xlist__item--selected" tabindex="0" aria-selected="true">
+                  <div class="xlist__icon">A</div>
+                  <div class="xlist__content">
+                    <div class="xlist__header">
+                      <div class="xlist__heading">
+                        <p class="xlist__title">Atlas Supply renewal</p>
+                        <p class="xlist__subtitle">Enterprise account</p>
+                      </div>
+                      <span class="xbadge xbadge--size-sm">Priority</span>
+                    </div>
+                    <p class="xlist__description">Legal review is complete. Pricing owner needs to approve final terms.</p>
+                    <p class="xlist__meta">Updated today</p>
+                  </div>
+                  <div class="xlist__trailing"><button class="xbutton">Open</button></div>
+                </article>
+                <article class="xlist__item xlist__item--selectable" tabindex="0">
+                  <div class="xlist__icon">N</div>
+                  <div class="xlist__content">
+                    <div class="xlist__header">
+                      <div class="xlist__heading">
+                        <p class="xlist__title">Northwind onboarding</p>
+                        <p class="xlist__subtitle">Implementation</p>
+                      </div>
+                    </div>
+                    <p class="xlist__description">Sandbox workspace is ready for the customer admin.</p>
+                    <p class="xlist__meta">Updated yesterday</p>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="fixture-band">
+        <div class="xgallery xgallery--variant-card xgallery--density-comfortable">
+          <div class="xgallery__grid">
+            <article class="xgallery__card">
+              <div class="xgallery__image fixture-media"></div>
+              <div class="xgallery__body">
+                <div class="xgallery__header"><div class="xgallery__heading"><p class="xgallery__title">Workspace Analytics</p><p class="xgallery__subtitle">Product module</p></div><span class="xbadge xbadge--size-sm">Active</span></div>
+                <p class="xgallery__description">Usage health and operational signals for workspace owners.</p>
+                <p class="xgallery__meta">3 dashboards</p>
+              </div>
+            </article>
+            <article class="xgallery__card">
+              <div class="xgallery__image fixture-media"></div>
+              <div class="xgallery__body">
+                <div class="xgallery__header"><div class="xgallery__heading"><p class="xgallery__title">Approval Center</p><p class="xgallery__subtitle">Workflow module</p></div></div>
+                <p class="xgallery__description">Review, approve, and route customer-facing changes.</p>
+                <p class="xgallery__meta">6 queues</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="xkanban xkanban--density-compact">
+        <div class="xkanban__board">
+          <section class="xkanban__column">
+            <div class="xkanban__column-header"><h3 class="xkanban__column-title">To Do</h3><span class="xbadge xbadge--size-sm">2</span></div>
+            <div class="xkanban__cards">
+              <article class="xkanban__card" tabindex="0"><div class="xkanban__card-body"><div class="xkanban__card-header"><div class="xkanban__heading"><p class="xkanban__title">Check invoice variance</p><p class="xkanban__subtitle">Finance</p></div><span class="xbadge xbadge--size-sm">High</span></div><p class="xkanban__description">Compare contracted rate with current invoice line items.</p><p class="xkanban__meta">Due Aug 26</p></div></article>
+            </div>
+          </section>
+          <section class="xkanban__column">
+            <div class="xkanban__column-header"><h3 class="xkanban__column-title">Blocked</h3><span class="xbadge xbadge--size-sm">0</span></div>
+            <div class="xkanban__cards"><div class="xempty xempty--variant-inline xkanban__column-empty"><div class="xempty__stack"><p class="xempty__title">No records</p></div></div></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="xtimeline xtimeline--density-comfortable">
+        <div class="xtimeline__items">
+          <article class="xtimeline__item xtimeline__item--selectable" tabindex="0">
+            <div class="xtimeline__axis"><p class="xtimeline__date">Aug 24</p><span class="xtimeline__dot"></span></div>
+            <div class="xtimeline__card"><div class="xtimeline__body"><div class="xtimeline__header"><div class="xtimeline__heading"><p class="xtimeline__title">Renewal approved</p><p class="xtimeline__subtitle">Account update</p></div><span class="xbadge xbadge--size-sm">Done</span></div><p class="xtimeline__description">Customer success approved the renewal package.</p><p class="xtimeline__meta">10:32</p></div></div>
+          </article>
+          <article class="xtimeline__item xtimeline__item--selected" aria-selected="true">
+            <div class="xtimeline__axis"><p class="xtimeline__date">Aug 22</p><span class="xtimeline__dot"></span></div>
+            <div class="xtimeline__card"><div class="xtimeline__body"><div class="xtimeline__header"><div class="xtimeline__heading"><p class="xtimeline__title">Legal notes attached</p><p class="xtimeline__subtitle">Review</p></div></div><p class="xtimeline__description">Contract notes added to the opportunity.</p></div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="xcalendar xcalendar--density-comfortable">
+        <div class="xcalendar__nav"><button class="xbutton">Prev</button><h2 class="xcalendar__title">August 2026</h2><div class="xcalendar__nav-actions"><button class="xbutton">Today</button><button class="xbutton">Next</button></div></div>
+        <div class="xcalendar__weekdays"><p class="xcalendar__weekday">Sun</p><p class="xcalendar__weekday">Mon</p><p class="xcalendar__weekday">Tue</p><p class="xcalendar__weekday">Wed</p><p class="xcalendar__weekday">Thu</p><p class="xcalendar__weekday">Fri</p><p class="xcalendar__weekday">Sat</p></div>
+        <div class="xcalendar__days">
+          <div class="xcalendar__day xcalendar__day--outside"><p class="xcalendar__day-number">26</p></div>
+          <div class="xcalendar__day"><p class="xcalendar__day-number">24</p><article class="xcalendar__event xcalendar__event--selected" aria-selected="true"><div class="xcalendar__event-header"><p class="xcalendar__event-title">Pricing review</p></div><p class="xcalendar__event-meta">09:00</p></article></div>
+          <div class="xcalendar__day xcalendar__day--today"><p class="xcalendar__day-number">25</p><article class="xcalendar__event xcalendar__event--selectable" tabindex="0"><div class="xcalendar__event-header"><p class="xcalendar__event-title">Launch sync</p></div><p class="xcalendar__event-meta">13:30</p></article></div>
+          <div class="xcalendar__day xcalendar__day--empty"><p class="xcalendar__day-number">26</p></div>
+          <div class="xcalendar__day xcalendar__day--empty"><p class="xcalendar__day-number">27</p></div>
+          <div class="xcalendar__day xcalendar__day--empty"><p class="xcalendar__day-number">28</p></div>
+          <div class="xcalendar__day xcalendar__day--empty"><p class="xcalendar__day-number">29</p></div>
+        </div>
+      </section>
+
+      <section class="xempty xempty--variant-section">
+        <div class="xempty__stack">
+          <p class="xempty__title">No archived records</p>
+          <p class="xempty__desc">Archived records will appear here after retention rules run.</p>
+        </div>
+      </section>
+    </main>
+
+    <main class="fixture-shell" data-theme="xdashboard-2026-dark">
+      <header class="fixture-band">
+        <h1 class="fixture-title">Data Operations Dark</h1>
+        <div class="xstats xstats--variant-subtle xstats--density-spacious">
+          <div class="xstats__grid">
+            <article class="xstats__card"><div class="xstats__header"><p class="xstats__title">Pipeline</p></div><p class="xstats__value">$42K</p><p class="xstats__meta">Open value</p></article>
+            <article class="xstats__card"><div class="xstats__header"><p class="xstats__title">Incidents</p></div><p class="xstats__value">3</p><p class="xstats__subtitle">One critical</p></article>
+          </div>
+        </div>
+      </header>
+
+      <section class="xsection xsection--variant-card">
+        <div class="xsection__container">
+          <div class="xsection__header"><div class="xsection__headings"><h2 class="xsection__title">Dark Theme Records</h2><p class="xsection__subtitle">Same data components under xdashboard-2026-dark.</p></div></div>
+          <div class="xsection__body">
+            <div class="xtable xtable--variant-card xtable--hover xtable--density-comfortable">
+              <table class="xtable__table"><thead class="xtable__head"><tr><th class="xtable__th">Name</th><th class="xtable__th">State</th><th class="xtable__th">Owner</th></tr></thead><tbody class="xtable__body"><tr><td class="xtable__td">Deployment</td><td class="xtable__td">Healthy</td><td class="xtable__td">Ops</td></tr><tr><td class="xtable__td">Billing sync</td><td class="xtable__td">Queued</td><td class="xtable__td">Finance</td></tr></tbody></table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="xgallery xgallery--variant-subtle xgallery--density-compact">
+        <div class="xgallery__grid">
+          <article class="xgallery__card xgallery__card--no-image"><div class="xgallery__body"><div class="xgallery__header"><div class="xgallery__heading"><p class="xgallery__title">Audit Export</p><p class="xgallery__subtitle">Compliance</p></div></div><p class="xgallery__description">CSV export prepared for review.</p></div></article>
+          <article class="xgallery__card xgallery__card--no-image"><div class="xgallery__body"><div class="xgallery__header"><div class="xgallery__heading"><p class="xgallery__title">Data Retention</p><p class="xgallery__subtitle">Policy</p></div></div><p class="xgallery__description">Next purge window scheduled.</p></div></article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

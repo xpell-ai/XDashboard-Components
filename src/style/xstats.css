@@ -27,6 +27,58 @@
   box-shadow:var(--x-shadow-sm, none);
 }
 
+[data-theme="xdashboard-2026-light"] .xstats__card,
+[data-theme="xdashboard-2026-dark"] .xstats__card {
+  border-color:var(--x-border-subtle, var(--x-border));
+  box-shadow:var(--x-shadow-xs, none);
+}
+
+.xstats--variant-plain .xstats__card {
+  background:transparent;
+  border-color:transparent;
+  box-shadow:none;
+}
+
+.xstats--variant-subtle .xstats__card {
+  background:var(--x-surface-muted, var(--x-surface-2, var(--x-surface)));
+  border-color:var(--x-border-subtle, var(--x-border));
+  box-shadow:none;
+}
+
+.xstats--variant-card .xstats__card {
+  background:var(--x-surface);
+  border-color:var(--x-border-subtle, var(--x-border));
+  box-shadow:var(--x-shadow-xs, none);
+}
+
+.xstats--variant-elevated .xstats__card {
+  background:var(--x-surface-elevated, var(--x-surface));
+  border-color:var(--x-border);
+  box-shadow:var(--x-shadow-md);
+}
+
+.xstats--density-compact .xstats__grid {
+  gap:var(--x-density-compact-gap, var(--x-spacing-sm));
+}
+
+.xstats--density-compact .xstats__card {
+  gap:var(--x-spacing-xs);
+  padding:var(--x-spacing-sm);
+}
+
+.xstats--density-comfortable .xstats__grid {
+  gap:var(--x-density-comfortable-gap, var(--x-spacing-md));
+}
+
+.xstats--density-spacious .xstats__grid {
+  gap:var(--x-density-spacious-gap, var(--x-spacing-lg));
+}
+
+.xstats--density-spacious .xstats__card {
+  gap:var(--x-spacing-md);
+  padding:var(--x-density-spacious-padding, var(--x-spacing-lg));
+}
+
 .xstats__header {
   min-width:0;
   display:flex;
@@ -46,9 +98,9 @@
   flex:1;
   margin:0;
   color:var(--x-text-muted, var(--x-text));
-  font-size:12px;
+  font-size:var(--x-type-label-size, 12px);
   font-weight:700;
-  line-height:1.25;
+  line-height:var(--x-type-label-line-height, 1.25);
   overflow-wrap:anywhere;
 }
 
@@ -56,7 +108,7 @@
   min-width:0;
   margin:0;
   color:var(--x-text);
-  font-size:28px;
+  font-size:var(--x-type-page-title-size, 28px);
   font-weight:800;
   line-height:1.1;
   overflow-wrap:anywhere;
@@ -68,8 +120,8 @@
   min-width:0;
   margin:0;
   color:var(--x-text-muted, var(--x-text));
-  font-size:12px;
-  line-height:1.35;
+  font-size:var(--x-type-caption-size, 12px);
+  line-height:var(--x-type-caption-line-height, 1.35);
   overflow-wrap:anywhere;
 }
 

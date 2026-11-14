@@ -121,7 +121,7 @@ export const XTIMELINE_SKILL: XDashboardDiscoverySkill = {
     _order:
       "Chronological order: asc for oldest first, desc for newest first. Defaults to desc.",
     _item:
-      "Item mapping object. Supports _title, _subtitle, _description, _meta, _icon, _image, _image_alt, _badge, and _actions. String values may use $row, $row.field, and $row_index.",
+      "Item mapping object. Supports _title, _subtitle, _description, _meta, _icon, _image, _image_alt, _badge, _actions, and _styles. Persist repeated-entry presentation under _item._styles.<surface>._style.",
     _actions:
       "Optional per-item action child objects used when _item._actions is not set. Action templates receive _row, _row_index, and _context.",
     _row_key: "Optional row field used for stable item and action ids.",
@@ -146,6 +146,7 @@ export const XTIMELINE_SKILL: XDashboardDiscoverySkill = {
     "Use _order:'asc' or _order:'desc' for chronological direction.",
     "Use _item to map generic record fields; do not add domain-specific rendering logic.",
     "Supported item mappings include _title, _subtitle, _description, _meta, _icon, _image, _image_alt, _badge, and _actions.",
+    "Keep item-template presentation under _item._styles.<surface>._style; do not use _title_style, _card_style, root _title_style, or instance _design.",
     "Use _item._actions or _actions for per-item buttons, links, or menu controls.",
     "Per-item action templates may reference $row, $row.field, and $row_index.",
     "Item clicks emit xtimeline:item-select and may invoke runtime _on_select.",
@@ -165,6 +166,11 @@ export const XTIMELINE_SKILL: XDashboardDiscoverySkill = {
         _subtitle: "$row.type",
         _description: "$row.notes",
         _badge: "$row.status",
+        _styles: {
+          _date: { _style: { color: "var(--x-text-muted)" } },
+          _dot: { _style: { "background-color": "var(--x-accent)" } },
+          _title: { _style: { "font-weight": 700 } },
+        },
         _actions: [
           {
             _type: "button",
