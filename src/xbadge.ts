@@ -5,7 +5,7 @@ import type { XpellSkill } from "@xpell/ui";
 export interface XBadgeData extends XUIObjectData {
   _type: "badge";
   _text?: string;
-  _variant?: "default" | "success" | "warn" | "error" | "info";
+  _variant?: "default" | "neutral" | "success" | "warn" | "warning" | "error" | "danger" | "info" | "primary";
   _size?: "sm" | "md";
   _pill?: boolean;
   _dot?: boolean;
@@ -72,6 +72,7 @@ export class XBadge extends XUIObject {
   private __pill = true;
   private __dot = false;
   private __title?: string;
+  private __suppress_root_text = false;
 
   private __dot_id: string;
   private __text_id: string;
@@ -93,7 +94,11 @@ export class XBadge extends XUIObject {
     this.applyText();
   }
 
-  private normalizeVariant(value?: XBadgeVariant): XBadgeVariant {
+  private normalizeVariant(value?: string): XBadgeVariant {
+    if (value === "warning") return "warn";
+    if (value === "danger") return "error";
+    if (value === "primary") return "info";
+    if (value === "neutral") return "default";
     if (value === "success" || value === "warn" || value === "error" || value === "info") {
       return value;
     }
@@ -112,6 +117,8 @@ export class XBadge extends XUIObject {
     this.__text = (this as any)._text ? String((this as any)._text) : "";
     this.__variant = this.normalizeVariant((this as any)._variant);
     this.__size = this.normalizeSize((this as any)._size);
+    (this as any)._variant = this.__variant;
+    (this as any)._size = this.__size;
     if ((this as any)._pill === undefined) this.__pill = true;
     else this.__pill = this.normalizeBoolean((this as any)._pill);
     this.__dot = this.normalizeBoolean((this as any)._dot);
@@ -194,6 +201,7 @@ export class XBadge extends XUIObject {
   }
 
   get _text(): string {
+    if (this.__suppress_root_text) return "";
     return this.__text;
   }
 
@@ -202,8 +210,15 @@ export class XBadge extends XUIObject {
     this.applyText();
   }
 
-  setVariant(variant: XBadgeVariant) {
+  setVariant(variant: string | undefined) {
     this.__variant = this.normalizeVariant(variant);
+    (this as any)._variant = this.__variant;
+    this.applyLayout();
+  }
+
+  setSize(size: XBadgeSize | undefined) {
+    this.__size = this.normalizeSize(size);
+    (this as any)._size = this.__size;
     this.applyLayout();
   }
 
@@ -246,5 +261,41 @@ export class XBadge extends XUIObject {
 
   get _title() {
     return this.__title;
+  }
+
+  update(next: XBadgeData) {
+    if (!next) return;
+
+    const {
+      _text,
+      _variant,
+      _size,
+      _pill,
+      _dot,
+      _title,
+      ...rest
+    } = next as any;
+
+    if (_text !== undefined) this._text = String(_text ?? "");
+    if (_variant !== undefined) this.setVariant(_variant);
+    if (_size !== undefined) this.setSize(_size);
+    if (_pill !== undefined) this._pill = _pill;
+    if (_dot !== undefined) this._dot = _dot;
+    if (_title !== undefined) this._title = _title;
+
+    super.update(rest as XUIObjectData);
+    this.applyLayout();
+  }
+
+  getDOMObject(): HTMLElement {
+    const previous = this.__suppress_root_text;
+    this.__suppress_root_text = true;
+    try {
+      const dom = super.getDOMObject();
+      this.applyLayout();
+      return dom;
+    } finally {
+      this.__suppress_root_text = previous;
+    }
   }
 }

@@ -4,10 +4,23 @@
    ========================================================================== */
 
 .xempty {
+  --xempty-padding:
+    0;
+
+  --xempty-min-height:
+    auto;
 
   display:flex;
 
   width:100%;
+
+  min-height:
+    var(--xempty-min-height);
+
+  padding:
+    var(--xempty-padding);
+
+  box-sizing:border-box;
 }
 
 
@@ -65,6 +78,9 @@
     var(--x-text);
 
   font-weight:700;
+
+  line-height:
+    var(--x-type-title-line-height, 1.35);
 }
 
 
@@ -76,6 +92,9 @@
 
   color:
     var(--x-text-muted, var(--x-text));
+
+  line-height:
+    var(--x-type-body-line-height, 1.5);
 }
 
 
@@ -90,10 +109,10 @@
     var(--x-spacing-sm);
 
   --x-empty-title-size:
-    14px;
+    var(--x-type-label-size, 14px);
 
   --x-empty-desc-size:
-    12px;
+    var(--x-type-caption-size, 12px);
 }
 
 
@@ -104,10 +123,10 @@
     var(--x-spacing-md);
 
   --x-empty-title-size:
-    16px;
+    var(--x-type-title-size, 16px);
 
   --x-empty-desc-size:
-    13px;
+    var(--x-type-small-size, 13px);
 }
 
 
@@ -118,10 +137,63 @@
     var(--x-spacing-lg);
 
   --x-empty-title-size:
-    18px;
+    var(--x-type-section-title-size, 18px);
 
   --x-empty-desc-size:
-    14px;
+    var(--x-type-body-size, 14px);
+}
+
+/* ==========================================================================
+   Empty-State Scope Variants
+   ========================================================================== */
+
+.xempty--variant-inline {
+  --xempty-padding:
+    var(--x-spacing-xs) 0;
+
+  --xempty-min-height:
+    auto;
+
+  --x-empty-gap:
+    var(--x-spacing-xs);
+
+  --x-empty-title-size:
+    var(--x-type-label-size, 12px);
+
+  --x-empty-desc-size:
+    var(--x-type-caption-size, 12px);
+}
+
+.xempty--variant-section {
+  --xempty-padding:
+    var(--x-density-comfortable-padding, var(--x-spacing-md));
+
+  --xempty-min-height:
+    140px;
+
+  --x-empty-gap:
+    var(--x-spacing-sm);
+}
+
+.xempty--variant-page {
+  --xempty-padding:
+    var(--x-density-spacious-padding, var(--x-spacing-lg));
+
+  --xempty-min-height:
+    320px;
+
+  --x-empty-gap:
+    var(--x-spacing-md);
+}
+
+[data-theme="xdashboard-2026-light"] .xempty,
+[data-theme="xdashboard-2026-dark"] .xempty {
+  --xempty-padding:
+    var(--x-density-comfortable-padding, var(--x-spacing-md));
+
+  background:transparent;
+  border:none;
+  box-shadow:none;
 }
 
 
@@ -169,4 +241,11 @@
 
   color:
     var(--x-primary);
+}
+
+@media (max-width: 640px) {
+  .xempty--variant-page {
+    --xempty-min-height:
+      220px;
+  }
 }

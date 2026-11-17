@@ -211,7 +211,7 @@ globalThis.Node = {
   TEXT_NODE: 3,
 };
 
-const { XUI } = await import("@xpell/ui");
+const { XUI, XStudioModule } = await import("@xpell/ui");
 const {
   XDashPack,
   XDashboardObjectSkills,
@@ -228,8 +228,12 @@ const collectionPresentationSkills = getXDashboardObjectSkillsByCategory(
   "collection-presentation"
 );
 const dataSummarySkills = getXDashboardObjectSkillsByCategory("data-summary");
+const compositionSkills = getXDashboardObjectSkillsByCategory("composition");
 
 const expectedTypes = new Set([
+  "xshell",
+  "xpage",
+  "xpage-header",
   "card",
   "grid",
   "navlist",
@@ -259,8 +263,37 @@ const expectedTypes = new Set([
   "xsection",
 ]);
 
+const expectedDashboardChildren = [
+  "xpage",
+  "xpage-header",
+  "card",
+  "grid",
+  "stack",
+  "kpi-card",
+  "table",
+  "xlist",
+  "xtimeline",
+  "xcalendar",
+  "xgallery",
+  "xkanban",
+  "xstats",
+  "badge",
+  "toolbar",
+  "field",
+  "igroup",
+  "search",
+  "xselect",
+  "empty",
+  "divider",
+  "scroll",
+  "drawer",
+  "modal",
+  "xsection",
+];
+
 const validInputs = new Set(["text", "textarea", "number", "checkbox", "select", "json"]);
 const validSections = new Set(["properties", "interactions", "raw-json", "danger"]);
+const validInspectorGroups = new Set(["design", "content", "data", "interactions", "advanced"]);
 const validCategories = new Set([
   "Dashboard",
   "Layout",
@@ -272,40 +305,47 @@ const validCategories = new Set([
   "Charts",
   "Feedback",
   "Media",
+  "Composition",
 ]);
 const internalFieldPattern = /^(__|_on_open$|_on_close$|_on_select$|_on_toggle$|_on_input$|_on_clear$|_dom|_cache|_runtime)/;
 
 const supportedInspectorKeys = {
-  card: ["_image", "_image_alt", "_hide_image", "_title", "_text", "_href", "_link_text", "_actions", "class"],
-  grid: ["_children", "_cols", "_gap", "_min_col_width", "class"],
+  xshell: ["_sidebar", "_children", "_scroll", "class"],
+  xpage: ["_width", "_density", "_children", "class"],
+  "xpage-header": ["_title", "_subtitle", "_meta", "_actions", "_density", "class"],
+  card: ["_image", "_image_alt", "_hide_image", "_title", "_text", "_variant", "_density", "_elevation", "_href", "_link_text", "_actions", "class"],
+  grid: ["_children", "_cols", "_gap", "_min_col_width", "_density", "class"],
   navlist: ["_items", "_active", "_dense", "_dividers", "class"],
   badge: ["_text", "_variant", "_size", "_pill", "_dot", "_title", "class"],
-  table: ["_columns", "_rows", "_data_source", "_on_data", "_row_key", "_dense", "_striped", "_hover", "_bordered", "_empty_text", "class"],
-  xlist: ["_items", "_data_source", "_item", "_actions", "_row_key", "_dense", "_selectable", "_selected_key", "_gap", "_empty_text", "_empty", "_on_data", "class"],
-  xtimeline: ["_items", "_data_source", "_date_field", "_order", "_item", "_actions", "_row_key", "_selectable", "_selected_key", "_empty_text", "_empty", "_undated_text", "_on_data", "class"],
-  xcalendar: ["_items", "_data_source", "_date_field", "_end_date_field", "_view", "_month", "_week_start", "_item", "_actions", "_row_key", "_selectable", "_selected_key", "_empty_text", "_empty", "_on_data", "class"],
-  xgallery: ["_items", "_data_source", "_item", "_actions", "_row_key", "_columns", "_min_col_width", "_gap", "_empty_text", "_empty", "_on_data", "class"],
-  xkanban: ["_items", "_data_source", "_group_by", "_columns", "_item", "_actions", "_row_key", "_min_col_width", "_gap", "_empty_text", "_empty_column_text", "_empty", "_draggable", "_on_data", "class"],
-  xstats: ["_data_source", "_records", "_items", "_min_col_width", "_gap", "_empty_text", "_empty", "_on_data", "class"],
+  table: ["_columns", "_rows", "_data_source", "_on_data", "_row_key", "_variant", "_density", "_striped", "_hover", "_bordered", "_empty_text", "class"],
+  xlist: ["_items", "_data_source", "_item", "_actions", "_row_key", "_variant", "_density", "_selectable", "_selected_key", "_gap", "_empty_text", "_empty", "_on_data", "class"],
+  xtimeline: ["_items", "_data_source", "_date_field", "_order", "_item", "_actions", "_row_key", "_density", "_selectable", "_selected_key", "_empty_text", "_empty", "_undated_text", "_on_data", "class"],
+  xcalendar: ["_items", "_data_source", "_date_field", "_end_date_field", "_view", "_month", "_week_start", "_item", "_actions", "_row_key", "_density", "_selectable", "_selected_key", "_empty_text", "_empty", "_on_data", "class"],
+  xgallery: ["_items", "_data_source", "_item", "_actions", "_row_key", "_variant", "_density", "_columns", "_min_col_width", "_gap", "_empty_text", "_empty", "_on_data", "class"],
+  xkanban: ["_items", "_data_source", "_group_by", "_columns", "_item", "_actions", "_row_key", "_density", "_min_col_width", "_gap", "_empty_text", "_empty_column_text", "_empty", "_draggable", "_on_data", "class"],
+  xstats: ["_data_source", "_records", "_items", "_variant", "_density", "_min_col_width", "_gap", "_empty_text", "_empty", "_on_data", "class"],
   modal: ["_open", "_title", "_subtitle", "_size", "_width", "_closable", "_close_on_backdrop", "_scroll", "_actions", "_content", "_children", "class"],
   toast: ["_open", "_text", "_variant", "_icon", "_actions", "_closable", "_auto_close_ms", "_position", "class"],
   divider: ["_orientation", "_thickness", "_length", "_inset", "_muted", "class"],
-  stack: ["_children", "_direction", "_gap", "_align", "_justify", "_wrap", "_grow", "_class", "class"],
-  "kpi-card": ["_label", "_value", "_delta", "_delta_state", "_icon", "class"],
+  stack: ["_children", "_direction", "_gap", "_density", "_align", "_justify", "_wrap", "_grow", "_class", "class"],
+  "kpi-card": ["_label", "_value", "_delta", "_delta_state", "_variant", "_density", "_icon", "class"],
   scroll: ["_children", "_direction", "_grow", "_hide_scrollbar", "_max_height", "_max_width", "class"],
   spacer: ["_direction", "class"],
-  toolbar: ["_children", "_gap", "_align", "_justify", "_wrap", "_sticky", "_top", "_elevated", "class"],
-  empty: ["_title", "_description", "_icon", "_action", "_size", "_align", "class"],
-  igroup: ["_children", "_gap", "_align", "_wrap", "_dense", "_merged", "class"],
+  toolbar: ["_children", "_gap", "_variant", "_density", "_align", "_justify", "_wrap", "_sticky", "_top", "_elevated", "class"],
+  empty: ["_title", "_description", "_icon", "_action", "_variant", "_size", "_align", "class"],
+  igroup: ["_children", "_gap", "_variant", "_density", "_align", "_wrap", "_merged", "class"],
   search: ["_value", "_placeholder", "_size", "_disabled", "_clearable", "_icon", "_autofocus", "_input_id", "class"],
   xselect: ["_value", "_placeholder", "_options", "_data_source", "_selected_data_source", "_data_output", "_size", "_disabled", "_name", "_select_id", "_on_change", "class"],
   field: ["_label", "_hint", "_error", "_required", "_inline", "_size", "_control", "_data_output", "_update_data_source_event", "class"],
   drawer: ["_open", "_side", "_width", "_title", "_closable", "_scroll", "_elevated", "_overlay", "_children", "class"],
   sidebar: ["_side", "_width", "_title", "_subtitle", "_logo", "_actions", "_nav", "_scroll", "_dividers", "_footer", "_collapsed", "_children", "class"],
-  xsection: ["_title", "_subtitle", "_actions", "_children", "class"],
+  xsection: ["_title", "_subtitle", "_variant", "_density", "_elevation", "_actions", "_children", "class"],
 };
 
 const expectedChildrenAllowed = {
+  xshell: true,
+  xpage: true,
+  "xpage-header": false,
   card: false,
   grid: true,
   navlist: false,
@@ -345,6 +385,65 @@ function visit(value, fn) {
   Object.values(value).forEach((item) => visit(item, fn));
 }
 
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function findObjectById(value, id) {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const match = findObjectById(item, id);
+      if (match) return match;
+    }
+    return null;
+  }
+  if (!value || typeof value !== "object") return null;
+  if (value._id === id) return value;
+  for (const item of Object.values(value)) {
+    const match = findObjectById(item, id);
+    if (match) return match;
+  }
+  return null;
+}
+
+function createVisualCreationHarness(view) {
+  const commands = [];
+  const statuses = [];
+  const module = new XStudioModule({
+    getActiveAppId: () => "xdashboard-contract-app",
+    getActiveEnv: () => "default",
+  });
+
+  const refreshTree = () => {
+    const nodes = [];
+    module._build_object_tree_nodes(view, "main", "$", "$", "", "", "", "$", 0, false, true, nodes);
+    module._object_tree_nodes = nodes;
+  };
+
+  module._get_cached_view = (viewId) => viewId === "main" ? view : null;
+  module._app_explorer_current_view_id = () => "main";
+  module._resolve_selected_object_skill = (type) => objects[type]?._skill ?? null;
+  module._write_studio_status = (status) => statuses.push(status);
+  module._request_object_tree_structured_edit_refresh = async () => {};
+  module._refresh_object_tree_for_current_view = refreshTree;
+  module._log = () => {};
+  module._error = () => {};
+  module._send_xvibe_command = async (op, params) => {
+    commands.push({ op, params: cloneJson(params) });
+    const target = findObjectById(view, params._target_id);
+    assert.ok(target, `${params._child?._type} target must exist`);
+    if (!Array.isArray(target._children)) target._children = [];
+    target._children.push(cloneJson(params._child));
+    return {
+      _ok: true,
+      _created_object_id: params._child?._id,
+    };
+  };
+
+  refreshTree();
+  return { module, commands, statuses };
+}
+
 function assertCanonicalImageSlots(type, value) {
   visit(value, (node) => {
     if (!node || typeof node !== "object" || Array.isArray(node)) return;
@@ -366,6 +465,37 @@ assert.equal(XDashboardObjectSkills.xtimeline?._id, "xtimeline");
 assert.equal(XDashboardObjectSkills.xcalendar?._id, "xcalendar");
 assert.equal(XDashboardObjectSkills.xkanban?._id, "xkanban");
 assert.equal(XDashboardObjectSkills.xstats?._id, "xstats");
+
+for (const [type, objectClass] of entries) {
+  const view = {
+    _id: "main",
+    _type: "view",
+    _children: [],
+  };
+  const harness = createVisualCreationHarness(view);
+
+  assert.equal(
+    // Stable IDs are an explicit palette request; omitted IDs use XUI GUIDs.
+    await harness.module._apply_add_object_from_palette_skill(objectClass._skill, type),
+    true,
+    `${type} must be accepted by Visual Xpell Add Object`,
+  );
+  assert.equal(harness.commands.length, 1, `${type} must submit one structured edit`);
+  assert.equal(harness.commands[0].op, "apply-view-edit");
+
+  const params = harness.commands[0].params;
+  assert.equal(params._edit_action, "add-child");
+  assert.equal(params._target_id, "main");
+  assert.equal(params._target_type, "view");
+  assert.equal(params._child._type, type);
+  assert.equal(params._child._id, type, `${type} must receive a stable generic id`);
+  assert.ok(
+    params._runtime_xui_types.includes(type),
+    `${type} must be included in the runtime XUI type payload`,
+  );
+  assert.equal(findObjectById(view, type)?._type, type);
+  assert.doesNotThrow(() => XUI.create(params._child), `${type} payload must be creatable`);
+}
 
 const listDiscoverySkill = objectSkills.xlist;
 assert.ok(listDiscoverySkill, "xlist must be enumerable from package-level skills");
@@ -786,6 +916,15 @@ assert.ok(
 assert.deepEqual(Object.keys(dataSummarySkills).sort(), ["xstats"]);
 assert.equal(dataSummarySkills.xstats?._id, statsDiscoverySkill._id);
 
+assert.deepEqual(Object.keys(compositionSkills).sort(), [
+  "xpage",
+  "xpage-header",
+  "xshell",
+]);
+assert.equal(compositionSkills.xshell?._purpose, "application shell geometry for XDashboard pages");
+assert.equal(compositionSkills.xpage?._purpose, "page width, padding, and vertical rhythm for XDashboard apps");
+assert.equal(compositionSkills["xpage-header"]?._purpose, "canonical page title, subtitle, metadata, and action header");
+
 const paletteTitles = new Set();
 
 for (const [type, objectClass] of entries) {
@@ -826,6 +965,12 @@ for (const [type, objectClass] of entries) {
     assert.ok(allowedKeys.has(inspectorField._key), `${type} exposes unsupported inspector key ${inspectorField._key}`);
     assert.ok(!internalFieldPattern.test(inspectorField._key), `${type} exposes internal field ${inspectorField._key}`);
     assert.ok(validInputs.has(inspectorField._input), `${type}.${inspectorField._key} has invalid input ${inspectorField._input}`);
+    if (inspectorField._group !== undefined) {
+      assert.ok(
+        validInspectorGroups.has(inspectorField._group),
+        `${type}.${inspectorField._key} has invalid group ${inspectorField._group}`
+      );
+    }
     if (inspectorField._input === "select") {
       assert.ok(Array.isArray(inspectorField._options), `${type}.${inspectorField._key} select field needs options`);
       assert.ok(inspectorField._options.length > 0, `${type}.${inspectorField._key} select options must not be empty`);
@@ -846,6 +991,430 @@ for (const [type, objectClass] of entries) {
   } else {
     assert.ok(!children._insert_modes.includes("inside"), `${type} leaf objects must not support inside insertion`);
   }
+}
+
+function inspectorField(type, key) {
+  const field = objects[type]._skill._design._inspector._fields.find(
+    (candidate) => candidate._key === key
+  );
+  assert.ok(field, `${type} inspector must expose ${key}`);
+  return field;
+}
+
+function assertFieldGroup(type, key, group) {
+  assert.equal(inspectorField(type, key)._group, group, `${type}.${key} group must be ${group}`);
+}
+
+function assertFieldOptions(type, key, options) {
+  assert.deepEqual(inspectorField(type, key)._options, options, `${type}.${key} options must match`);
+}
+
+function assertNoInspectorField(type, key) {
+  const fields = objects[type]._skill._design._inspector._fields;
+  assert.equal(
+    fields.some((field) => field._key === key),
+    false,
+    `${type} inspector must not expose ${key}`
+  );
+}
+
+function assertDesignCapabilities(type, capabilities) {
+  for (const capability of capabilities) {
+    assert.ok(
+      objects[type]._skill._design._capabilities?.includes(capability),
+      `${type} design capabilities must include ${capability}`
+    );
+  }
+}
+
+assertFieldGroup("xpage", "_width", "design");
+assertFieldGroup("xpage", "_density", "design");
+assertFieldOptions("xpage", "_width", ["full", "contained", "readable"]);
+assertFieldOptions("xpage", "_density", ["compact", "comfortable", "spacious"]);
+
+for (const key of ["_title", "_subtitle", "_meta", "_actions"]) {
+  assertFieldGroup("xpage-header", key, "content");
+}
+assertFieldGroup("xpage-header", "_density", "design");
+assert.deepEqual(
+  objects["xpage-header"]._skill._design._semantic_children.map((child) => child._id),
+  ["title", "subtitle", "meta", "actions"],
+  "xpage-header semantic children must be preserved"
+);
+
+assertFieldGroup("xsection", "_variant", "design");
+assertFieldGroup("xsection", "_density", "design");
+assertFieldGroup("xsection", "_elevation", "design");
+assertFieldOptions("xsection", "_elevation", ["none", "xs", "sm", "md"]);
+assertFieldGroup("xsection", "_title", "content");
+assertFieldGroup("xsection", "_subtitle", "content");
+assertFieldGroup("xsection", "_actions", "content");
+
+assertFieldGroup("toolbar", "_variant", "design");
+assertFieldGroup("toolbar", "_density", "design");
+assertFieldGroup("toolbar", "_children", "content");
+assertFieldOptions("toolbar", "_variant", ["plain", "subtle", "sticky"]);
+
+assertFieldGroup("igroup", "_variant", "design");
+assertFieldGroup("igroup", "_density", "design");
+assertFieldOptions("igroup", "_variant", ["plain", "subtle", "merged"]);
+
+for (const key of ["_variant", "_density", "_bordered", "_striped", "_hover"]) {
+  assertFieldGroup("table", key, "design");
+}
+for (const key of ["_data_source", "_rows", "_columns", "_row_key"]) {
+  assertFieldGroup("table", key, "data");
+}
+assertNoInspectorField("table", "_dense");
+assertNoInspectorField("xlist", "_dense");
+assertNoInspectorField("igroup", "_dense");
+
+assertFieldGroup("xlist", "_variant", "design");
+assertFieldGroup("xlist", "_density", "design");
+assertFieldGroup("xlist", "_item", "data");
+assertFieldGroup("xlist", "_actions", "interactions");
+assertFieldGroup("xlist", "_selectable", "interactions");
+
+assertFieldGroup("xgallery", "_variant", "design");
+assertFieldGroup("xgallery", "_density", "design");
+assertFieldGroup("xgallery", "_min_col_width", "design");
+assertFieldGroup("xgallery", "_item", "data");
+
+assertFieldGroup("xkanban", "_density", "design");
+assertFieldGroup("xkanban", "_min_col_width", "design");
+assertFieldGroup("xkanban", "_group_by", "data");
+assertFieldGroup("xkanban", "_columns", "data");
+assertFieldGroup("xkanban", "_draggable", "interactions");
+
+assertFieldGroup("xtimeline", "_density", "design");
+assertFieldGroup("xtimeline", "_date_field", "data");
+assertFieldGroup("xtimeline", "_order", "data");
+assertFieldGroup("xtimeline", "_undated_text", "content");
+assertFieldGroup("xtimeline", "_selectable", "interactions");
+
+assertFieldGroup("xcalendar", "_density", "design");
+assertFieldGroup("xcalendar", "_view", "design");
+assertFieldGroup("xcalendar", "_week_start", "design");
+assertFieldGroup("xcalendar", "_date_field", "data");
+assertFieldGroup("xcalendar", "_end_date_field", "data");
+assertFieldGroup("xcalendar", "_selectable", "interactions");
+
+assertFieldGroup("xstats", "_variant", "design");
+assertFieldGroup("xstats", "_density", "design");
+assertFieldGroup("xstats", "_data_source", "data");
+assertFieldGroup("xstats", "_items", "data");
+
+assertFieldGroup("badge", "_text", "content");
+assertFieldGroup("badge", "_title", "advanced");
+assertFieldGroup("badge", "_variant", "design");
+assertFieldGroup("badge", "_size", "design");
+assertFieldGroup("badge", "_pill", "design");
+assertFieldGroup("badge", "_dot", "design");
+assertFieldOptions("badge", "_variant", ["default", "success", "warn", "error", "info"]);
+
+assertDesignCapabilities("xpage", ["typography", "spacing", "layout", "appearance"]);
+assertDesignCapabilities("xsection", ["typography", "spacing", "layout", "appearance"]);
+assertDesignCapabilities("table", ["typography", "spacing", "appearance"]);
+assertDesignCapabilities("xlist", ["typography", "spacing", "appearance"]);
+assertDesignCapabilities("xgallery", ["typography", "spacing", "appearance"]);
+assertDesignCapabilities("badge", ["typography", "spacing", "appearance"]);
+
+const sectionDesign = objects.xsection._skill._design;
+const sectionSemanticChildren = sectionDesign._semantic_children;
+assert.ok(Array.isArray(sectionSemanticChildren), "xsection must expose semantic children");
+assert.deepEqual(
+  sectionSemanticChildren.map((child) => child._id),
+  ["title", "subtitle", "actions", "body"],
+  "xsection semantic child order must match its persisted structure"
+);
+
+const sectionSemanticById = new Map(
+  sectionSemanticChildren.map((child) => [child._id, child])
+);
+
+assert.deepEqual(
+  sectionSemanticById.get("title"),
+  {
+    _id: "title",
+    _label: "Title",
+    _role: "title",
+    _kind: "property",
+    _path: "_title",
+    _actions: ["editable"],
+  },
+  "xsection Title must map directly to _title"
+);
+assert.equal(
+  sectionSemanticById.get("title")._style_path,
+  undefined,
+  "xsection Title must not invent title style persistence"
+);
+assert.equal(
+  sectionSemanticById.get("title")._capabilities,
+  undefined,
+  "xsection Title must not attach style capabilities without style persistence"
+);
+assert.deepEqual(
+  sectionSemanticById.get("subtitle"),
+  {
+    _id: "subtitle",
+    _label: "Subtitle",
+    _role: "subtitle",
+    _kind: "property",
+    _path: "_subtitle",
+    _actions: ["editable"],
+  },
+  "xsection Subtitle must map directly to _subtitle"
+);
+assert.equal(
+  sectionSemanticById.get("subtitle")._style_path,
+  undefined,
+  "xsection Subtitle must not invent subtitle style persistence"
+);
+assert.equal(
+  sectionSemanticById.get("subtitle")._capabilities,
+  undefined,
+  "xsection Subtitle must not attach style capabilities without style persistence"
+);
+assert.deepEqual(
+  sectionSemanticById.get("actions"),
+  {
+    _id: "actions",
+    _label: "Actions",
+    _role: "actions",
+    _kind: "object-array",
+    _path: "_actions",
+    _actions: ["editable"],
+  },
+  "xsection Actions must map to persisted _actions objects"
+);
+assert.equal(
+  sectionSemanticById.get("actions")._type,
+  undefined,
+  "xsection Actions must keep each persisted action object's own type"
+);
+assert.deepEqual(
+  sectionSemanticById.get("body"),
+  {
+    _id: "body",
+    _label: "Body",
+    _role: "body",
+    _kind: "children",
+    _path: "_children",
+    _accepted_types: expectedDashboardChildren,
+    _actions: ["add-child"],
+  },
+  "xsection Body must map to persisted _children"
+);
+
+function semanticChildrenById(children) {
+  return new Map((children ?? []).map((child) => [child._id, child]));
+}
+
+function assertNoSemanticStyleCapabilities(children, owner) {
+  for (const child of children ?? []) {
+    assert.equal(child._style_path, undefined, `${owner}.${child._id} must not define a style path`);
+    assert.equal(child._capabilities, undefined, `${owner}.${child._id} must not define style capabilities`);
+    assertNoSemanticStyleCapabilities(child._children, `${owner}.${child._id}`);
+  }
+}
+
+function assertCollectionTemplateSemantics({
+  design,
+  type,
+  expectedItemFields,
+  expectedRoots = ["item-template", "fallback-actions", "empty-state"],
+  expectedTemplateLabel = "Item Template",
+  expectedConfigRoot,
+  expectedConfigFields = [],
+  expectedEmptyFields = [
+    {
+      _id: "empty-text",
+      _label: "Empty Text",
+      _role: "empty-text",
+      _kind: "property",
+      _path: "_empty_text",
+      _actions: ["editable"],
+    },
+    {
+      _id: "empty-object",
+      _label: "Empty Object",
+      _role: "empty-object",
+      _kind: "object",
+      _path: "_empty",
+      _actions: ["editable"],
+    },
+  ],
+}) {
+  const semanticChildren = design._semantic_children;
+  assert.ok(Array.isArray(semanticChildren), `${type} must expose semantic children`);
+  assert.deepEqual(
+    semanticChildren.map((child) => child._id),
+    expectedRoots,
+    `${type} semantic roots must match the expected collection edit groups`
+  );
+
+  const semanticById = semanticChildrenById(semanticChildren);
+  if (expectedConfigRoot) {
+    const configRoot = semanticById.get(expectedConfigRoot._id);
+    assert.deepEqual(
+      {
+        _id: configRoot._id,
+        _label: configRoot._label,
+        _role: configRoot._role,
+        _kind: configRoot._kind,
+        _path: configRoot._path,
+      },
+      {
+        _id: expectedConfigRoot._id,
+        _label: expectedConfigRoot._label,
+        _role: "configuration",
+        _kind: "group",
+        _path: "",
+      },
+      `${type} configuration root must be a virtual semantic group`
+    );
+    assert.deepEqual(
+      configRoot._children.map((child) => child._id),
+      expectedConfigFields.map((field) => field._id),
+      `${type} configuration fields must match`
+    );
+    const configFieldsById = semanticChildrenById(configRoot._children);
+    for (const expected of expectedConfigFields) {
+      const actual = configFieldsById.get(expected._id);
+      assert.ok(actual, `${type} configuration must expose ${expected._id}`);
+      assert.deepEqual(
+        {
+          _id: actual._id,
+          _label: actual._label,
+          _role: actual._role,
+          _kind: actual._kind,
+          _path: actual._path,
+          _actions: actual._actions,
+        },
+        {
+          _id: expected._id,
+          _label: expected._label,
+          _role: expected._role,
+          _kind: "property",
+          _path: expected._path,
+          _actions: ["editable"],
+        },
+        `${type}.${expected._id} configuration field mismatch`
+      );
+    }
+    assertNoSemanticStyleCapabilities([configRoot], `${type}.${expectedConfigRoot._id}`);
+  }
+
+  const itemTemplate = semanticById.get("item-template");
+  assert.equal(
+    itemTemplate._style_path,
+    undefined,
+    `${type} Item Template root must not define a direct style path`
+  );
+  assert.equal(
+    itemTemplate._capabilities,
+    undefined,
+    `${type} Item Template root must not define direct style capabilities`
+  );
+  assert.deepEqual(
+    {
+      _id: itemTemplate._id,
+      _label: itemTemplate._label,
+      _role: itemTemplate._role,
+      _kind: itemTemplate._kind,
+      _path: itemTemplate._path,
+    },
+    {
+      _id: "item-template",
+      _label: expectedTemplateLabel,
+      _role: "collection-item-template",
+      _kind: "group",
+      _path: "_item",
+    },
+    `${type} Item Template must be a semantic group over persisted _item`
+  );
+  assert.deepEqual(
+    itemTemplate._children.map((child) => child._id),
+    expectedItemFields.map((field) => field._id),
+    `${type} Item Template children must match the collection template field set`
+  );
+
+  const itemFieldsById = semanticChildrenById(itemTemplate._children);
+  for (const expected of expectedItemFields) {
+    const actual = itemFieldsById.get(expected._id);
+    assert.ok(actual, `${type} must expose ${expected._id}`);
+    assert.equal(actual._label, expected._label, `${type}.${expected._id} label mismatch`);
+    assert.equal(actual._path, expected._path, `${type}.${expected._id} path mismatch`);
+    assert.equal(actual._kind, expected._kind ?? "property", `${type}.${expected._id} kind mismatch`);
+    if ("_actions" in expected) {
+      assert.deepEqual(actual._actions, expected._actions, `${type}.${expected._id} actions mismatch`);
+    } else if ((expected._kind ?? "property") === "group") {
+      assert.equal(actual._actions, undefined, `${type}.${expected._id} group must not expose edit actions`);
+    } else {
+      assert.deepEqual(actual._actions, ["editable"], `${type}.${expected._id} must be editable`);
+    }
+    assert.equal(
+      actual._style_path,
+      expected._style_path,
+      `${type}.${expected._id} style path mismatch`
+    );
+    if ("_capabilities" in expected) {
+      assert.deepEqual(
+        actual._capabilities,
+        expected._capabilities,
+        `${type}.${expected._id} capability mismatch`
+      );
+    } else {
+      assert.equal(
+        actual._capabilities,
+        undefined,
+        `${type}.${expected._id} must not define style capabilities`
+      );
+    }
+  }
+
+  assert.deepEqual(
+    semanticById.get("fallback-actions"),
+    {
+      _id: "fallback-actions",
+      _label: "Fallback Actions",
+      _role: "fallback-actions",
+      _kind: "object-array",
+      _path: "_actions",
+      _actions: ["editable"],
+    },
+    `${type} fallback actions must remain separate from _item._actions`
+  );
+  assertNoSemanticStyleCapabilities(
+    [semanticById.get("fallback-actions")],
+    `${type}.fallback-actions`
+  );
+
+  const emptyState = semanticById.get("empty-state");
+  assert.deepEqual(
+    {
+      _id: emptyState._id,
+      _label: emptyState._label,
+      _role: emptyState._role,
+      _kind: emptyState._kind,
+      _path: emptyState._path,
+    },
+    {
+      _id: "empty-state",
+      _label: "Empty State",
+      _role: "empty-state",
+      _kind: "group",
+      _path: "",
+    },
+    `${type} Empty State must be a virtual semantic group`
+  );
+  assert.deepEqual(
+    emptyState._children,
+    expectedEmptyFields,
+    `${type} Empty State children must target persisted empty-state configuration`
+  );
+  assertNoSemanticStyleCapabilities([emptyState], `${type}.empty-state`);
 }
 
 const kanbanObjectClass = objects.xkanban;
@@ -874,6 +1443,116 @@ for (const key of [
 }
 assert.ok(!kanbanInspectorKeys.has("_on_select"), "runtime _on_select must not be exposed in Inspector");
 assert.ok(!kanbanInspectorKeys.has("_on_card_moved"), "runtime _on_card_moved must not be exposed in Inspector");
+assertCollectionTemplateSemantics({
+  design: kanbanDesign,
+  type: "xkanban",
+  expectedRoots: ["kanban-configuration", "item-template", "fallback-actions", "empty-state"],
+  expectedConfigRoot: { _id: "kanban-configuration", _label: "Board Configuration" },
+  expectedConfigFields: [
+    { _id: "group-by", _label: "Group By", _role: "group-by", _path: "_group_by" },
+    { _id: "columns", _label: "Columns", _role: "columns", _path: "_columns" },
+    { _id: "row-key", _label: "Row Key", _role: "row-key", _path: "_row_key" },
+    { _id: "min-column-width", _label: "Min Column Width", _role: "min-column-width", _path: "_min_col_width" },
+    { _id: "gap", _label: "Gap", _role: "gap", _path: "_gap" },
+    { _id: "draggable", _label: "Draggable", _role: "draggable", _path: "_draggable" },
+  ],
+  expectedTemplateLabel: "Card Template",
+  expectedItemFields: [
+    {
+      _id: "item-card",
+      _label: "Card",
+      _path: "_styles._item",
+      _kind: "group",
+      _style_path: "_styles._item._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-image",
+      _label: "Image",
+      _path: "_image",
+      _style_path: "_styles._image._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    { _id: "item-image-alt", _label: "Image Alt", _path: "_image_alt" },
+    {
+      _id: "item-body",
+      _label: "Body",
+      _path: "_styles._body",
+      _kind: "group",
+      _style_path: "_styles._body._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-title",
+      _label: "Title",
+      _path: "_title",
+      _style_path: "_styles._title._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-subtitle",
+      _label: "Subtitle",
+      _path: "_subtitle",
+      _style_path: "_styles._subtitle._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-description",
+      _label: "Description",
+      _path: "_description",
+      _style_path: "_styles._description._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-meta",
+      _label: "Meta",
+      _path: "_meta",
+      _style_path: "_styles._meta._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-badge",
+      _label: "Badge",
+      _path: "_badge",
+      _style_path: "_styles._badge._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-actions",
+      _label: "Actions",
+      _path: "_actions",
+      _kind: "object-array",
+      _style_path: "_styles._actions._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+  ],
+  expectedEmptyFields: [
+    {
+      _id: "empty-text",
+      _label: "Empty Text",
+      _role: "empty-text",
+      _kind: "property",
+      _path: "_empty_text",
+      _actions: ["editable"],
+    },
+    {
+      _id: "empty-column-text",
+      _label: "Empty Column Text",
+      _role: "empty-column-text",
+      _kind: "property",
+      _path: "_empty_column_text",
+      _actions: ["editable"],
+    },
+    {
+      _id: "empty-object",
+      _label: "Empty Object",
+      _role: "empty-object",
+      _kind: "object",
+      _path: "_empty",
+      _actions: ["editable"],
+    },
+  ],
+});
 
 const listObjectClass = objects.xlist;
 assert.equal(listObjectClass._skill._id, "xlist");
@@ -908,7 +1587,6 @@ for (const key of [
   "_row_key",
   "_empty",
   "_empty_text",
-  "_dense",
   "_selectable",
   "_selected_key",
   "_gap",
@@ -924,6 +1602,188 @@ assert.deepEqual(listDesign._inspector._sections, [
   "raw-json",
 ]);
 assert.doesNotThrow(() => XUI.create(listDesign._palette._default_object));
+assertCollectionTemplateSemantics({
+  design: listDesign,
+  type: "xlist",
+  expectedItemFields: [
+    {
+      _id: "item-row",
+      _label: "Row",
+      _path: "_styles._item",
+      _kind: "group",
+      _style_path: "_styles._item._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-leading",
+      _label: "Leading",
+      _path: "_leading",
+      _style_path: "_styles._leading._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-image",
+      _label: "Image",
+      _path: "_image",
+      _style_path: "_styles._image._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-avatar",
+      _label: "Avatar",
+      _path: "_avatar",
+      _style_path: "_styles._avatar._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-icon",
+      _label: "Icon",
+      _path: "_icon",
+      _style_path: "_styles._icon._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    { _id: "item-image-alt", _label: "Image Alt", _path: "_image_alt" },
+    {
+      _id: "item-content",
+      _label: "Content",
+      _path: "_styles._content",
+      _kind: "group",
+      _style_path: "_styles._content._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-title",
+      _label: "Title",
+      _path: "_title",
+      _style_path: "_styles._title._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-subtitle",
+      _label: "Subtitle",
+      _path: "_subtitle",
+      _style_path: "_styles._subtitle._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-description",
+      _label: "Description",
+      _path: "_description",
+      _style_path: "_styles._description._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-meta",
+      _label: "Meta",
+      _path: "_meta",
+      _style_path: "_styles._meta._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-badge",
+      _label: "Badge",
+      _path: "_badge",
+      _style_path: "_styles._badge._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-trailing",
+      _label: "Trailing",
+      _path: "_trailing",
+      _style_path: "_styles._trailing._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-actions",
+      _label: "Actions",
+      _path: "_actions",
+      _kind: "object-array",
+      _style_path: "_styles._actions._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+  ],
+});
+
+const galleryObjectClass = objects.xgallery;
+const galleryDesign = galleryObjectClass._skill._design;
+assert.equal(galleryObjectClass._xtype, "xgallery");
+assert.equal(galleryDesign._palette._default_object._type, "xgallery");
+assert.equal(galleryDesign._palette._category, "Data Display");
+assert.deepEqual(galleryDesign._children._insert_modes, ["before", "after"]);
+assert.equal(galleryDesign._children._allowed, false);
+assertCollectionTemplateSemantics({
+  design: galleryDesign,
+  type: "xgallery",
+  expectedItemFields: [
+    {
+      _id: "item-card",
+      _label: "Card",
+      _path: "_styles._item",
+      _kind: "group",
+      _style_path: "_styles._item._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-image",
+      _label: "Image",
+      _path: "_image",
+      _style_path: "_styles._image._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    { _id: "item-image-alt", _label: "Image Alt", _path: "_image_alt" },
+    {
+      _id: "item-body",
+      _label: "Body",
+      _path: "_styles._body",
+      _kind: "group",
+      _style_path: "_styles._body._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-title",
+      _label: "Title",
+      _path: "_title",
+      _style_path: "_styles._title._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-subtitle",
+      _label: "Subtitle",
+      _path: "_subtitle",
+      _style_path: "_styles._subtitle._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-description",
+      _label: "Description",
+      _path: "_description",
+      _style_path: "_styles._description._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-meta",
+      _label: "Meta",
+      _path: "_meta",
+      _style_path: "_styles._meta._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-badge",
+      _label: "Badge",
+      _path: "_badge",
+      _style_path: "_styles._badge._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-actions",
+      _label: "Actions",
+      _path: "_actions",
+      _kind: "object-array",
+      _style_path: "_styles._actions._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+  ],
+});
 
 const timelineObjectClass = objects.xtimeline;
 assert.equal(timelineObjectClass._skill._id, "xtimeline");
@@ -964,6 +1824,129 @@ for (const key of [
 }
 assert.ok(!timelineInspectorKeys.has("_on_select"), "runtime _on_select must not be exposed in Inspector");
 assert.doesNotThrow(() => XUI.create(timelineDesign._palette._default_object));
+assertCollectionTemplateSemantics({
+  design: timelineDesign,
+  type: "xtimeline",
+  expectedRoots: ["timeline-configuration", "item-template", "fallback-actions", "empty-state"],
+  expectedConfigRoot: { _id: "timeline-configuration", _label: "Timeline Configuration" },
+  expectedConfigFields: [
+    { _id: "date-field", _label: "Date Field", _role: "date-field", _path: "_date_field" },
+    { _id: "order", _label: "Order", _role: "order", _path: "_order" },
+    { _id: "row-key", _label: "Row Key", _role: "row-key", _path: "_row_key" },
+    { _id: "selectable", _label: "Selectable", _role: "selectable", _path: "_selectable" },
+    { _id: "selected-key", _label: "Selected Key", _role: "selected-key", _path: "_selected_key" },
+    { _id: "undated-text", _label: "Undated Text", _role: "undated-text", _path: "_undated_text" },
+  ],
+  expectedTemplateLabel: "Entry Template",
+  expectedItemFields: [
+    {
+      _id: "item-entry",
+      _label: "Entry",
+      _path: "_styles._item",
+      _kind: "group",
+      _style_path: "_styles._item._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-axis",
+      _label: "Axis",
+      _path: "_styles._axis",
+      _kind: "group",
+      _style_path: "_styles._axis._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-date",
+      _label: "Date",
+      _path: "_styles._date",
+      _kind: "group",
+      _style_path: "_styles._date._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-marker",
+      _label: "Marker",
+      _path: "_styles._dot",
+      _kind: "group",
+      _style_path: "_styles._dot._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-card",
+      _label: "Card",
+      _path: "_styles._card",
+      _kind: "group",
+      _style_path: "_styles._card._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-body",
+      _label: "Body",
+      _path: "_styles._body",
+      _kind: "group",
+      _style_path: "_styles._body._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-image",
+      _label: "Image",
+      _path: "_image",
+      _style_path: "_styles._image._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-icon",
+      _label: "Icon",
+      _path: "_icon",
+      _style_path: "_styles._icon._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    { _id: "item-image-alt", _label: "Image Alt", _path: "_image_alt" },
+    {
+      _id: "item-title",
+      _label: "Title",
+      _path: "_title",
+      _style_path: "_styles._title._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-subtitle",
+      _label: "Subtitle",
+      _path: "_subtitle",
+      _style_path: "_styles._subtitle._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-description",
+      _label: "Description",
+      _path: "_description",
+      _style_path: "_styles._description._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-meta",
+      _label: "Meta",
+      _path: "_meta",
+      _style_path: "_styles._meta._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-badge",
+      _label: "Badge",
+      _path: "_badge",
+      _style_path: "_styles._badge._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-actions",
+      _label: "Actions",
+      _path: "_actions",
+      _kind: "object-array",
+      _style_path: "_styles._actions._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+  ],
+});
 
 const calendarObjectClass = objects.xcalendar;
 assert.equal(calendarObjectClass._skill._id, "xcalendar");
@@ -1008,6 +1991,91 @@ for (const key of [
 }
 assert.ok(!calendarInspectorKeys.has("_on_select"), "runtime _on_select must not be exposed in Inspector");
 assert.doesNotThrow(() => XUI.create(calendarDesign._palette._default_object));
+assertCollectionTemplateSemantics({
+  design: calendarDesign,
+  type: "xcalendar",
+  expectedRoots: ["calendar-configuration", "item-template", "fallback-actions", "empty-state"],
+  expectedConfigRoot: { _id: "calendar-configuration", _label: "Calendar Configuration" },
+  expectedConfigFields: [
+    { _id: "date-field", _label: "Date Field", _role: "date-field", _path: "_date_field" },
+    { _id: "end-date-field", _label: "End Date Field", _role: "end-date-field", _path: "_end_date_field" },
+    { _id: "view", _label: "View", _role: "view", _path: "_view" },
+    { _id: "month", _label: "Month", _role: "month", _path: "_month" },
+    { _id: "week-start", _label: "Week Start", _role: "week-start", _path: "_week_start" },
+    { _id: "row-key", _label: "Row Key", _role: "row-key", _path: "_row_key" },
+    { _id: "selectable", _label: "Selectable", _role: "selectable", _path: "_selectable" },
+    { _id: "selected-key", _label: "Selected Key", _role: "selected-key", _path: "_selected_key" },
+  ],
+  expectedTemplateLabel: "Event Template",
+  expectedItemFields: [
+    {
+      _id: "item-event",
+      _label: "Event",
+      _path: "_styles._item",
+      _kind: "group",
+      _style_path: "_styles._item._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-image",
+      _label: "Image",
+      _path: "_image",
+      _style_path: "_styles._image._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    {
+      _id: "item-icon",
+      _label: "Icon",
+      _path: "_icon",
+      _style_path: "_styles._icon._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+    { _id: "item-image-alt", _label: "Image Alt", _path: "_image_alt" },
+    {
+      _id: "item-title",
+      _label: "Title",
+      _path: "_title",
+      _style_path: "_styles._title._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-subtitle",
+      _label: "Subtitle",
+      _path: "_subtitle",
+      _style_path: "_styles._subtitle._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-description",
+      _label: "Description",
+      _path: "_description",
+      _style_path: "_styles._description._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-meta",
+      _label: "Meta",
+      _path: "_meta",
+      _style_path: "_styles._meta._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-badge",
+      _label: "Badge",
+      _path: "_badge",
+      _style_path: "_styles._badge._style",
+      _capabilities: ["typography", "spacing", "appearance"],
+    },
+    {
+      _id: "item-actions",
+      _label: "Actions",
+      _path: "_actions",
+      _kind: "object-array",
+      _style_path: "_styles._actions._style",
+      _capabilities: ["spacing", "layout", "appearance"],
+    },
+  ],
+});
 
 const statsObjectClass = objects.xstats;
 assert.equal(statsObjectClass._skill._id, "xstats");

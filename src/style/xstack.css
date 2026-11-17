@@ -42,10 +42,11 @@
    ========================================================================== */
 
 .xstack--dense,
-.xstack--density-dense {
+.xstack--density-dense,
+.xstack--density-compact {
 
   --xstack-gap:
-    var(--x-spacing-sm);
+    var(--x-density-compact-gap, var(--x-spacing-sm));
 }
 
 
@@ -53,7 +54,14 @@
 .xstack--density-comfortable {
 
   --xstack-gap:
-    var(--x-spacing-lg);
+    var(--x-density-comfortable-gap, var(--x-spacing-md));
+}
+
+.xstack--spacious,
+.xstack--density-spacious {
+
+  --xstack-gap:
+    var(--x-density-spacious-gap, var(--x-spacing-lg));
 }
 
 
@@ -137,4 +145,11 @@
 
 .xstack--nowrap {
   flex-wrap:nowrap;
+}
+
+@media (max-width: 640px) {
+  .xstack--h.xstack--wrap,
+  .xstack--horizontal.xstack--wrap {
+    align-items:stretch;
+  }
 }

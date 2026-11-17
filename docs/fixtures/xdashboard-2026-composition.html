@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>XDashboard 2026 Composition</title>
+    <link rel="stylesheet" href="../../../packages/xpell-ui/src/XUI/Style/xui.css" />
+    <link rel="stylesheet" href="../../src/style/style.css" />
+    <style>
+      body {
+        margin:0;
+        font-family:var(--x-font-body, system-ui, sans-serif);
+      }
+
+      .fixture-frame {
+        min-height:100vh;
+        background:var(--x-bg);
+      }
+
+      .fixture-spacer {
+        height:24px;
+      }
+
+      .fixture-note {
+        margin:0;
+        color:var(--x-text-muted);
+        font-size:var(--x-type-caption-size, 12px);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="fixture-frame" data-theme="xdashboard-2026-light">
+      <div class="xshell xshell--with-sidebar xshell--main-scroll">
+        <aside class="xsidebar xshell__sidebar">
+          <div class="xsidebar__panel">
+            <div class="xsidebar__header">
+              <div class="xsidebar__title">Tracker</div>
+              <div class="xsidebar__subtitle">Operations</div>
+            </div>
+            <div class="xsidebar__body">
+              <nav class="xnavlist">
+                <button class="xnavlist__item xnavlist__item--active">Lists</button>
+                <button class="xnavlist__item">Reports</button>
+                <button class="xnavlist__item">Settings</button>
+              </nav>
+            </div>
+          </div>
+        </aside>
+        <main class="xshell__main">
+          <div class="xpage xpage--width-contained xpage--density-comfortable">
+            <header class="xpage-header xpage-header--density-comfortable">
+              <div class="xpage-header__heading">
+                <h1 class="xpage-header__title">Customer Tracker</h1>
+                <p class="xpage-header__subtitle">Review account health, open tasks, and recent history without starter-specific page CSS.</p>
+                <p class="xpage-header__meta">Updated August 24, 2026</p>
+              </div>
+              <div class="xtoolbar xpage-header__actions xtoolbar--variant-plain xtoolbar--density-comfortable">
+                <button class="xbutton xbutton--variant-primary">Add Customer</button>
+                <button class="xbutton">Export</button>
+              </div>
+            </header>
+
+            <div class="xtoolbar xtoolbar--variant-plain xtoolbar--density-comfortable">
+              <div class="xsearch"><input placeholder="Search customers" /></div>
+              <div class="xigroup xigroup--variant-subtle xigroup--density-comfortable">
+                <select class="xselect"><option>All statuses</option><option>At risk</option></select>
+                <select class="xselect"><option>All owners</option><option>Customer Success</option></select>
+              </div>
+              <button class="xbutton">Reset</button>
+            </div>
+
+            <section class="xsection xsection--variant-card xsection--density-comfortable">
+              <div class="xsection__container">
+                <div class="xsection__header">
+                  <div class="xsection__headings">
+                    <h2 class="xsection__title">Active accounts</h2>
+                    <p class="xsection__subtitle">Primary work queue aligned to the page width.</p>
+                  </div>
+                  <div class="xsection__actions"><span class="xbadge xbadge--size-sm">24 accounts</span></div>
+                </div>
+                <div class="xsection__body">
+                  <div class="xlist xlist--variant-plain xlist--density-comfortable">
+                    <div class="xlist__items">
+                      <article class="xlist__item xlist__item--selectable xlist__item--selected" tabindex="0" aria-selected="true">
+                        <div class="xlist__icon">A</div>
+                        <div class="xlist__content">
+                          <div class="xlist__header">
+                            <div class="xlist__heading">
+                              <p class="xlist__title">Atlas Supply</p>
+                              <p class="xlist__subtitle">Renewal in review</p>
+                            </div>
+                            <span class="xbadge xbadge--size-sm">At risk</span>
+                          </div>
+                          <p class="xlist__description">Pricing approval is the only remaining blocker.</p>
+                          <p class="xlist__meta">Owner: Maya</p>
+                        </div>
+                        <div class="xlist__trailing"><button class="xbutton">Open</button></div>
+                      </article>
+                      <article class="xlist__item xlist__item--selectable" tabindex="0">
+                        <div class="xlist__icon">N</div>
+                        <div class="xlist__content">
+                          <div class="xlist__header">
+                            <div class="xlist__heading">
+                              <p class="xlist__title">Northwind Labs</p>
+                              <p class="xlist__subtitle">Implementation</p>
+                            </div>
+                          </div>
+                          <p class="xlist__description">Sandbox workspace is ready for the customer admin.</p>
+                          <p class="xlist__meta">Owner: Lee</p>
+                        </div>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="xsection xsection--variant-subtle xsection--density-comfortable">
+              <div class="xsection__container">
+                <div class="xsection__header">
+                  <div class="xsection__headings">
+                    <h2 class="xsection__title">Import queue</h2>
+                    <p class="xsection__subtitle">Empty table region uses the section rhythm, not a separate blank page zone.</p>
+                  </div>
+                </div>
+                <div class="xsection__body">
+                  <div class="xtable xtable--variant-plain xtable--hover xtable--density-comfortable">
+                    <table class="xtable__table">
+                      <thead class="xtable__head"><tr><th class="xtable__th">File</th><th class="xtable__th">State</th><th class="xtable__th">Owner</th></tr></thead>
+                      <tbody class="xtable__body"><tr class="xtable__row xtable__row--empty"><td class="xtable__td xtable__empty" colspan="3">No pending imports</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="xsection xsection--variant-plain xsection--density-comfortable">
+              <div class="xsection__container">
+                <div class="xsection__header">
+                  <div class="xsection__headings">
+                    <h2 class="xsection__title">Recent history</h2>
+                    <p class="xsection__subtitle">Secondary content follows the same page rhythm.</p>
+                  </div>
+                </div>
+                <div class="xsection__body">
+                  <div class="xtimeline xtimeline--density-compact">
+                    <div class="xtimeline__items">
+                      <article class="xtimeline__item"><div class="xtimeline__axis"><p class="xtimeline__date">Today</p><span class="xtimeline__dot"></span></div><div class="xtimeline__card"><div class="xtimeline__body"><div class="xtimeline__header"><div class="xtimeline__heading"><p class="xtimeline__title">Atlas pricing note added</p><p class="xtimeline__subtitle">Customer Success</p></div></div><p class="xtimeline__description">Final pricing note is ready for approval.</p></div></div></article>
+                      <article class="xtimeline__item"><div class="xtimeline__axis"><p class="xtimeline__date">Yesterday</p><span class="xtimeline__dot"></span></div><div class="xtimeline__card"><div class="xtimeline__body"><div class="xtimeline__header"><div class="xtimeline__heading"><p class="xtimeline__title">Northwind workspace created</p><p class="xtimeline__subtitle">Implementation</p></div></div></div></div></article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <div class="fixture-spacer"></div>
+
+    <section class="fixture-frame" data-theme="xdashboard-2026-dark">
+      <div class="xshell xshell--single xshell--main-scroll">
+        <main class="xshell__main">
+          <div class="xpage xpage--width-contained xpage--density-comfortable">
+            <header class="xpage-header">
+              <div class="xpage-header__heading">
+                <h1 class="xpage-header__title">Customer Tracker</h1>
+                <p class="xpage-header__subtitle">Same composition system under the dark 2026 theme.</p>
+              </div>
+              <div class="xtoolbar xpage-header__actions xtoolbar--variant-plain"><button class="xbutton xbutton--variant-primary">Add Customer</button></div>
+            </header>
+            <div class="xtoolbar xtoolbar--variant-plain">
+              <div class="xsearch"><input placeholder="Search" /></div>
+              <button class="xbutton">Filter</button>
+            </div>
+            <section class="xsection xsection--variant-card">
+              <div class="xsection__container">
+                <div class="xsection__header"><div class="xsection__headings"><h2 class="xsection__title">Dark theme content</h2><p class="xsection__subtitle">Contained width and rhythm remain consistent.</p></div></div>
+                <div class="xsection__body"><p class="fixture-note">Shell -> Page -> Page Header -> Toolbar -> Sections.</p></div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </section>
+  </body>
+</html>

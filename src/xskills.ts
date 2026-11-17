@@ -5,6 +5,9 @@ import { XTIMELINE_SKILL } from "./xtimeline.skill";
 import { XCALENDAR_SKILL } from "./xcalendar.skill";
 import { XKANBAN_SKILL } from "./xkanban.skill";
 import { XSTATS_SKILL } from "./xstats.skill";
+import { XSHELL_SKILL } from "./xshell.skill";
+import { XPAGE_SKILL } from "./xpage.skill";
+import { XPAGE_HEADER_SKILL } from "./xpage-header.skill";
 
 export type XDashboardSkillBindings = {
   _collection?: string[];
@@ -28,6 +31,9 @@ export type XDashboardDiscoverySkill = XpellSkill & {
 };
 
 const xdashboardObjectSkillSource: Record<string, XDashboardDiscoverySkill> = {
+  [XSHELL_SKILL._id]: XSHELL_SKILL,
+  [XPAGE_SKILL._id]: XPAGE_SKILL,
+  [XPAGE_HEADER_SKILL._id]: XPAGE_HEADER_SKILL,
   [XGALLERY_SKILL._id]: XGALLERY_SKILL,
   [XLIST_SKILL._id]: XLIST_SKILL,
   [XTIMELINE_SKILL._id]: XTIMELINE_SKILL,

@@ -4,8 +4,20 @@
    ========================================================================== */
 
 .xsection {
-    flex:1 1 auto;
-    min-height:0;
+  --xsection-padding:
+    var(--x-density-comfortable-padding, var(--x-spacing-md));
+
+  --xsection-header-gap:
+    var(--x-density-comfortable-gap, var(--x-spacing-sm));
+
+  --xsection-heading-gap:
+    var(--x-spacing-xs);
+
+  --xsection-body-gap:
+    var(--x-content-gap, var(--x-spacing-md));
+
+  flex:1 1 auto;
+  min-height:0;
 }
 
 /* ==========================================================================
@@ -27,9 +39,18 @@
     var(--x-shadow-md);
 
   padding:
-    var(--x-spacing-md);
+    var(--xsection-padding);
+
   display:flex;
   flex-direction:column;
+}
+
+[data-theme="xdashboard-2026-light"] .xsection:not(.xsection--variant-plain):not(.xsection--variant-subtle):not(.xsection--variant-card) .xsection__container,
+[data-theme="xdashboard-2026-dark"] .xsection:not(.xsection--variant-plain):not(.xsection--variant-subtle):not(.xsection--variant-card) .xsection__container {
+  background:transparent;
+  border-color:transparent;
+  box-shadow:none;
+  padding:0;
 }
 
 
@@ -45,10 +66,10 @@
   justify-content:space-between;
 
   gap:
-    var(--x-spacing-sm);
+    var(--xsection-header-gap);
 
   margin-bottom:
-    var(--x-spacing-sm);
+    var(--xsection-body-gap);
 }
 
 
@@ -62,7 +83,7 @@
   flex-direction:column;
 
   gap:
-    var(--x-spacing-xs);
+    var(--xsection-heading-gap);
 
   min-width:0;
 }
@@ -72,13 +93,17 @@
 
   margin:0;
 
-  font-size:16px;
-  font-weight:700;
+  font-size:
+    var(--x-type-section-title-size, 16px);
+
+  font-weight:
+    var(--x-type-section-title-weight, 700);
 
   color:
     var(--x-text);
 
-  line-height:1.2;
+  line-height:
+    var(--x-type-section-title-line-height, 1.2);
 }
 
 
@@ -86,12 +111,14 @@
 
   margin:0;
 
-  font-size:13px;
+  font-size:
+    var(--x-type-section-subtitle-size, 13px);
 
   color:
     var(--x-text-muted);
 
-  line-height:1.35;
+  line-height:
+    var(--x-type-section-subtitle-line-height, 1.35);
 }
 
 
@@ -107,7 +134,7 @@
   justify-content:flex-end;
 
   gap:
-    var(--x-spacing-sm);
+    var(--xsection-header-gap);
 
   flex-wrap:wrap;
 }
@@ -121,6 +148,8 @@
   width:100%;
   display:flex;
   flex-direction:column;
+  gap:
+    var(--xsection-body-gap);
 }
 
 
@@ -128,8 +157,37 @@
    Semantic Variants
    ========================================================================== */
 
+.xsection--variant-plain .xsection__container {
+  background:transparent;
+  border-color:transparent;
+  box-shadow:none;
+}
+
+.xsection--variant-subtle .xsection__container {
+  background:
+    var(--x-surface-muted, var(--x-surface-2, var(--x-surface)));
+
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:none;
+}
+
+.xsection--variant-card .xsection__container {
+  background:
+    var(--x-surface);
+
+  border-color:
+    var(--x-border-subtle, var(--x-border));
+
+  box-shadow:
+    var(--x-shadow-xs, none);
+}
+
 .xsection--primary,
-.xsection--variant-primary {
+.xsection--variant-primary,
+.xsection--primary .xsection__container,
+.xsection--variant-primary .xsection__container {
 
   border-color:
     var(--x-primary);
@@ -137,7 +195,9 @@
 
 
 .xsection--success,
-.xsection--variant-success {
+.xsection--variant-success,
+.xsection--success .xsection__container,
+.xsection--variant-success .xsection__container {
 
   border-color:
     var(--x-success);
@@ -147,7 +207,11 @@
 .xsection--danger,
 .xsection--error,
 .xsection--variant-danger,
-.xsection--variant-error {
+.xsection--variant-error,
+.xsection--danger .xsection__container,
+.xsection--error .xsection__container,
+.xsection--variant-danger .xsection__container,
+.xsection--variant-error .xsection__container {
 
   border-color:
     var(--x-danger);
@@ -155,7 +219,9 @@
 
 
 .xsection--warning,
-.xsection--variant-warning {
+.xsection--variant-warning,
+.xsection--warning .xsection__container,
+.xsection--variant-warning .xsection__container {
 
   border-color:
     var(--x-warning);
@@ -167,14 +233,30 @@
    ========================================================================== */
 
 .xsection--flat,
-.xsection--elevation-flat {
+.xsection--elevation-flat,
+.xsection--elevation-none,
+.xsection--flat .xsection__container,
+.xsection--elevation-flat .xsection__container,
+.xsection--elevation-none .xsection__container {
 
   box-shadow:none;
 }
 
+.xsection--elevation-xs .xsection__container {
+  box-shadow:
+    var(--x-shadow-xs, none);
+}
+
+.xsection--elevation-sm .xsection__container {
+  box-shadow:
+    var(--x-shadow-sm, none);
+}
+
 
 .xsection--elevated,
-.xsection--elevation-md {
+.xsection--elevation-md,
+.xsection--elevated .xsection__container,
+.xsection--elevation-md .xsection__container {
 
   box-shadow:
     var(--x-shadow-md);
@@ -186,16 +268,60 @@
    ========================================================================== */
 
 .xsection--dense,
-.xsection--density-dense {
+.xsection--density-dense,
+.xsection--density-compact {
 
-  padding:
-    var(--x-spacing-sm);
+  --xsection-padding:
+    var(--x-density-compact-padding, var(--x-spacing-sm));
+
+  --xsection-header-gap:
+    var(--x-density-compact-gap, var(--x-spacing-xs));
+
+  --xsection-body-gap:
+    var(--x-density-compact-gap, var(--x-spacing-sm));
 }
 
 
 .xsection--comfortable,
 .xsection--density-comfortable {
 
-  padding:
-    var(--x-spacing-md);
+  --xsection-padding:
+    var(--x-density-comfortable-padding, var(--x-spacing-md));
+
+  --xsection-header-gap:
+    var(--x-density-comfortable-gap, var(--x-spacing-sm));
+
+  --xsection-body-gap:
+    var(--x-content-gap, var(--x-spacing-md));
+}
+
+.xsection--spacious,
+.xsection--density-spacious {
+  --xsection-padding:
+    var(--x-density-spacious-padding, var(--x-spacing-lg));
+
+  --xsection-header-gap:
+    var(--x-density-spacious-gap, var(--x-spacing-md));
+
+  --xsection-body-gap:
+    var(--x-section-gap, var(--x-spacing-lg));
+}
+
+@media (max-width: 640px) {
+  .xsection {
+    --xsection-padding:
+      var(--x-page-padding-x-mobile, var(--x-spacing-sm));
+
+    --xsection-body-gap:
+      var(--x-content-gap, var(--x-spacing-sm));
+  }
+
+  .xsection__header {
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .xsection__actions {
+    justify-content:flex-start;
+  }
 }

@@ -368,4 +368,52 @@ createStats({
 assert.equal(getObject("xstats-arbitrary_item_nested-sum_value")._text, "28");
 assert.equal(getObject("xstats-arbitrary_item_contains_value")._text, "2");
 
+function localDateTime(offsetDays, hour) {
+  const value = new Date();
+  value.setDate(value.getDate() + offsetDays);
+  value.setHours(hour, 0, 0, 0);
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  const hours = String(value.getHours()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:00`;
+}
+
+if (typeof _xd?.set === "function") {
+  _xd.set("daily.records", {
+    records: [
+      { id: "a", distance_km: 40, occurred_at: localDateTime(0, 8) },
+      { id: "b", distance_km: 60, occurred_at: localDateTime(0, 18) },
+      { id: "c", distance_km: 999, occurred_at: localDateTime(-1, 12) },
+    ],
+  });
+}
+
+const currentDayStats = createStats({
+  _id: "xstats-current-day",
+  _data_source: "daily.records",
+  _items: [
+    {
+      _id: "today-km",
+      _title: "Distance Today",
+      _aggregate: "sum",
+      _field: "distance_km",
+      _value_suffix: "km",
+      _filter: {
+        _field: "occurred_at",
+        _operator: "current_day",
+      },
+    },
+  ],
+});
+assert.equal(getObject("xstats-current-day_item_today-km_value")._text, "100 km");
+
+await currentDayStats.onData({
+  records: [
+    { distance_km: 25, occurred_at: localDateTime(0, 9) },
+    { distance_km: 75, occurred_at: localDateTime(-2, 9) },
+  ],
+});
+assert.equal(getObject("xstats-current-day_item_today-km_value")._text, "25 km");
+
 console.log("xstats data-summary component passed");

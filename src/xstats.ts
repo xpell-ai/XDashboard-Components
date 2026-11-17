@@ -1,6 +1,7 @@
 import { XUI, XUIObject } from "@xpell/ui";
 import type { XObjectData, XUIObjectData, XpellSkill } from "@xpell/ui";
 import {
+  buildCollectionRootClassName,
   collectionTextValue,
   normalizeCollectionDataKey,
   normalizeCollectionNumber,
@@ -25,7 +26,8 @@ export type XStatsFilterOperator =
   | "lte"
   | "contains"
   | "truthy"
-  | "falsy";
+  | "falsy"
+  | "current_day";
 
 export type XStatsFilter = {
   _field?: string;
@@ -44,6 +46,9 @@ export type XStatsItem = {
   _badge?: any;
   _trend?: any;
   _meta?: any;
+  _value_prefix?: any;
+  _value_suffix?: any;
+  _unit?: any;
 };
 
 export interface XStatsData extends XUIObjectData {
@@ -53,6 +58,8 @@ export interface XStatsData extends XUIObjectData {
   _items?: XStatsItem[];
   _min_col_width?: number;
   _gap?: number;
+  _variant?: "plain" | "subtle" | "card" | "elevated";
+  _density?: "compact" | "comfortable" | "spacious";
   _empty_text?: string;
   _empty?: XObjectData;
   _on_data?: ((xobj: XStats, data: any) => void) | string;
@@ -160,8 +167,12 @@ export class XStats extends XUIObject {
 
   private buildClassName(): string {
     const existing = String((this as any).class || "");
-    const filtered = this.splitClasses(existing).filter((c) => c !== "xstats");
-    return Array.from(new Set(["xstats", ...filtered])).join(" ");
+    return buildCollectionRootClassName(
+      "xstats",
+      existing,
+      this as any,
+      ["_variant", "_density"]
+    );
   }
 
   private applyLayout() {
@@ -249,7 +260,56 @@ export class XStats extends XUIObject {
     return value;
   }
 
+  private dateParts(value: any): { y: number; m: number; d: number } | undefined {
+    if (value instanceof Date && Number.isFinite(value.getTime())) {
+      return {
+        y: value.getFullYear(),
+        m: value.getMonth(),
+        d: value.getDate(),
+      };
+    }
+
+    if (typeof value === "number" && Number.isFinite(value)) {
+      const date = new Date(value);
+      if (!Number.isFinite(date.getTime())) return undefined;
+      return {
+        y: date.getFullYear(),
+        m: date.getMonth(),
+        d: date.getDate(),
+      };
+    }
+
+    if (typeof value !== "string" || !value.trim()) return undefined;
+    const raw = value.trim();
+    const localDateMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s])/u);
+    if (localDateMatch) {
+      return {
+        y: Number(localDateMatch[1]),
+        m: Number(localDateMatch[2]) - 1,
+        d: Number(localDateMatch[3]),
+      };
+    }
+
+    const date = new Date(raw);
+    if (!Number.isFinite(date.getTime())) return undefined;
+    return {
+      y: date.getFullYear(),
+      m: date.getMonth(),
+      d: date.getDate(),
+    };
+  }
+
+  private isSameDay(left: any, right: any): boolean {
+    const leftParts = this.dateParts(left);
+    const rightParts = this.dateParts(right ?? new Date());
+    if (!leftParts || !rightParts) return false;
+    return leftParts.y === rightParts.y &&
+      leftParts.m === rightParts.m &&
+      leftParts.d === rightParts.d;
+  }
+
   private compareValues(actual: any, expected: any, operator: XStatsFilterOperator) {
+    if (operator === "current_day") return this.isSameDay(actual, expected);
     if (operator === "truthy") return Boolean(actual);
     if (operator === "falsy") return !actual;
 
@@ -317,6 +377,14 @@ export class XStats extends XUIObject {
     return String(Number(value.toFixed(2)));
   }
 
+  private formatMetricValue(item: XStatsItem, value: string): string {
+    const prefix = this.resolveMetricText(item._value_prefix, value);
+    const suffix =
+      this.resolveMetricText(item._value_suffix, value) ||
+      this.resolveMetricText(item._unit, value);
+    return `${prefix}${value}${suffix ? ` ${suffix}` : ""}`;
+  }
+
   private resolveMetricText(value: any, computedValue: string): string {
     if (value === undefined || value === null) return "";
     if (typeof value === "string") {
@@ -342,7 +410,10 @@ export class XStats extends XUIObject {
       const filtered = rows.filter((row, rowIndex) =>
         this.matchesFilter(row, rowIndex, item._filter)
       );
-      const value = this.formatNumber(this.aggregate(filtered, item));
+      const value = this.formatMetricValue(
+        item,
+        this.formatNumber(this.aggregate(filtered, item))
+      );
       const title =
         collectionTextValue(item._title) ||
         key ||
@@ -478,6 +549,7 @@ export class XStats extends XUIObject {
       _id: `${this._id}_empty`,
       _title: this.__empty_text,
       _size: "md",
+      _variant: "section",
       _align: "center",
     };
   }

@@ -9,16 +9,16 @@
     var(--x-spacing-sm);
 
   --xsearch-pad-y:
-    6px;
+    var(--x-control-padding-y-md, 6px);
 
   --xsearch-pad-x:
-    10px;
+    var(--x-control-padding-x-md, 10px);
 
   --xsearch-font:
-    13px;
+    var(--x-control-font-size-md, var(--x-type-body-size, 13px));
 
   --xsearch-height:
-    34px;
+    var(--x-control-height-md, 34px);
 
   display:inline-flex;
 
@@ -55,36 +55,36 @@
 .xsearch--sm,
 .xsearch--size-sm {
 
-  --xsearch-pad-y:4px;
-  --xsearch-pad-x:8px;
+  --xsearch-pad-y:var(--x-control-padding-y-sm, 4px);
+  --xsearch-pad-x:var(--x-control-padding-x-sm, 8px);
 
-  --xsearch-font:12px;
+  --xsearch-font:var(--x-control-font-size-sm, var(--x-type-caption-size, 12px));
 
-  --xsearch-height:30px;
+  --xsearch-height:var(--x-control-height-sm, 30px);
 }
 
 
 .xsearch--md,
 .xsearch--size-md {
 
-  --xsearch-pad-y:6px;
-  --xsearch-pad-x:10px;
+  --xsearch-pad-y:var(--x-control-padding-y-md, 6px);
+  --xsearch-pad-x:var(--x-control-padding-x-md, 10px);
 
-  --xsearch-font:13px;
+  --xsearch-font:var(--x-control-font-size-md, var(--x-type-body-size, 13px));
 
-  --xsearch-height:34px;
+  --xsearch-height:var(--x-control-height-md, 34px);
 }
 
 
 .xsearch--lg,
 .xsearch--size-lg {
 
-  --xsearch-pad-y:8px;
-  --xsearch-pad-x:12px;
+  --xsearch-pad-y:var(--x-control-padding-y-lg, 8px);
+  --xsearch-pad-x:var(--x-control-padding-x-lg, 12px);
 
-  --xsearch-font:14px;
+  --xsearch-font:var(--x-control-font-size-lg, var(--x-type-body-size, 14px));
 
-  --xsearch-height:40px;
+  --xsearch-height:var(--x-control-height-lg, 40px);
 }
 
 

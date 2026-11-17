@@ -429,6 +429,78 @@ await (async function generatedPotTableRegression() {
   await table.dispose();
 })();
 
+await (async function generatedTrackerDeleteRefreshRegression() {
+  scenarioIndex += 1;
+  const key = `tracker_entry:records.${scenarioIndex}`;
+  const first = {
+    _id: "tracker-entry-a",
+    description: "First entry",
+    amount: 10,
+    occurred_at: "2026-09-04T08:00",
+  };
+  const second = {
+    _id: "tracker-entry-b",
+    description: "Second entry",
+    amount: 20,
+    occurred_at: "2026-09-04T09:00",
+  };
+  const recent = XUI.create({
+    _id: "tracker-delete-recent",
+    _type: "xlist",
+    _data_source: key,
+    _items: key,
+    _row_key: "_id",
+    _item: {
+      _title: "$row.description",
+      _trailing: { _field: "amount", _format: "number" },
+    },
+  });
+  const history = XUI.create({
+    _id: "tracker-delete-history",
+    _type: "table",
+    _data_source: key,
+    _rows: key,
+    _row_key: "_id",
+    _columns: [
+      { _key: "description", _label: "Description" },
+      { _key: "amount", _label: "Amount" },
+    ],
+  });
+  const stats = XUI.create({
+    _id: "tracker-delete-stats",
+    _type: "xstats",
+    _data_source: key,
+    _records: key,
+    _items: [
+      { _id: "amount-total", _title: "Amount", _aggregate: "sum", _field: "amount" },
+    ],
+  });
+
+  await recent.onMount();
+  await history.onMount();
+  await stats.onMount();
+
+  _xd.set(key, [first, second]);
+  await settle();
+  assert.match(objectText(recent), /First entry/);
+  assert.match(objectText(recent), /Second entry/);
+  assert.match(objectText(history), /First entry/);
+  assert.match(objectText(history), /Second entry/);
+  assert.match(objectText(stats), /Amount30/);
+
+  _xd.set(key, [first], { source: "flow-client" });
+  await settle();
+  assert.match(objectText(recent), /First entry/);
+  assert.doesNotMatch(objectText(recent), /Second entry/);
+  assert.match(objectText(history), /First entry/);
+  assert.doesNotMatch(objectText(history), /Second entry/);
+  assert.match(objectText(stats), /Amount10/);
+
+  await recent.dispose();
+  await history.dispose();
+  await stats.dispose();
+})();
+
 await (async function disposeUnsubscribesFromSharedSource() {
   scenarioIndex += 1;
   const key = `pot.records.dispose.${scenarioIndex}`;

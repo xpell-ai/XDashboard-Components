@@ -20,7 +20,7 @@
   width:100%;
 
   --xstack-gap:
-    var(--x-field-gap, 10px);
+    var(--x-field-gap, var(--x-spacing-sm));
 }
 
 
@@ -77,7 +77,7 @@
     var(--x-text-muted, var(--x-text));
 
   font-size:
-    var(--x-field-hint-size, 12px);
+    var(--x-field-hint-size, var(--x-type-caption-size, 12px));
 }
 
 
@@ -91,7 +91,7 @@
     var(--x-danger, var(--x-text));
 
   font-size:
-    var(--x-field-hint-size, 12px);
+    var(--x-field-hint-size, var(--x-type-caption-size, 12px));
 }
 
 
@@ -103,13 +103,13 @@
 .xfield--size-sm {
 
   --x-field-gap:
-    8px;
+    var(--x-density-compact-gap, var(--x-spacing-xs));
 
   --x-field-label-size:
-    12px;
+    var(--x-type-label-size, 12px);
 
   --x-field-hint-size:
-    11px;
+    var(--x-type-caption-size, 11px);
 }
 
 
@@ -117,13 +117,13 @@
 .xfield--size-md {
 
   --x-field-gap:
-    10px;
+    var(--x-density-comfortable-gap, var(--x-spacing-sm));
 
   --x-field-label-size:
-    13px;
+    var(--x-type-label-size, 13px);
 
   --x-field-hint-size:
-    12px;
+    var(--x-type-caption-size, 12px);
 }
 
 
@@ -131,13 +131,13 @@
 .xfield--size-lg {
 
   --x-field-gap:
-    12px;
+    var(--x-density-spacious-gap, var(--x-spacing-md));
 
   --x-field-label-size:
-    14px;
+    var(--x-type-body-size, 14px);
 
   --x-field-hint-size:
-    13px;
+    var(--x-type-small-size, 13px);
 }
 
 

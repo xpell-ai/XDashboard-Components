@@ -1,5 +1,11 @@
 # @xpell/xdashboard
 
+## 2.0.8 release candidate
+
+Target publication date: **13 November 2026**; this candidate has not been published.
+Use the coordinated 2.0.8 runtime dependencies. See [CHANGELOG](./CHANGELOG.md)
+for package changes and qualification limits; [LICENSE](./LICENSE) contains the MIT terms.
+
 ![npm](https://img.shields.io/npm/v/@xpell/xdashboard)
 ![downloads](https://img.shields.io/npm/dm/@xpell/xdashboard)
 ![license](https://img.shields.io/npm/l/%40xpell%2Fxdashboard)

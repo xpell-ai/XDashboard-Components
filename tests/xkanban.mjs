@@ -229,6 +229,10 @@ function getObject(id) {
   return object;
 }
 
+function styleOf(id) {
+  return getObject(id)._style;
+}
+
 function childIds(object) {
   return Array.isArray(object._children)
     ? object._children.map((child) => child?._id)
@@ -379,6 +383,86 @@ assert.equal(getObject("xkanban-mapped_item_deal-1_image").src, "/public/deals/d
 assert.equal(getObject("xkanban-mapped_item_deal-1_action_0")._text, "deal-1");
 assert.equal(getObject("xkanban-mapped_item_deal-1_action_0")._row.uuid, "deal-1");
 assert.equal(getObject("xkanban-mapped_item_deal-1_action_0")._context.row_index, 0);
+
+const styled = createKanban({
+  _id: "xkanban-styled",
+  _items: [
+    {
+      id: "styled",
+      status: "todo",
+      title: "Styled",
+      assignee: "Rae",
+      notes: "Styled notes",
+      meta: "Updated",
+      priority: "High",
+      image_url: "/assets/styled.png",
+    },
+  ],
+  _row_key: "id",
+  _group_by: "status",
+  _item: {
+    _title: "$row.title",
+    _subtitle: "$row.assignee",
+    _image: {
+      _type: "image",
+      src: "$row.image_url",
+      alt: "$row.title",
+      _style: { width: "64px", border: "1px solid green" },
+    },
+    _description: "$row.notes",
+    _meta: "$row.meta",
+    _badge: {
+      _text: "$row.priority",
+      _style: { color: "green" },
+    },
+    _actions: [{ _type: "button", _text: "Open" }],
+    _styles: {
+      _item: { _style: { border: "1px solid blue" } },
+      _image: { _style: { width: "32px", height: "32px", border: "1px solid red" } },
+      _body: { _style: { padding: "12px" } },
+      _title: { _style: { color: "purple" } },
+      _subtitle: { _style: { color: "gray" } },
+      _description: { _style: { "font-size": "12px" } },
+      _meta: { _style: { opacity: 0.8 } },
+      _badge: { _style: { color: "red", "font-weight": 700 } },
+      _actions: { _style: { gap: "6px" } },
+    },
+  },
+});
+assert.ok(styled);
+assert.deepEqual(styleOf("xkanban-styled_item_styled"), { border: "1px solid blue" });
+assert.deepEqual(styleOf("xkanban-styled_item_styled_image"), {
+  width: "64px",
+  height: "32px",
+  border: "1px solid green",
+});
+assert.deepEqual(styleOf("xkanban-styled_item_styled_body"), { padding: "12px" });
+assert.deepEqual(styleOf("xkanban-styled_item_styled_title"), { color: "purple" });
+assert.deepEqual(styleOf("xkanban-styled_item_styled_subtitle"), { color: "gray" });
+assert.deepEqual(styleOf("xkanban-styled_item_styled_description"), { "font-size": "12px" });
+assert.deepEqual(styleOf("xkanban-styled_item_styled_meta"), { opacity: 0.8 });
+assert.deepEqual(styleOf("xkanban-styled_item_styled_badge"), {
+  color: "green",
+  "font-weight": 700,
+});
+assert.deepEqual(styleOf("xkanban-styled_item_styled_actions"), { gap: "6px" });
+assert.equal(styleOf("xkanban-styled_column_todo_header"), undefined);
+assert.equal(styleOf("xkanban-styled_column_todo_title"), undefined);
+assert.equal(styleOf("xkanban-styled_column_todo_count"), undefined);
+
+const plain = createKanban({
+  _id: "xkanban-plain-style",
+  _items: [{ id: "plain", status: "todo", title: "Plain" }],
+  _row_key: "id",
+  _group_by: "status",
+  _item: { _title: "$row.title" },
+});
+assert.ok(plain);
+assert.equal(styleOf("xkanban-plain-style_item_plain"), undefined);
+assert.equal(styleOf("xkanban-plain-style_item_plain_title"), undefined);
+styled._item = { _title: "$row.title" };
+assert.equal(styleOf("xkanban-styled_item_styled"), undefined);
+assert.equal(styleOf("xkanban-styled_item_styled_title"), undefined);
 
 let selected;
 const selectable = createKanban({

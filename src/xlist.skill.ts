@@ -106,7 +106,7 @@ export const XLIST_SKILL: XDashboardDiscoverySkill = {
     _data_source:
       "Optional XData key used to hydrate and update list records, for example records.items.",
     _item:
-      "Item mapping object. Supports _title, _subtitle, _description, _meta, _icon, _image, _avatar, _image_alt, _badge, _leading, _trailing, and _actions. String values may use $row, $row.field, and $row_index.",
+      "Item mapping object. Supports _title, _subtitle, _description, _meta, _icon, _image, _avatar, _image_alt, _badge, _leading, _trailing, _actions, and _styles. String values may use $row, $row.field, and $row_index. Template presentation styles persist under _item._styles.<surface>._style.",
     _actions:
       "Optional per-item action child objects used when _item._actions is not set. Action templates receive _row, _row_index, and _context.",
     _row_key: "Optional row field used for stable item and action ids.",
@@ -128,6 +128,7 @@ export const XLIST_SKILL: XDashboardDiscoverySkill = {
     "Use _items for static records or for an XData key string.",
     "Use _item to map generic record fields; do not add domain-specific rendering logic.",
     "Supported item mappings include _title, _subtitle, _description, _meta, _icon, _image, _avatar, _badge, _leading, _trailing, and _actions.",
+    "Keep item-template presentation under _item._styles.<surface>._style; do not use _title_style, _card_style, root _title_style, or instance _design.",
     "Use _item._actions or _actions for per-item buttons, links, or menu controls.",
     "Use _item._leading and _item._trailing for additional generic row slots.",
     "Per-item action templates may reference $row, $row.field, and $row_index.",
@@ -154,6 +155,18 @@ export const XLIST_SKILL: XDashboardDiscoverySkill = {
         _meta: "$row.updated_at",
         _icon: "$row.icon",
         _badge: "$row.status",
+        _styles: {
+          _item: {
+            _style: {
+              padding: "14px",
+            },
+          },
+          _title: {
+            _style: {
+              "font-size": "18px",
+            },
+          },
+        },
         _actions: [
           {
             _type: "button",

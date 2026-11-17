@@ -61,7 +61,7 @@ export const XGALLERY_SKILL: XDashboardDiscoverySkill = {
     _data_source:
       "Optional XData key used to hydrate and update the gallery records, for example records.items.",
     _item:
-      "Item mapping object. Supports _title, _subtitle, _image, _image_alt, _description, _meta, _badge, and _actions. String values may use $row, $row.field, and $row_index.",
+      "Item mapping object. Supports _title, _subtitle, _image, _image_alt, _description, _meta, _badge, _actions, and _styles. String values may use $row, $row.field, and $row_index. Template presentation styles persist under _item._styles.<surface>._style.",
     _actions:
       "Optional per-item action child objects used when _item._actions is not set. Action templates receive _row, _row_index, and _context.",
     _row_key: "Optional row field used for stable item and action ids.",
@@ -82,6 +82,7 @@ export const XGALLERY_SKILL: XDashboardDiscoverySkill = {
     "Use _data_source when records should come from XData.",
     "Use _items for static records or for an XData key string.",
     "Use _item to map generic record fields; do not add domain-specific rendering logic.",
+    "Keep item-template presentation under _item._styles.<surface>._style; do not use _title_style, _card_style, root _title_style, or instance _design.",
     "Use _item._actions or _actions for per-item buttons, links, or menu controls.",
     "Per-item action templates may reference $row, $row.field, and $row_index.",
     "Prefer xgallery over table when images, summaries, badges, or card actions matter more than dense column comparison.",
@@ -102,8 +103,20 @@ export const XGALLERY_SKILL: XDashboardDiscoverySkill = {
         _title: "$row.name",
         _subtitle: "$row.type",
         _image: "$row.image",
-          _description: "$row.summary",
+        _description: "$row.summary",
         _badge: "$row.status",
+        _styles: {
+          _item: {
+            _style: {
+              "border-radius": "14px",
+            },
+          },
+          _title: {
+            _style: {
+              "font-size": "20px",
+            },
+          },
+        },
         _actions: [
           {
             _type: "button",

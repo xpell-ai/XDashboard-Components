@@ -18,16 +18,22 @@
     var(--xigroup-gap);
 }
 
+[data-theme="xdashboard-2026-light"] .xigroup,
+[data-theme="xdashboard-2026-dark"] .xigroup {
+  flex-wrap:wrap;
+}
+
 
 /* ==========================================================================
    Density Variants
    ========================================================================== */
 
 .xigroup--dense,
-.xigroup--density-dense {
+.xigroup--density-dense,
+.xigroup--density-compact {
 
   --xigroup-gap:
-    6px;
+    var(--x-density-compact-gap, var(--x-spacing-xs));
 }
 
 
@@ -35,7 +41,14 @@
 .xigroup--density-comfortable {
 
   --xigroup-gap:
-    var(--x-spacing-md);
+    var(--x-density-comfortable-gap, var(--x-spacing-sm));
+}
+
+.xigroup--spacious,
+.xigroup--density-spacious {
+
+  --xigroup-gap:
+    var(--x-density-spacious-gap, var(--x-spacing-md));
 }
 
 
@@ -50,23 +63,41 @@
     var(--x-surface);
 
   border:
-    1px solid var(--x-border);
+    1px solid var(--x-border-subtle, var(--x-border));
 
   border-radius:
     var(--x-radius-md);
 
-  padding:4px;
+  padding:
+    var(--x-spacing-xs);
 }
 
 
 .xigroup--flat,
-.xigroup--variant-flat {
+.xigroup--plain,
+.xigroup--variant-flat,
+.xigroup--variant-plain {
 
   background:transparent;
 
   border:none;
 
   padding:0;
+}
+
+.xigroup--subtle,
+.xigroup--variant-subtle {
+  background:
+    var(--x-surface-muted, var(--x-surface-2, var(--x-surface)));
+
+  border:
+    1px solid var(--x-border-subtle, var(--x-border));
+
+  border-radius:
+    var(--x-radius-md);
+
+  padding:
+    var(--x-spacing-xs);
 }
 
 
@@ -108,4 +139,15 @@
 
 .xigroup--between {
   justify-content:space-between;
+}
+
+@media (max-width: 640px) {
+  .xigroup {
+    align-items:stretch;
+  }
+
+  .xigroup > :where(.xsearch, .xselect, .xfield, .xbutton, button) {
+    flex:1 1 100%;
+    width:100%;
+  }
 }

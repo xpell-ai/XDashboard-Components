@@ -1,6 +1,8 @@
 import { XUI, XUIObject } from "@xpell/ui";
 import type { XObjectData, XUIObjectData, XpellSkill } from "@xpell/ui";
 import {
+  applyCollectionTemplateStyle,
+  buildCollectionRootClassName,
   buildCollectionActions,
   buildCollectionBadge,
   buildCollectionImage,
@@ -18,6 +20,7 @@ import {
   resolveCollectionTemplateValue,
   resolveCollectionTemplates,
   safeCollectionIdSegment,
+  type XCollectionTemplateStyles,
 } from "./xcollection";
 import type { XDashboardDiscoverySkill } from "./xskills";
 import { XGALLERY_SKILL } from "./xgallery.skill";
@@ -31,6 +34,7 @@ export type XGalleryItemMap = {
   _meta?: any;
   _badge?: any;
   _actions?: XObjectData[];
+  _styles?: XCollectionTemplateStyles;
 };
 
 export interface XGalleryData extends XUIObjectData {
@@ -43,6 +47,8 @@ export interface XGalleryData extends XUIObjectData {
   _columns?: number;
   _min_col_width?: number;
   _gap?: number;
+  _variant?: "plain" | "subtle" | "card";
+  _density?: "compact" | "comfortable" | "spacious";
   _empty_text?: string;
   _empty?: XObjectData;
   _on_data?: ((xobj: XGallery, data: any) => void) | string;
@@ -164,8 +170,12 @@ export class XGallery extends XUIObject {
 
   private buildClassName(): string {
     const existing = String((this as any).class || "");
-    const filtered = this.splitClasses(existing).filter((c) => c !== "xgallery");
-    return Array.from(new Set(["xgallery", ...filtered])).join(" ");
+    return buildCollectionRootClassName(
+      "xgallery",
+      existing,
+      this as any,
+      ["_variant", "_density"]
+    );
   }
 
   private applyLayout() {
@@ -281,6 +291,13 @@ export class XGallery extends XUIObject {
     return cloneCollectionAction(action);
   }
 
+  private applyTemplateStyle<T extends XObjectData | XUIObject | undefined>(
+    value: T,
+    surface: string
+  ): T {
+    return applyCollectionTemplateStyle(value, this.__item._styles, surface);
+  }
+
   private buildActions(row: any, rowIndex: number, itemId: string): XObjectData[] {
     return buildCollectionActions(this.__item._actions, this.__actions, row, rowIndex, itemId);
   }
@@ -291,7 +308,10 @@ export class XGallery extends XUIObject {
     rowIndex: number,
     itemId: string
   ): XObjectData | undefined {
-    return buildCollectionBadge(value, row, rowIndex, itemId);
+    return this.applyTemplateStyle(
+      buildCollectionBadge(value, row, rowIndex, itemId),
+      "_badge"
+    );
   }
 
   private buildImage(
@@ -299,7 +319,10 @@ export class XGallery extends XUIObject {
     alt: string,
     itemId: string
   ): XObjectData | XUIObject | undefined {
-    return buildCollectionImage(value, alt, itemId, "xgallery__image");
+    return this.applyTemplateStyle(
+      buildCollectionImage(value, alt, itemId, "xgallery__image"),
+      "_image"
+    );
   }
 
   private buildItem(row: any, rowIndex: number): XObjectData {
@@ -345,20 +368,30 @@ export class XGallery extends XUIObject {
 
     const headerChildren: XObjectData[] = [];
     if (title) {
-      headerChildren.push({
-        _type: "label",
-        _id: `${itemId}_title`,
-        class: "xgallery__title",
-        _text: title,
-      });
+      headerChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_title`,
+            class: "xgallery__title",
+            _text: title,
+          },
+          "_title"
+        )
+      );
     }
     if (subtitle) {
-      headerChildren.push({
-        _type: "label",
-        _id: `${itemId}_subtitle`,
-        class: "xgallery__subtitle",
-        _text: subtitle,
-      });
+      headerChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_subtitle`,
+            class: "xgallery__subtitle",
+            _text: subtitle,
+          },
+          "_subtitle"
+        )
+      );
     }
 
     const bodyChildren: XObjectData[] = [
@@ -379,44 +412,65 @@ export class XGallery extends XUIObject {
     ];
 
     if (description) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_description`,
-        class: "xgallery__description",
-        _text: description,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_description`,
+            class: "xgallery__description",
+            _text: description,
+          },
+          "_description"
+        )
+      );
     }
     if (meta) {
-      bodyChildren.push({
-        _type: "label",
-        _id: `${itemId}_meta`,
-        class: "xgallery__meta",
-        _text: meta,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "label",
+            _id: `${itemId}_meta`,
+            class: "xgallery__meta",
+            _text: meta,
+          },
+          "_meta"
+        )
+      );
     }
     if (actions.length) {
-      bodyChildren.push({
-        _type: "view",
-        _id: `${itemId}_actions`,
-        class: "xgallery__actions",
-        _children: actions,
-      });
+      bodyChildren.push(
+        this.applyTemplateStyle(
+          {
+            _type: "view",
+            _id: `${itemId}_actions`,
+            class: "xgallery__actions",
+            _children: actions,
+          },
+          "_actions"
+        )
+      );
     }
 
-    return {
-      _type: "view",
-      _id: itemId,
-      class: `xgallery__card${image ? "" : " xgallery__card--no-image"}`,
-      _children: [
-        ...(image ? [image as XObjectData] : []),
-        {
-          _type: "view",
-          _id: `${itemId}_body`,
-          class: "xgallery__body",
-          _children: bodyChildren,
-        },
-      ],
-    };
+    return this.applyTemplateStyle(
+      {
+        _type: "view",
+        _id: itemId,
+        class: `xgallery__card${image ? "" : " xgallery__card--no-image"}`,
+        _children: [
+          ...(image ? [image as XObjectData] : []),
+          this.applyTemplateStyle(
+            {
+              _type: "view",
+              _id: `${itemId}_body`,
+              class: "xgallery__body",
+              _children: bodyChildren,
+            },
+            "_body"
+          ),
+        ],
+      },
+      "_item"
+    );
   }
 
   private buildEmpty(): XObjectData {
@@ -432,6 +486,7 @@ export class XGallery extends XUIObject {
       _id: `${this._id}_empty`,
       _title: this.__empty_text,
       _size: "md",
+      _variant: "section",
       _align: "center",
     };
   }

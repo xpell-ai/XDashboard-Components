@@ -30,6 +30,14 @@ type XCardOwnedData = Pick<
   | "_actions"
 >;
 
+const semanticClassFields = [
+  "_variant",
+  "_tone",
+  "_size",
+  "_density",
+  "_elevation",
+] as const;
+
 export class XCard extends XUIObject {
   static _xtype = "card";
   static _skill: XpellSkill = {
@@ -132,6 +140,7 @@ export class XCard extends XUIObject {
     };
 
     super(rootData, defaults);
+    this.applySemanticProps(rootData);
 
     this.__inner_id = this._id + "_inner";
     this.__body_id = this._id + "_body";
@@ -182,6 +191,14 @@ export class XCard extends XUIObject {
     if (value === true || value === ("true" as any)) return true;
     if (value === false || value === ("false" as any)) return false;
     return fallback;
+  }
+
+  private applySemanticProps(data: XUIObjectData) {
+    semanticClassFields.forEach((field) => {
+      const value = (data as any)[field];
+      if (value === undefined || value === null || value === "") return;
+      (this as any)[field] = String(value);
+    });
   }
 
   private applyCardProps(cardData: XCardOwnedData) {
@@ -270,9 +287,17 @@ export class XCard extends XUIObject {
     const existing = String((this as any).class || "");
     const filtered = this
       .splitClasses(existing)
-      .filter((c) => c !== "xcard" && c !== "xcard--no-image");
+      .filter((c) => {
+        if (c === "xcard" || c === "xcard--no-image") return false;
+        return !/^xcard--(?:variant|tone|size|density|elevation)-/.test(c);
+      });
 
     const tokens = ["xcard", ...filtered];
+    semanticClassFields.forEach((field) => {
+      const value = (this as any)[field];
+      if (!value) return;
+      tokens.push(`xcard--${field.slice(1)}-${value}`);
+    });
     if (!this.hasImage()) tokens.push("xcard--no-image");
 
     return Array.from(new Set(tokens.filter(Boolean))).join(" ");
@@ -355,8 +380,11 @@ export class XCard extends XUIObject {
   private applyLayout() {
     const nextClass = this.buildClassName();
     (this as any).class = nextClass;
-    if (typeof HTMLElement !== "undefined") {
-      this.update({ class: nextClass } as any);
+    if (
+      typeof HTMLElement !== "undefined" &&
+      this._dom_object instanceof HTMLElement
+    ) {
+      this._dom_object.setAttribute("class", nextClass);
     }
   }
 

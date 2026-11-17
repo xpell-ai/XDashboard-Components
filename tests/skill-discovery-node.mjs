@@ -16,12 +16,16 @@ assert.equal(typeof globalThis.document, "undefined");
 const skills = getXDashboardObjectSkills();
 const collectionSkills = getXDashboardObjectSkillsByCategory("collection-presentation");
 const dataSummarySkills = getXDashboardObjectSkillsByCategory("data-summary");
+const compositionSkills = getXDashboardObjectSkillsByCategory("composition");
 const gallery = skills.xgallery;
 const list = skills.xlist;
 const timeline = skills.xtimeline;
 const calendar = skills.xcalendar;
 const kanban = skills.xkanban;
 const stats = skills.xstats;
+const shell = skills.xshell;
+const page = skills.xpage;
+const pageHeader = skills["xpage-header"];
 
 assert.ok(gallery, "xgallery skill must be package-level enumerable");
 assert.equal(gallery._id, "xgallery");
@@ -256,6 +260,23 @@ assert.ok(
 assert.deepEqual(Object.keys(dataSummarySkills).sort(), ["xstats"]);
 assert.equal(dataSummarySkills.xstats?._id, "xstats");
 assert.equal(XDashboardObjectSkills.xstats?._id, "xstats");
+assert.deepEqual(Object.keys(compositionSkills).sort(), [
+  "xpage",
+  "xpage-header",
+  "xshell",
+]);
+assert.ok(shell, "xshell skill must be package-level enumerable");
+assert.equal(shell._category, "composition");
+assert.deepEqual(shell._bindings?._layout, ["_sidebar", "_children", "_scroll"]);
+assert.ok(page, "xpage skill must be package-level enumerable");
+assert.equal(page._category, "composition");
+assert.deepEqual(page._bindings?._layout, ["_width", "_density", "_children"]);
+assert.ok(pageHeader, "xpage-header skill must be package-level enumerable");
+assert.equal(pageHeader._category, "composition");
+assert.deepEqual(pageHeader._bindings?._content, ["_title", "_subtitle", "_meta", "_actions"]);
+assert.equal(XDashboardObjectSkills.xshell?._id, "xshell");
+assert.equal(XDashboardObjectSkills.xpage?._id, "xpage");
+assert.equal(XDashboardObjectSkills["xpage-header"]?._id, "xpage-header");
 assert.equal(typeof globalThis.window, "undefined");
 assert.equal(typeof globalThis.document, "undefined");
 
