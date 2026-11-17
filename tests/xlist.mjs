@@ -710,6 +710,47 @@ createList({
 assert.match(getObject("xlist-formatted-values_item_run_title")._text, /^Today, \d{2}:\d{2}$/);
 assert.equal(getObject("xlist-formatted-values_item_run_trailing_0")._text, "3.46 km");
 
+// Equivalent instants must render identically, regardless of input representation.
+// Run this suite under UTC and both positive/negative-offset host timezones.
+const timestampCases = [
+  "2026-11-13T00:30:00Z",
+  "2026-11-13T02:30:00+02:00",
+  "2026-11-12T19:30:00-05:00",
+  "2026-11-13T23:30:00.123Z",
+];
+let timestampCase = 0;
+function formattedTimestamp(value, format) {
+  const id = "xlist-timestamp-" + timestampCase++;
+  createList({
+    _id: id,
+    _items: [{ id: "row", occurred_at: value }],
+    _row_key: "id",
+    _item: { _title: { _field: "occurred_at", _format: format } },
+  });
+  return getObject(id + "_item_row_title")._text;
+}
+for (const timestamp of timestampCases) {
+  const instant = new Date(timestamp);
+  for (const format of ["time", "date", "datetime", "relative-datetime"]) {
+    const expected = formattedTimestamp(instant, format);
+    assert.equal(formattedTimestamp(timestamp, format), expected, timestamp + " / " + format);
+    assert.equal(formattedTimestamp(instant.getTime(), format), expected);
+    if (format === "time") {
+      assert.equal(expected, instant.toLocaleTimeString(undefined, {
+        hour: "2-digit", minute: "2-digit", hour12: false,
+      }));
+    }
+  }
+}
+for (const [timestamp, localDate] of [
+  ["2026-11-13", new Date(2026, 10, 13)],
+  ["2026-11-13T07:30:00", new Date(2026, 10, 13, 7, 30)],
+]) {
+  for (const format of ["time", "date", "datetime"]) {
+    assert.equal(formattedTimestamp(timestamp, format), formattedTimestamp(localDate, format));
+  }
+}
+
 const mappingTemplate = {
   _title: "$row.name",
   _styles: {
@@ -756,3 +797,6 @@ assert.equal(getObject("xlist-remove-style_item_remove_title")._style, undefined
 assert.equal(getObject("pot-rich-list_item_fern_title")._style, undefined);
 
 console.log("xlist collection component passed");
+
+const { runDashboardRuntimeRegressions } = await import("./dashboard-runtime-regressions.mjs");
+runDashboardRuntimeRegressions(XUI);

@@ -190,8 +190,9 @@ function parseCollectionDate(value: any): Date | undefined {
   }
   if (typeof value !== "string" || !value.trim()) return undefined;
   const raw = value.trim();
+  // Keep unzoned values local; timezone-bearing strings must use Date's parser.
   const localDateTime = raw.match(
-    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/u
+    /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?$/u
   );
   if (localDateTime) {
     const date = new Date(

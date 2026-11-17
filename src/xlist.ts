@@ -163,8 +163,12 @@ export class XList extends XUIObject {
   }
 
   private buildClassName(): string {
-    const existing = String((this as any).class || "");
-    const extra = this.__dense ? ["xlist--dense", "xlist--density-compact"] : [];
+    const existing = this.splitClasses(String((this as any).class || ""))
+      .filter((token) => token !== "xlist--dense" && token !== "xlist--density-compact")
+      .join(" ");
+    const density = (this as any)._density;
+    const hasDensity = density !== undefined && density !== null && density !== "";
+    const extra = this.__dense && !hasDensity ? ["xlist--dense", "xlist--density-compact"] : [];
     return buildCollectionRootClassName(
       "xlist",
       existing,
@@ -183,7 +187,11 @@ export class XList extends XUIObject {
       .filter((part) => part && !part.startsWith("--xlist-gap:"));
     (this as any).style = [...existingStyle, ...styleParts].join("; ");
     if (typeof HTMLElement !== "undefined") {
-      this.update({ class: (this as any).class, style: (this as any).style } as any);
+      this.update({
+        class: (this as any).class,
+        style: (this as any).style,
+        _density: (this as any)._density,
+      } as any);
     }
   }
 
